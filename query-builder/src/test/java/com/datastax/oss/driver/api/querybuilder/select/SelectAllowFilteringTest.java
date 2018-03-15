@@ -24,12 +24,12 @@ public class SelectAllowFilteringTest {
   @Test
   public void should_generate_allow_filtering() {
     assertThat(selectFrom("foo").all().allowFiltering())
-        .hasUglyCql("SELECT * FROM \"foo\" ALLOW FILTERING");
+        .hasCql("SELECT * FROM foo ALLOW FILTERING");
   }
 
   @Test
   public void should_use_single_allow_filtering_if_called_multiple_times() {
     assertThat(selectFrom("foo").all().allowFiltering().allowFiltering())
-        .hasUglyCql("SELECT * FROM \"foo\" ALLOW FILTERING");
+        .hasCql("SELECT * FROM foo ALLOW FILTERING");
   }
 }

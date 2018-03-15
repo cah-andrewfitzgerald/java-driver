@@ -25,28 +25,26 @@ public class SelectLimitTest {
 
   @Test
   public void should_generate_limit() {
-    assertThat(selectFrom("foo").all().limit(1)).hasUglyCql("SELECT * FROM \"foo\" LIMIT 1");
-    assertThat(selectFrom("foo").all().limit(bindMarker("l")))
-        .hasUglyCql("SELECT * FROM \"foo\" LIMIT :\"l\"");
+    assertThat(selectFrom("foo").all().limit(1)).hasCql("SELECT * FROM foo LIMIT 1");
+    assertThat(selectFrom("foo").all().limit(bindMarker("l"))).hasCql("SELECT * FROM foo LIMIT :l");
   }
 
   @Test
   public void should_use_last_limit_if_called_multiple_times() {
-    assertThat(selectFrom("foo").all().limit(1).limit(2))
-        .hasUglyCql("SELECT * FROM \"foo\" LIMIT 2");
+    assertThat(selectFrom("foo").all().limit(1).limit(2)).hasCql("SELECT * FROM foo LIMIT 2");
   }
 
   @Test
   public void should_generate_per_partition_limit() {
     assertThat(selectFrom("foo").all().perPartitionLimit(1))
-        .hasUglyCql("SELECT * FROM \"foo\" PER PARTITION LIMIT 1");
+        .hasCql("SELECT * FROM foo PER PARTITION LIMIT 1");
     assertThat(selectFrom("foo").all().perPartitionLimit(bindMarker("l")))
-        .hasUglyCql("SELECT * FROM \"foo\" PER PARTITION LIMIT :\"l\"");
+        .hasCql("SELECT * FROM foo PER PARTITION LIMIT :l");
   }
 
   @Test
   public void should_use_last_per_partition_limit_if_called_multiple_times() {
     assertThat(selectFrom("foo").all().perPartitionLimit(1).perPartitionLimit(2))
-        .hasUglyCql("SELECT * FROM \"foo\" PER PARTITION LIMIT 2");
+        .hasCql("SELECT * FROM foo PER PARTITION LIMIT 2");
   }
 }

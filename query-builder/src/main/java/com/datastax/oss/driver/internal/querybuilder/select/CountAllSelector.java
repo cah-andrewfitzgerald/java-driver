@@ -37,8 +37,11 @@ public class CountAllSelector implements Selector {
   }
 
   @Override
-  public String asCql(boolean pretty) {
-    return (alias == null) ? "count(*)" : "count(*) AS " + alias.asCql(pretty);
+  public void appendTo(StringBuilder builder) {
+    builder.append("count(*)");
+    if (alias != null) {
+      builder.append(" AS ").append(alias.asCql(true));
+    }
   }
 
   @Override

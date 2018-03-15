@@ -58,15 +58,14 @@ public class MapSelector implements Selector {
   }
 
   @Override
-  public String asCql(boolean pretty) {
-    StringBuilder builder = new StringBuilder();
+  public void appendTo(StringBuilder builder) {
     if (keyType != null) {
       assert valueType != null;
       builder
           .append("(map<")
-          .append(keyType.asCql(false, pretty))
+          .append(keyType.asCql(false, true))
           .append(',')
-          .append(valueType.asCql(false, pretty))
+          .append(valueType.asCql(false, true))
           .append(">)");
     }
     builder.append("{");
@@ -77,12 +76,11 @@ public class MapSelector implements Selector {
       } else {
         builder.append(",");
       }
-      builder
-          .append(entry.getKey().asCql(pretty))
-          .append(":")
-          .append(entry.getValue().asCql(pretty));
+      entry.getKey().appendTo(builder);
+      builder.append(":");
+      entry.getValue().appendTo(builder);
     }
-    return builder.append("}").toString();
+    builder.append("}");
   }
 
   public Map<Selector, Selector> getElementSelectors() {

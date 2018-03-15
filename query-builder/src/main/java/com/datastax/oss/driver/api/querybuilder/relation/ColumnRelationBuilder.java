@@ -24,12 +24,12 @@ public interface ColumnRelationBuilder extends ArithmeticRelationBuilder {
 
   /** Builds a LIKE relation for the column. */
   default Relation like(Term term) {
-    return build("LIKE", term);
+    return build(" LIKE ", term);
   }
 
   /** Builds an IS NOT NULL relation for the column. */
   default Relation notNull() {
-    return build("IS NOT NULL", null);
+    return build(" IS NOT NULL", null);
   }
 
   /**
@@ -37,7 +37,7 @@ public interface ColumnRelationBuilder extends ArithmeticRelationBuilder {
    * variable, as in {@code IN ?}.
    */
   default Relation in(BindMarker bindMarker) {
-    return build("IN", bindMarker);
+    return build(" IN ", bindMarker);
   }
 
   /**
@@ -45,7 +45,7 @@ public interface ColumnRelationBuilder extends ArithmeticRelationBuilder {
    * IN (term1, term2...)}.
    */
   default Relation in(Iterable<Term> alternatives) {
-    return build("IN", QueryBuilderDsl.tuple(alternatives));
+    return build(" IN ", QueryBuilderDsl.tuple(alternatives));
   }
 
   /** Var-arg equivalent of {@link #in(Iterable)} . */
@@ -55,11 +55,11 @@ public interface ColumnRelationBuilder extends ArithmeticRelationBuilder {
 
   /** Builds a CONTAINS relation for the column. */
   default Relation contains(Term term) {
-    return build("CONTAINS", term);
+    return build(" CONTAINS ", term);
   }
 
   /** Builds a CONTAINS KEY relation for the column. */
   default Relation containsKey(Term term) {
-    return build("CONTAINS KEY", term);
+    return build(" CONTAINS KEY ", term);
   }
 }

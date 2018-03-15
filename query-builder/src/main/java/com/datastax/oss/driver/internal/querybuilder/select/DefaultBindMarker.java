@@ -31,8 +31,12 @@ public class DefaultBindMarker implements BindMarker {
   }
 
   @Override
-  public String asCql(boolean pretty) {
-    return (id == null) ? "?" : (":" + id.asCql(pretty));
+  public void appendTo(StringBuilder builder) {
+    if (id == null) {
+      builder.append('?');
+    } else {
+      builder.append(':').append(id.asCql(true));
+    }
   }
 
   public CqlIdentifier getId() {

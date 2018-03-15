@@ -29,7 +29,9 @@ public class ColumnComponentLeftHandSide implements LeftHandSide {
   }
 
   @Override
-  public String asCql(boolean pretty) {
-    return columnId.asCql(pretty) + "[" + index.asCql(pretty) + "]";
+  public void appendTo(StringBuilder builder) {
+    builder.append(columnId.asCql(true)).append('[');
+    index.appendTo(builder);
+    builder.append(']');
   }
 }

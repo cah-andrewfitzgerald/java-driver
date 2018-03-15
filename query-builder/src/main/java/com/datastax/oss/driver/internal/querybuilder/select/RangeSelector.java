@@ -48,20 +48,20 @@ public class RangeSelector implements Selector {
   }
 
   @Override
-  public String asCql(boolean pretty) {
-    StringBuilder builder = new StringBuilder(collection.asCql(pretty)).append('[');
+  public void appendTo(StringBuilder builder) {
+    collection.appendTo(builder);
+    builder.append('[');
     if (left != null) {
-      builder.append(left.asCql(pretty));
+      left.appendTo(builder);
     }
     builder.append("..");
     if (right != null) {
-      builder.append(right.asCql(pretty));
+      right.appendTo(builder);
     }
     builder.append(']');
     if (alias != null) {
-      builder.append(" AS ").append(alias.asCql(pretty));
+      builder.append(" AS ").append(alias.asCql(true));
     }
-    return builder.toString();
   }
 
   public Selector getCollection() {

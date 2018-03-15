@@ -17,7 +17,7 @@ package com.datastax.oss.driver.internal.querybuilder.select;
 
 import com.datastax.oss.driver.api.core.CqlIdentifier;
 import com.datastax.oss.driver.api.querybuilder.select.Selector;
-import com.datastax.oss.driver.internal.querybuilder.Joiners;
+import com.datastax.oss.driver.internal.querybuilder.CqlHelper;
 import com.google.common.base.Preconditions;
 import com.google.common.collect.Iterables;
 import java.util.Objects;
@@ -44,8 +44,8 @@ public abstract class CollectionSelector implements Selector {
   }
 
   @Override
-  public String asCql(boolean pretty) {
-    return opening + Joiners.joinSelectorsWithComma(elementSelectors, pretty) + closing;
+  public void appendTo(StringBuilder builder) {
+    CqlHelper.append(elementSelectors, builder, opening, ",", closing);
   }
 
   public Iterable<Selector> getElementSelectors() {

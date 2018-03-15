@@ -16,6 +16,7 @@
 package com.datastax.oss.driver.internal.querybuilder.term;
 
 import com.datastax.oss.driver.api.querybuilder.term.Term;
+import com.datastax.oss.driver.internal.querybuilder.CqlHelper;
 
 public class TupleTerm implements Term {
 
@@ -26,18 +27,8 @@ public class TupleTerm implements Term {
   }
 
   @Override
-  public String asCql(boolean pretty) {
-    StringBuilder builder = new StringBuilder("(");
-    boolean first = true;
-    for (Term component : components) {
-      if (first) {
-        first = false;
-      } else {
-        builder.append(",");
-      }
-      builder.append(component.asCql(pretty));
-    }
-    return builder.append(")").toString();
+  public void appendTo(StringBuilder builder) {
+    CqlHelper.append(components, builder, "(", ",", ")");
   }
 
   public Iterable<? extends Term> getComponents() {

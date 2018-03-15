@@ -29,8 +29,9 @@ public class CastTerm implements Term {
   }
 
   @Override
-  public String asCql(boolean pretty) {
-    return "(" + targetType.asCql(false, pretty) + ")" + term.asCql(pretty);
+  public void appendTo(StringBuilder builder) {
+    builder.append('(').append(targetType.asCql(false, true)).append(')');
+    term.appendTo(builder);
   }
 
   public Term getTerm() {

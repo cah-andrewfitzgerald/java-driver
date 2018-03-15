@@ -15,6 +15,7 @@
  */
 package com.datastax.oss.driver.internal.querybuilder.relation;
 
+import com.datastax.oss.driver.api.querybuilder.CqlSnippet;
 import com.datastax.oss.driver.api.querybuilder.relation.Relation;
 
 /**
@@ -26,7 +27,4 @@ import com.datastax.oss.driver.api.querybuilder.relation.Relation;
  * <p>Implementations of this interface are only used temporarily while building a {@link Relation},
  * so they don't need to provide introspection (i.e. public getters).
  */
-public interface LeftHandSide {
-
-  String asCql(boolean pretty);
-}
+public interface LeftHandSide extends CqlSnippet {}

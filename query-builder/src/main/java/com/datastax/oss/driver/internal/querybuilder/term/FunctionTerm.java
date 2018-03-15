@@ -17,6 +17,7 @@ package com.datastax.oss.driver.internal.querybuilder.term;
 
 import com.datastax.oss.driver.api.core.CqlIdentifier;
 import com.datastax.oss.driver.api.querybuilder.term.Term;
+import com.datastax.oss.driver.internal.querybuilder.CqlHelper;
 import com.google.common.base.Preconditions;
 
 public class FunctionTerm implements Term {
@@ -35,22 +36,14 @@ public class FunctionTerm implements Term {
   }
 
   @Override
-  public String asCql(boolean pretty) {
-    StringBuilder builder = new StringBuilder();
+  public void appendTo(StringBuilder builder) {
     if (keyspaceId != null) {
-      builder.append(keyspaceId.asCql(pretty)).append('.');
+      builder.append(keyspaceId.asCql(true)).append('.');
     }
-    builder.append(functionId.asCql(pretty)).append('(');
-    boolean first = true;
-    for (Term argument : arguments) {
-      if (first) {
-        first = false;
-      } else {
-        builder.append(",");
-      }
-      builder.append(argument.asCql(pretty));
-    }
-    return builder.append(")").toString();
+    // The function name appears even without arguments, so don't use prefix/suffix in CqlHelper
+    builder.append(functionId.asCql(true)).append('(');
+    CqlHelper.append(arguments, builder, null, ",", null);
+    builder.append(')');
   }
 
   public CqlIdentifier getKeyspaceId() {

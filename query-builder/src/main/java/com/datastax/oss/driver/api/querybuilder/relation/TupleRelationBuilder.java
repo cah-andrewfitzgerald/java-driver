@@ -56,6 +56,6 @@ public interface TupleRelationBuilder extends ArithmeticRelationBuilder {
    * }</pre>
    */
   default Relation in(Term rightHandSide) {
-    return build("IN", rightHandSide);
+    return build(" IN ", rightHandSide);
   }
 }

@@ -35,19 +35,18 @@ public class SelectSelectorTest {
 
   @Test
   public void should_generate_star_selector() {
-    assertThat(selectFrom("foo").all()).hasUglyCql("SELECT * FROM \"foo\"");
-    assertThat(selectFrom("ks", "foo").all()).hasUglyCql("SELECT * FROM \"ks\".\"foo\"");
+    assertThat(selectFrom("foo").all()).hasCql("SELECT * FROM foo");
+    assertThat(selectFrom("ks", "foo").all()).hasCql("SELECT * FROM ks.foo");
   }
 
   @Test
   public void should_remove_star_selector_if_other_selector_added() {
-    assertThat(selectFrom("foo").all().column("bar")).hasUglyCql("SELECT \"bar\" FROM \"foo\"");
+    assertThat(selectFrom("foo").all().column("bar")).hasCql("SELECT bar FROM foo");
   }
 
   @Test
   public void should_remove_other_selectors_if_star_selector_added() {
-    assertThat(selectFrom("foo").column("bar").column("baz").all())
-        .hasUglyCql("SELECT * FROM \"foo\"");
+    assertThat(selectFrom("foo").column("bar").column("baz").all()).hasCql("SELECT * FROM foo");
   }
 
   @Test(expected = IllegalArgumentException.class)
@@ -57,70 +56,65 @@ public class SelectSelectorTest {
 
   @Test
   public void should_generate_count_all_selector() {
-    assertThat(selectFrom("foo").countAll()).hasUglyCql("SELECT count(*) FROM \"foo\"");
+    assertThat(selectFrom("foo").countAll()).hasCql("SELECT count(*) FROM foo");
   }
 
   @Test
   public void should_generate_column_selectors() {
-    assertThat(selectFrom("foo").column("bar")).hasUglyCql("SELECT \"bar\" FROM \"foo\"");
-    assertThat(selectFrom("foo").column("bar").column("baz"))
-        .hasUglyCql("SELECT \"bar\", \"baz\" FROM \"foo\"");
+    assertThat(selectFrom("foo").column("bar")).hasCql("SELECT bar FROM foo");
+    assertThat(selectFrom("foo").column("bar").column("baz")).hasCql("SELECT bar,baz FROM foo");
     assertThat(selectFrom("foo").selectors(getColumn("bar"), getColumn("baz")))
-        .hasUglyCql("SELECT \"bar\", \"baz\" FROM \"foo\"");
+        .hasCql("SELECT bar,baz FROM foo");
   }
 
   @Test
   public void should_generate_arithmetic_selectors() {
     assertThat(selectFrom("foo").sum(getColumn("bar"), getColumn("baz")))
-        .hasUglyCql("SELECT \"bar\" + \"baz\" FROM \"foo\"");
+        .hasCql("SELECT bar+baz FROM foo");
     assertThat(selectFrom("foo").difference(raw("1"), getSum(getColumn("bar"), getColumn("baz"))))
-        .hasUglyCql("SELECT 1 - (\"bar\" + \"baz\") FROM \"foo\"");
+        .hasCql("SELECT 1-(bar+baz) FROM foo");
     assertThat(selectFrom("foo").opposite(getSum(getColumn("bar"), getColumn("baz"))))
-        .hasUglyCql("SELECT -(\"bar\" + \"baz\") FROM \"foo\"");
+        .hasCql("SELECT -(bar+baz) FROM foo");
     assertThat(
             selectFrom("foo")
                 .product(getOpposite(getColumn("bar")), getSum(getColumn("baz"), raw("1"))))
-        .hasUglyCql("SELECT -\"bar\" * (\"baz\" + 1) FROM \"foo\"");
+        .hasCql("SELECT -bar*(baz+1) FROM foo");
     assertThat(selectFrom("foo").quotient(raw("1"), getSum(getColumn("bar"), getColumn("baz"))))
-        .hasUglyCql("SELECT 1 / (\"bar\" + \"baz\") FROM \"foo\"");
+        .hasCql("SELECT 1/(bar+baz) FROM foo");
     assertThat(selectFrom("foo").quotient(raw("1"), getProduct(getColumn("bar"), getColumn("baz"))))
-        .hasUglyCql("SELECT 1 / (\"bar\" * \"baz\") FROM \"foo\"");
+        .hasCql("SELECT 1/(bar*baz) FROM foo");
   }
 
   @Test
   public void should_generate_field_selectors() {
-    assertThat(selectFrom("foo").field("user", "name"))
-        .hasUglyCql("SELECT \"user\".\"name\" FROM \"foo\"");
+    assertThat(selectFrom("foo").field("user", "name")).hasCql("SELECT user.name FROM foo");
     assertThat(selectFrom("foo").field(getField("user", "address"), "city"))
-        .hasUglyCql("SELECT \"user\".\"address\".\"city\" FROM \"foo\"");
+        .hasCql("SELECT user.address.city FROM foo");
   }
 
   @Test
   public void should_generate_element_selectors() {
-    assertThat(selectFrom("foo").element("m", literal(1)))
-        .hasUglyCql("SELECT \"m\"[1] FROM \"foo\"");
+    assertThat(selectFrom("foo").element("m", literal(1))).hasCql("SELECT m[1] FROM foo");
     assertThat(selectFrom("foo").element(getElement("m", literal("bar")), literal(1)))
-        .hasUglyCql("SELECT \"m\"['bar'][1] FROM \"foo\"");
+        .hasCql("SELECT m['bar'][1] FROM foo");
   }
 
   @Test
   public void should_generate_range_selectors() {
     assertThat(selectFrom("foo").range("s", literal(1), literal(5)))
-        .hasUglyCql("SELECT \"s\"[1..5] FROM \"foo\"");
-    assertThat(selectFrom("foo").range("s", literal(1), null))
-        .hasUglyCql("SELECT \"s\"[1..] FROM \"foo\"");
-    assertThat(selectFrom("foo").range("s", null, literal(5)))
-        .hasUglyCql("SELECT \"s\"[..5] FROM \"foo\"");
+        .hasCql("SELECT s[1..5] FROM foo");
+    assertThat(selectFrom("foo").range("s", literal(1), null)).hasCql("SELECT s[1..] FROM foo");
+    assertThat(selectFrom("foo").range("s", null, literal(5))).hasCql("SELECT s[..5] FROM foo");
   }
 
   @Test
   public void should_generate_collection_and_tuple_selectors() {
     assertThat(selectFrom("foo").listOf(getColumn("a"), getColumn("b"), getColumn("c")))
-        .hasUglyCql("SELECT [\"a\",\"b\",\"c\"] FROM \"foo\"");
+        .hasCql("SELECT [a,b,c] FROM foo");
     assertThat(selectFrom("foo").setOf(getColumn("a"), getColumn("b"), getColumn("c")))
-        .hasUglyCql("SELECT {\"a\",\"b\",\"c\"} FROM \"foo\"");
+        .hasCql("SELECT {a,b,c} FROM foo");
     assertThat(selectFrom("foo").tupleOf(getColumn("a"), getColumn("b"), getColumn("c")))
-        .hasUglyCql("SELECT (\"a\",\"b\",\"c\") FROM \"foo\"");
+        .hasCql("SELECT (a,b,c) FROM foo");
   }
 
   @Test(expected = IllegalArgumentException.class)
@@ -135,7 +129,7 @@ public class SelectSelectorTest {
                 .mapOf(
                     ImmutableMap.of(
                         getColumn("k1"), getColumn("v1"), getColumn("k2"), getColumn("v2"))))
-        .hasUglyCql("SELECT {\"k1\":\"v1\",\"k2\":\"v2\"} FROM \"foo\"");
+        .hasCql("SELECT {k1:v1,k2:v2} FROM foo");
     assertThat(
             selectFrom("foo")
                 .mapOf(
@@ -143,7 +137,7 @@ public class SelectSelectorTest {
                         getColumn("k1"), getColumn("v1"), getColumn("k2"), getColumn("v2")),
                     DataTypes.TEXT,
                     DataTypes.INT))
-        .hasUglyCql("SELECT (map<text,int>){\"k1\":\"v1\",\"k2\":\"v2\"} FROM \"foo\"");
+        .hasCql("SELECT (map<text,int>){k1:v1,k2:v2} FROM foo");
   }
 
   @Test(expected = IllegalArgumentException.class)
@@ -160,35 +154,34 @@ public class SelectSelectorTest {
   @Test
   public void should_generate_cast_selector() {
     assertThat(selectFrom("foo").cast(getColumn("k"), DataTypes.INT))
-        .hasUglyCql("SELECT (int)\"k\" FROM \"foo\"");
+        .hasCql("SELECT (int)k FROM foo");
   }
 
   @Test
   public void should_generate_function_selectors() {
     assertThat(selectFrom("foo").function("f", getColumn("c1"), getSum(getColumn("c2"), raw("1"))))
-        .hasUglyCql("SELECT f(\"c1\",\"c2\" + 1) FROM \"foo\"");
+        .hasCql("SELECT f(c1,c2+1) FROM foo");
     assertThat(
             selectFrom("foo")
                 .function("ks", "f", getColumn("c1"), getSum(getColumn("c2"), raw("1"))))
-        .hasUglyCql("SELECT ks.f(\"c1\",\"c2\" + 1) FROM \"foo\"");
+        .hasCql("SELECT ks.f(c1,c2+1) FROM foo");
     assertThat(selectFrom("foo").writeTime("c1").ttl("c2"))
-        .hasUglyCql("SELECT writetime(\"c1\"), ttl(\"c2\") FROM \"foo\"");
+        .hasCql("SELECT writetime(c1),ttl(c2) FROM foo");
   }
 
   @Test
   public void should_generate_raw_selector() {
-    assertThat(selectFrom("foo").raw("a,b,c")).hasUglyCql("SELECT a,b,c FROM \"foo\"");
+    assertThat(selectFrom("foo").raw("a,b,c")).hasCql("SELECT a,b,c FROM foo");
 
     assertThat(selectFrom("foo").selectors(getColumn("bar"), raw("baz")))
-        .hasUglyCql("SELECT \"bar\", baz FROM \"foo\"");
+        .hasCql("SELECT bar,baz FROM foo");
   }
 
   @Test
   public void should_alias_selectors() {
-    assertThat(selectFrom("foo").column("bar").as("baz"))
-        .hasUglyCql("SELECT \"bar\" AS \"baz\" FROM \"foo\"");
+    assertThat(selectFrom("foo").column("bar").as("baz")).hasCql("SELECT bar AS baz FROM foo");
     assertThat(selectFrom("foo").selectors(getColumn("bar").as("c1"), getColumn("baz").as("c2")))
-        .hasUglyCql("SELECT \"bar\" AS \"c1\", \"baz\" AS \"c2\" FROM \"foo\"");
+        .hasCql("SELECT bar AS c1,baz AS c2 FROM foo");
   }
 
   @Test(expected = IllegalStateException.class)
@@ -204,6 +197,6 @@ public class SelectSelectorTest {
   @Test
   public void should_keep_last_alias_if_aliased_twice() {
     assertThat(selectFrom("foo").countAll().as("allthethings").as("total"))
-        .hasUglyCql("SELECT count(*) AS \"total\" FROM \"foo\"");
+        .hasCql("SELECT count(*) AS total FROM foo");
   }
 }

@@ -42,8 +42,11 @@ public class DefaultRaw implements Raw {
   }
 
   @Override
-  public String asCql(boolean pretty) {
-    return (alias == null) ? rawExpression : rawExpression + " AS " + alias.asCql(pretty);
+  public void appendTo(StringBuilder builder) {
+    builder.append(rawExpression);
+    if (alias != null) {
+      builder.append(" AS ").append(alias.asCql(true));
+    }
   }
 
   public String getRawExpression() {

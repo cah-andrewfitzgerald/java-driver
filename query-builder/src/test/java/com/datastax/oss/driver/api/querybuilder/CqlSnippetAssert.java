@@ -25,13 +25,10 @@ public class CqlSnippetAssert extends AbstractAssert<CqlSnippetAssert, CqlSnippe
     super(actual, CqlSnippetAssert.class);
   }
 
-  public CqlSnippetAssert hasPrettyCql(String expected) {
-    assertThat(actual.asCql(true)).isEqualTo(expected);
-    return this;
-  }
-
-  public CqlSnippetAssert hasUglyCql(String expected) {
-    assertThat(actual.asCql(false)).isEqualTo(expected);
+  public CqlSnippetAssert hasCql(String expected) {
+    StringBuilder builder = new StringBuilder();
+    actual.appendTo(builder);
+    assertThat(builder.toString()).isEqualTo(expected);
     return this;
   }
 }

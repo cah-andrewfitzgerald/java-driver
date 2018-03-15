@@ -26,8 +26,8 @@ public class ColumnLeftHandSide implements LeftHandSide {
   }
 
   @Override
-  public String asCql(boolean pretty) {
-    return columnId.asCql(pretty);
+  public void appendTo(StringBuilder builder) {
+    builder.append(columnId.asCql(true));
   }
 
   public CqlIdentifier getColumnId() {

@@ -15,18 +15,60 @@
  */
 package com.datastax.oss.driver.api.querybuilder;
 
+import com.datastax.oss.driver.api.core.CqlSession;
 import com.datastax.oss.driver.api.core.cql.SimpleStatement;
+import com.datastax.oss.driver.api.core.cql.SimpleStatementBuilder;
+import com.datastax.oss.driver.api.core.cql.Statement;
 
 /**
- * End state for the query builder DSL.
+ * End state for the query builder DSL, which allows the generation of a CQL query.
  *
- * <p>The API returns this type as soon as there is enough information to build a query (in most
- * cases, it's still possible to call more methods to keep building the query).
- *
- * <p>The resulting {@link SimpleStatement} can be executed directly (possibly after adding
- * parameters) or prepared.
+ * <p>The API returns this type as soon as there is enough information for a minimal query (in most
+ * cases, it's still possible to call more methods to keep building).
  */
 public interface BuildableQuery {
-  // TODO do we really need pretty-printing?
-  SimpleStatement build(boolean pretty);
+
+  /**
+   * Builds the CQL query as a raw string.
+   *
+   * <p>Use this if you plan to pass the query to {@link CqlSession#execute(String)} or {@link
+   * CqlSession#prepare(String)} without any further customization.
+   */
+  String asCql();
+
+  /**
+   * Builds the CQL query and wraps it in a simple statement.
+   *
+   * <p>This is a similar to:
+   *
+   * <pre>{@code
+   * SimpleStatement.newInstance(asCql())
+   * }</pre>
+   *
+   * In addition, some query implementation might try to infer additional statement properties (such
+   * as {@link Statement#isIdempotent()}).
+   */
+  default SimpleStatement asSimpleStatement() {
+    return SimpleStatement.newInstance(asCql());
+  }
+
+  /**
+   * Builds the CQL query and wraps it in a simple statement builder.
+   *
+   * <p>This is equivalent to {@link #asSimpleStatement()}, but the builder might be slightly more
+   * efficient if you plan to customize multiple properties on the statement, for example:
+   *
+   * <pre>{@code
+   * SimpleStatementBuilder builder =
+   *     selectFrom("foo")
+   *         .all()
+   *         .where(isColumn("k").eq(bindMarker("k")), isColumn("c").lt(bindMarker("c")))
+   *         .asSimpleStatementBuilder();
+   * SimpleStatement statement =
+   *     builder.addNamedValue("k", 1).addNamedValue("c", 2).withTracing().build();
+   * }</pre>
+   */
+  default SimpleStatementBuilder asSimpleStatementBuilder() {
+    return SimpleStatement.builder(asCql());
+  }
 }

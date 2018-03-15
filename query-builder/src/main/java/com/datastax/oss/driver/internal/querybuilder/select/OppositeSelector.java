@@ -43,14 +43,12 @@ public class OppositeSelector extends ArithmeticSelector {
   }
 
   @Override
-  public String asCql(boolean pretty) {
-    StringBuilder builder =
-        new StringBuilder("-")
-            .append(maybeParenthesize(operator.getPrecedenceLeft(), argument, pretty));
+  public void appendTo(StringBuilder builder) {
+    builder.append('-');
+    appendAndMaybeParenthesize(operator.getPrecedenceLeft(), argument, builder);
     if (alias != null) {
-      builder.append(" AS ").append(alias.asCql(pretty));
+      builder.append(" AS ").append(alias.asCql(true));
     }
-    return builder.toString();
   }
 
   public Selector getArgument() {

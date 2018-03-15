@@ -30,12 +30,12 @@ public class LiteralTerm<T> implements Term {
   }
 
   @Override
-  public String asCql(boolean pretty) {
+  public void appendTo(StringBuilder builder) {
     if (value == null) {
-      return "NULL";
+      builder.append("NULL");
     } else {
       TypeCodec<T> actualCodec = (codec == null) ? CodecRegistry.DEFAULT.codecFor(value) : codec;
-      return actualCodec.format(value);
+      builder.append(actualCodec.format(value));
     }
   }
 

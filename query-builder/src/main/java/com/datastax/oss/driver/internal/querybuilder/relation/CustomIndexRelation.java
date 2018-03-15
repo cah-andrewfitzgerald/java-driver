@@ -30,8 +30,10 @@ public class CustomIndexRelation implements Relation {
   }
 
   @Override
-  public String asCql(boolean pretty) {
-    return "expr(" + indexId.asCql(pretty) + ',' + expression.asCql(pretty) + ')';
+  public void appendTo(StringBuilder builder) {
+    builder.append("expr(").append(indexId.asCql(true)).append(',');
+    expression.appendTo(builder);
+    builder.append(')');
   }
 
   public CqlIdentifier getIndexId() {

@@ -25,20 +25,8 @@ public class BuildableQueryAssert extends AbstractAssert<BuildableQueryAssert, B
     super(actual, BuildableQueryAssert.class);
   }
 
-  public BuildableQueryAssert hasPrettyCql(String... expectedLines) {
-    StringBuilder expectedCql = new StringBuilder();
-    for (int i = 0; i < expectedLines.length; i++) {
-      if (i > 0) {
-        expectedCql.append('\n');
-      }
-      expectedCql.append(expectedLines[i]);
-    }
-    assertThat(actual.build(true).getQuery()).isEqualTo(expectedCql.toString());
-    return this;
-  }
-
-  public BuildableQueryAssert hasUglyCql(String expected) {
-    assertThat(actual.build(false).getQuery()).isEqualTo(expected);
+  public BuildableQueryAssert hasCql(String expected) {
+    assertThat(actual.asCql()).isEqualTo(expected);
     return this;
   }
 }

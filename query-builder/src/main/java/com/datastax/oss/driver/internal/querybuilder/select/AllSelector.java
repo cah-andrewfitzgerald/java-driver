@@ -27,8 +27,8 @@ public enum AllSelector implements Selector {
   }
 
   @Override
-  public String asCql(boolean pretty) {
-    return "*";
+  public void appendTo(StringBuilder builder) {
+    builder.append('*');
   }
 
   @Override

@@ -32,10 +32,17 @@ public abstract class ArithmeticSelector implements Selector {
     return operator;
   }
 
-  protected static String maybeParenthesize(int myPrecedence, Selector child, boolean pretty) {
+  protected static void appendAndMaybeParenthesize(
+      int myPrecedence, Selector child, StringBuilder builder) {
     boolean parenthesize =
         (child instanceof ArithmeticSelector)
             && (((ArithmeticSelector) child).operator.getPrecedenceLeft() < myPrecedence);
-    return parenthesize ? "(" + child.asCql(pretty) + ")" : child.asCql(pretty);
+    if (parenthesize) {
+      builder.append('(');
+    }
+    child.appendTo(builder);
+    if (parenthesize) {
+      builder.append(')');
+    }
   }
 }

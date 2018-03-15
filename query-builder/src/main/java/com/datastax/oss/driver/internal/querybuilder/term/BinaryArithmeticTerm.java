@@ -34,12 +34,10 @@ public class BinaryArithmeticTerm extends ArithmeticTerm {
   }
 
   @Override
-  public String asCql(boolean pretty) {
-    return maybeParenthesize(operator.getPrecedenceLeft(), left, pretty)
-        + ' '
-        + operator.getSymbol()
-        + ' '
-        + maybeParenthesize(operator.getPrecedenceRight(), right, pretty);
+  public void appendTo(StringBuilder builder) {
+    appendAndMaybeParenthesize(operator.getPrecedenceLeft(), left, builder);
+    builder.append(operator.getSymbol());
+    appendAndMaybeParenthesize(operator.getPrecedenceRight(), right, builder);
   }
 
   public Term getLeft() {

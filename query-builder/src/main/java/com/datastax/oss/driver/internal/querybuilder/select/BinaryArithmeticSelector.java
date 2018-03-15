@@ -47,17 +47,13 @@ public class BinaryArithmeticSelector extends ArithmeticSelector {
   }
 
   @Override
-  public String asCql(boolean pretty) {
-    StringBuilder builder =
-        new StringBuilder(maybeParenthesize(operator.getPrecedenceLeft(), left, pretty))
-            .append(' ')
-            .append(operator.getSymbol())
-            .append(' ')
-            .append(maybeParenthesize(operator.getPrecedenceRight(), right, pretty));
+  public void appendTo(StringBuilder builder) {
+    appendAndMaybeParenthesize(operator.getPrecedenceLeft(), left, builder);
+    builder.append(operator.getSymbol());
+    appendAndMaybeParenthesize(operator.getPrecedenceRight(), right, builder);
     if (alias != null) {
-      builder.append(" AS ").append(alias.asCql(pretty));
+      builder.append(" AS ").append(alias.asCql(true));
     }
-    return builder.toString();
   }
 
   public Selector getLeft() {

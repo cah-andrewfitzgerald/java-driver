@@ -35,13 +35,13 @@ public class SelectOrderingTest {
                 .where(isColumn("k").eq(literal(1)))
                 .orderBy("c1", ASC)
                 .orderBy("c2", DESC))
-        .hasUglyCql("SELECT * FROM \"foo\" WHERE \"k\" = 1 ORDER BY \"c1\" ASC, \"c2\" DESC");
+        .hasCql("SELECT * FROM foo WHERE k=1 ORDER BY c1 ASC,c2 DESC");
     assertThat(
             selectFrom("foo")
                 .all()
                 .where(isColumn("k").eq(literal(1)))
                 .orderBy(ImmutableMap.of("c1", ASC, "c2", DESC)))
-        .hasUglyCql("SELECT * FROM \"foo\" WHERE \"k\" = 1 ORDER BY \"c1\" ASC, \"c2\" DESC");
+        .hasCql("SELECT * FROM foo WHERE k=1 ORDER BY c1 ASC,c2 DESC");
   }
 
   @Test(expected = IllegalArgumentException.class)
@@ -61,7 +61,7 @@ public class SelectOrderingTest {
                 .orderBy("c1", ASC)
                 .orderBy("c2", DESC)
                 .orderBy("c1", DESC))
-        .hasUglyCql("SELECT * FROM \"foo\" WHERE \"k\" = 1 ORDER BY \"c2\" DESC, \"c1\" DESC");
+        .hasCql("SELECT * FROM foo WHERE k=1 ORDER BY c2 DESC,c1 DESC");
     assertThat(
             selectFrom("foo")
                 .all()
@@ -70,7 +70,6 @@ public class SelectOrderingTest {
                 .orderBy("c2", DESC)
                 .orderBy("c3", ASC)
                 .orderBy(ImmutableMap.of("c1", DESC, "c2", ASC)))
-        .hasUglyCql(
-            "SELECT * FROM \"foo\" WHERE \"k\" = 1 ORDER BY \"c3\" ASC, \"c1\" DESC, \"c2\" ASC");
+        .hasCql("SELECT * FROM foo WHERE k=1 ORDER BY c3 ASC,c1 DESC,c2 ASC");
   }
 }

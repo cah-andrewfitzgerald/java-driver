@@ -23,7 +23,7 @@ import com.datastax.oss.driver.api.querybuilder.relation.Relation;
 import com.datastax.oss.driver.api.querybuilder.select.Select;
 import com.datastax.oss.driver.api.querybuilder.select.SelectFrom;
 import com.datastax.oss.driver.api.querybuilder.select.Selector;
-import com.datastax.oss.driver.internal.core.metadata.schema.ScriptBuilder;
+import com.datastax.oss.driver.internal.querybuilder.CqlHelper;
 import com.google.common.base.Preconditions;
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableMap;
@@ -348,9 +348,8 @@ public class DefaultSelect implements SelectFrom, Select {
   }
 
   @Override
-  public SimpleStatement build(boolean pretty) {
-    // TODO move ScriptBuilder to a more generic package (util?), it's now used in multiple places
-    ScriptBuilder builder = new ScriptBuilder(pretty);
+  public String asCql() {
+    StringBuilder builder = new StringBuilder();
 
     builder.append("SELECT");
     if (isJson) {
@@ -360,73 +359,57 @@ public class DefaultSelect implements SelectFrom, Select {
       builder.append(" DISTINCT");
     }
 
-    builder.increaseIndent();
-    for (int i = 0; i < selectors.size(); i++) {
-      if (i > 0) {
+    CqlHelper.append(selectors, builder, " ", ",", null);
+
+    builder.append(" FROM ");
+    if (keyspace != null) {
+      builder.append(keyspace.asCql(true)).append(".");
+    }
+    builder.append(table.asCql(true));
+
+    CqlHelper.append(relations, builder, " WHERE ", " AND ", null);
+    CqlHelper.append(groupByClauses, builder, " GROUP BY ", ",", null);
+
+    boolean first = true;
+    for (Map.Entry<CqlIdentifier, ClusteringOrder> entry : orderings.entrySet()) {
+      if (first) {
+        builder.append(" ORDER BY ");
+        first = false;
+      } else {
         builder.append(",");
       }
-      builder.newLine().append(selectors.get(i).asCql(pretty));
-    }
-    builder.decreaseIndent();
-
-    builder.newLine().append("FROM ");
-    if (keyspace != null) {
-      builder.append(keyspace).append(".");
-    }
-    builder.append(table);
-
-    if (!relations.isEmpty()) {
-      builder.newLine().append("WHERE ").append(relations.get(0).asCql(pretty));
-      for (int i = 1; i < relations.size(); i++) {
-        builder.newLine().append("AND ").append(relations.get(i).asCql(pretty));
-      }
-    }
-
-    if (!groupByClauses.isEmpty()) {
-      builder.newLine().append("GROUP BY ").append(groupByClauses.get(0).asCql(pretty));
-      for (int i = 1; i < groupByClauses.size(); i++) {
-        builder.append(",").newLine().append(groupByClauses.get(i).asCql(pretty));
-      }
-    }
-
-    if (!orderings.isEmpty()) {
-      builder.newLine().append("ORDER BY");
-      boolean first = true;
-      for (Map.Entry<CqlIdentifier, ClusteringOrder> entry : orderings.entrySet()) {
-        if (first) {
-          builder.append(" ");
-          first = false;
-        } else {
-          builder.append(",").newLine();
-        }
-        builder.append(entry.getKey().asCql(pretty)).append(" ").append(entry.getValue().name());
-      }
+      builder.append(entry.getKey().asCql(true)).append(" ").append(entry.getValue().name());
     }
 
     if (limit != null) {
-      builder
-          .newLine()
-          .append("LIMIT ")
-          .append(
-              (limit instanceof BindMarker)
-                  ? ((BindMarker) limit).asCql(pretty)
-                  : limit.toString());
-    }
-    if (perPartitionLimit != null) {
-      builder
-          .newLine()
-          .append("PER PARTITION LIMIT ")
-          .append(
-              (perPartitionLimit instanceof BindMarker)
-                  ? ((BindMarker) perPartitionLimit).asCql(pretty)
-                  : perPartitionLimit.toString());
-    }
-    if (allowsFiltering) {
-      builder.newLine().append("ALLOW FILTERING");
+      builder.append(" LIMIT ");
+      if (limit instanceof BindMarker) {
+        ((BindMarker) limit).appendTo(builder);
+      } else {
+        builder.append(limit);
+      }
     }
 
+    if (perPartitionLimit != null) {
+      builder.append(" PER PARTITION LIMIT ");
+      if (perPartitionLimit instanceof BindMarker) {
+        ((BindMarker) perPartitionLimit).appendTo(builder);
+      } else {
+        builder.append(perPartitionLimit);
+      }
+    }
+
+    if (allowsFiltering) {
+      builder.append(" ALLOW FILTERING");
+    }
+
+    return builder.toString();
+  }
+
+  @Override
+  public SimpleStatement asSimpleStatement() {
     // TODO compute idempotence
-    return SimpleStatement.newInstance(builder.build());
+    return SimpleStatement.newInstance(asCql());
   }
 
   public CqlIdentifier getKeyspace() {

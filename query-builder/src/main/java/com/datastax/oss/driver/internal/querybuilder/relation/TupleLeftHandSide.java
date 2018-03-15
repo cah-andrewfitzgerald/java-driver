@@ -16,7 +16,7 @@
 package com.datastax.oss.driver.internal.querybuilder.relation;
 
 import com.datastax.oss.driver.api.core.CqlIdentifier;
-import com.datastax.oss.driver.internal.querybuilder.Joiners;
+import com.datastax.oss.driver.internal.querybuilder.CqlHelper;
 
 public class TupleLeftHandSide implements LeftHandSide {
 
@@ -27,8 +27,8 @@ public class TupleLeftHandSide implements LeftHandSide {
   }
 
   @Override
-  public String asCql(boolean pretty) {
-    return "(" + Joiners.joinIdsWithComma(identifiers, pretty) + ")";
+  public void appendTo(StringBuilder builder) {
+    CqlHelper.appendIds(identifiers, builder, "(", ",", ")");
   }
 
   public Iterable<CqlIdentifier> getIdentifiers() {

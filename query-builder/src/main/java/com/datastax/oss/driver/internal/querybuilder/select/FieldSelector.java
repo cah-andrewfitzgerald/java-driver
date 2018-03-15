@@ -44,13 +44,12 @@ public class FieldSelector implements Selector {
   }
 
   @Override
-  public String asCql(boolean pretty) {
-    StringBuilder builder =
-        new StringBuilder(udt.asCql(pretty)).append('.').append(fieldId.asCql(pretty));
+  public void appendTo(StringBuilder builder) {
+    udt.appendTo(builder);
+    builder.append('.').append(fieldId.asCql(true));
     if (alias != null) {
-      builder.append(" AS ").append(alias.asCql(pretty));
+      builder.append(" AS ").append(alias.asCql(true));
     }
-    return builder.toString();
   }
 
   public Selector getUdt() {

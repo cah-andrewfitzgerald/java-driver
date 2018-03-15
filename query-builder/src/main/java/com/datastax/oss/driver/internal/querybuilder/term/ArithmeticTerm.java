@@ -32,10 +32,17 @@ public abstract class ArithmeticTerm implements Term {
     return operator;
   }
 
-  protected static String maybeParenthesize(int myPrecedence, Term child, boolean pretty) {
+  protected static void appendAndMaybeParenthesize(
+      int myPrecedence, Term child, StringBuilder builder) {
     boolean parenthesize =
         (child instanceof ArithmeticTerm)
             && (((ArithmeticTerm) child).operator.getPrecedenceLeft() < myPrecedence);
-    return parenthesize ? "(" + child.asCql(pretty) + ")" : child.asCql(pretty);
+    if (parenthesize) {
+      builder.append('(');
+    }
+    child.appendTo(builder);
+    if (parenthesize) {
+      builder.append(')');
+    }
   }
 }

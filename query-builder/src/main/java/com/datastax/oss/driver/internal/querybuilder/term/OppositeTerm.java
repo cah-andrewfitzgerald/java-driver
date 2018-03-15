@@ -30,8 +30,9 @@ public class OppositeTerm extends ArithmeticTerm {
   }
 
   @Override
-  public String asCql(boolean pretty) {
-    return "-" + maybeParenthesize(operator.getPrecedenceLeft(), argument, pretty);
+  public void appendTo(StringBuilder builder) {
+    builder.append('-');
+    appendAndMaybeParenthesize(operator.getPrecedenceLeft(), argument, builder);
   }
 
   public Term getArgument() {

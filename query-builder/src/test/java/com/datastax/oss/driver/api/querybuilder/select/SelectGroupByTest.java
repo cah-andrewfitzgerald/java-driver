@@ -34,20 +34,20 @@ public class SelectGroupByTest {
                 .where(isColumn("k").eq(literal(1)))
                 .groupBy("foo")
                 .groupBy("bar"))
-        .hasUglyCql("SELECT * FROM \"foo\" WHERE \"k\" = 1 GROUP BY \"foo\", \"bar\"");
+        .hasCql("SELECT * FROM foo WHERE k=1 GROUP BY foo,bar");
 
     assertThat(
             selectFrom("foo")
                 .all()
                 .where(isColumn("k").eq(literal(1)))
                 .groupByColumns("foo", "bar"))
-        .hasUglyCql("SELECT * FROM \"foo\" WHERE \"k\" = 1 GROUP BY \"foo\", \"bar\"");
+        .hasCql("SELECT * FROM foo WHERE k=1 GROUP BY foo,bar");
 
     assertThat(
             selectFrom("foo")
                 .all()
                 .where(isColumn("k").eq(literal(1)))
                 .groupBy(getFunction("ks", "f", getColumn("foo")), getColumn("bar")))
-        .hasUglyCql("SELECT * FROM \"foo\" WHERE \"k\" = 1 GROUP BY ks.f(\"foo\"), \"bar\"");
+        .hasCql("SELECT * FROM foo WHERE k=1 GROUP BY ks.f(foo),bar");
   }
 }

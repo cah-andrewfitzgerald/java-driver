@@ -34,13 +34,12 @@ public class DefaultRelation implements Relation {
   }
 
   @Override
-  public String asCql(boolean pretty) {
-    StringBuilder builder =
-        new StringBuilder(leftHandSide.asCql(pretty)).append(' ').append(operator);
+  public void appendTo(StringBuilder builder) {
+    leftHandSide.appendTo(builder);
+    builder.append(operator);
     if (rightHandSide != null) {
-      builder.append(' ').append(rightHandSide.asCql(pretty));
+      rightHandSide.appendTo(builder);
     }
-    return builder.toString();
   }
 
   public LeftHandSide getLeftHandSide() {

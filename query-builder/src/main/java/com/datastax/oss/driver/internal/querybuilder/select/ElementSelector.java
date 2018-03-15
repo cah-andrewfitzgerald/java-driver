@@ -45,16 +45,14 @@ public class ElementSelector implements Selector {
   }
 
   @Override
-  public String asCql(boolean pretty) {
-    StringBuilder builder =
-        new StringBuilder(collection.asCql(pretty))
-            .append('[')
-            .append(index.asCql(pretty))
-            .append(']');
+  public void appendTo(StringBuilder builder) {
+    collection.appendTo(builder);
+    builder.append('[');
+    index.appendTo(builder);
+    builder.append(']');
     if (alias != null) {
-      builder.append(" AS ").append(alias.asCql(pretty));
+      builder.append(" AS ").append(alias.asCql(true));
     }
-    return builder.toString();
   }
 
   public Selector getCollection() {

@@ -45,17 +45,12 @@ public class CastSelector implements Selector {
   }
 
   @Override
-  public String asCql(boolean pretty) {
-    StringBuilder builder =
-        new StringBuilder()
-            .append('(')
-            .append(targetType.asCql(false, pretty))
-            .append(')')
-            .append(selector.asCql(pretty));
+  public void appendTo(StringBuilder builder) {
+    builder.append('(').append(targetType.asCql(false, true)).append(')');
+    selector.appendTo(builder);
     if (alias != null) {
-      builder.append(" AS ").append(alias.asCql(pretty));
+      builder.append(" AS ").append(alias.asCql(true));
     }
-    return builder.toString();
   }
 
   public Selector getSelector() {

@@ -41,10 +41,11 @@ public class ColumnSelector implements Selector {
   }
 
   @Override
-  public String asCql(boolean pretty) {
-    return (alias == null)
-        ? columnId.asCql(pretty)
-        : columnId.asCql(pretty) + " AS " + alias.asCql(pretty);
+  public void appendTo(StringBuilder builder) {
+    builder.append(columnId.asCql(true));
+    if (alias != null) {
+      builder.append(" AS ").append(alias.asCql(true));
+    }
   }
 
   public CqlIdentifier getColumnId() {
