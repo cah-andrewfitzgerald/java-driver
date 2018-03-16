@@ -156,8 +156,8 @@ public class SelectSelectorTest {
   }
 
   @Test
-  public void should_generate_cast_selector() {
-    assertThat(selectFrom("foo").cast(getColumn("k"), DataTypes.INT))
+  public void should_generate_type_hint_selector() {
+    assertThat(selectFrom("foo").typeHint(getColumn("k"), DataTypes.INT))
         .hasCql("SELECT (int)k FROM foo");
   }
 
@@ -171,6 +171,12 @@ public class SelectSelectorTest {
         .hasCql("SELECT ks.f(c1,c2+1) FROM foo");
     assertThat(selectFrom("foo").writeTime("c1").ttl("c2"))
         .hasCql("SELECT writetime(c1),ttl(c2) FROM foo");
+  }
+
+  @Test
+  public void should_generate_cast_selector() {
+    assertThat(selectFrom("foo").cast(getColumn("k"), DataTypes.DOUBLE))
+        .hasCql("SELECT CAST(k AS double) FROM foo");
   }
 
   @Test

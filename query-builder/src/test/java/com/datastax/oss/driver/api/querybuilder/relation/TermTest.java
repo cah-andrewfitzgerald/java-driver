@@ -16,7 +16,6 @@
 package com.datastax.oss.driver.api.querybuilder.relation;
 
 import static com.datastax.oss.driver.api.querybuilder.Assertions.assertThat;
-import static com.datastax.oss.driver.api.querybuilder.QueryBuilderDsl.cast;
 import static com.datastax.oss.driver.api.querybuilder.QueryBuilderDsl.difference;
 import static com.datastax.oss.driver.api.querybuilder.QueryBuilderDsl.function;
 import static com.datastax.oss.driver.api.querybuilder.QueryBuilderDsl.literal;
@@ -25,6 +24,7 @@ import static com.datastax.oss.driver.api.querybuilder.QueryBuilderDsl.product;
 import static com.datastax.oss.driver.api.querybuilder.QueryBuilderDsl.raw;
 import static com.datastax.oss.driver.api.querybuilder.QueryBuilderDsl.remainder;
 import static com.datastax.oss.driver.api.querybuilder.QueryBuilderDsl.sum;
+import static com.datastax.oss.driver.api.querybuilder.QueryBuilderDsl.typeHint;
 
 import com.datastax.oss.driver.api.core.CqlIdentifier;
 import com.datastax.oss.driver.api.core.data.TupleValue;
@@ -65,8 +65,8 @@ public class TermTest {
   }
 
   @Test
-  public void should_generate_cast_terms() {
-    assertThat(cast(raw("1"), DataTypes.BIGINT)).hasCql("(bigint)1");
+  public void should_generate_type_hint_terms() {
+    assertThat(typeHint(raw("1"), DataTypes.BIGINT)).hasCql("(bigint)1");
   }
 
   @Test

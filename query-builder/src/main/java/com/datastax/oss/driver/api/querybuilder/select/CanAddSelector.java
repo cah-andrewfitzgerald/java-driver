@@ -439,17 +439,17 @@ public interface CanAddSelector {
   }
 
   /**
-   * Forces a selector to a particular type, as in {@code SELECT (int)a}.
+   * Provides a type hint for a selector, as in {@code SELECT (double)1/3}.
    *
    * <p>Use the constants and static methods in {@link DataTypes} to create the data type.
    *
-   * <p>This is a shortcut for {@link #selector(Selector) selector(QueryBuilderDsl.getCast(selector,
-   * targetType))}.
+   * <p>This is a shortcut for {@link #selector(Selector)
+   * selector(QueryBuilderDsl.getTypeHint(selector, targetType))}.
    *
-   * @see QueryBuilderDsl#getCast(Selector, DataType)
+   * @see QueryBuilderDsl#getTypeHint(Selector, DataType)
    */
-  default Select cast(Selector selector, DataType targetType) {
-    return selector(QueryBuilderDsl.getCast(selector, targetType));
+  default Select typeHint(Selector selector, DataType targetType) {
+    return selector(QueryBuilderDsl.getTypeHint(selector, targetType));
   }
 
   /**
@@ -577,6 +577,21 @@ public interface CanAddSelector {
    */
   default Select ttl(String columnName) {
     return ttl(CqlIdentifier.fromCql(columnName));
+  }
+
+  /**
+   * Casts a selector to a type, as in {@code SELECT CAST(a AS double)}.
+   *
+   * <p>Use the constants and static methods in {@link DataTypes} to create the data type.
+   *
+   * <p>This is a shortcut for {@link #selector(Selector)
+   * selector(QueryBuilderDsl.getFunction(keyspaceId, functionId, arguments))}.
+   *
+   * @throws IllegalArgumentException if the selector is aliased.
+   * @see QueryBuilderDsl#getCast(Selector, DataType)
+   */
+  default Select cast(Selector selector, DataType targetType) {
+    return selector(QueryBuilderDsl.getCast(selector, targetType));
   }
 
   /**

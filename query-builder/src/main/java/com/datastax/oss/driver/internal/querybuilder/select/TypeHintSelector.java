@@ -21,38 +21,36 @@ import com.datastax.oss.driver.api.querybuilder.select.Selector;
 import com.google.common.base.Preconditions;
 import java.util.Objects;
 
-public class CastSelector implements Selector {
+public class TypeHintSelector implements Selector {
 
   private final Selector selector;
   private final DataType targetType;
   private final CqlIdentifier alias;
 
-  public CastSelector(Selector selector, DataType targetType) {
+  public TypeHintSelector(Selector selector, DataType targetType) {
     this(selector, targetType, null);
   }
 
-  public CastSelector(Selector selector, DataType targetType, CqlIdentifier alias) {
+  public TypeHintSelector(Selector selector, DataType targetType, CqlIdentifier alias) {
     Preconditions.checkNotNull(selector);
     Preconditions.checkNotNull(targetType);
-    Preconditions.checkArgument(selector.getAlias() == null, "Inner selector can't be aliased");
     this.selector = selector;
     this.targetType = targetType;
     this.alias = alias;
   }
 
   @Override
-  public void appendTo(StringBuilder builder) {
-    builder.append("CAST(");
-    selector.appendTo(builder);
-    builder.append(" AS ").append(targetType.asCql(false, true)).append(')');
-    if (alias != null) {
-      builder.append(" AS ").append(alias.asCql(true));
-    }
+  public Selector as(CqlIdentifier alias) {
+    return new TypeHintSelector(selector, targetType, alias);
   }
 
   @Override
-  public Selector as(CqlIdentifier alias) {
-    return new CastSelector(selector, targetType, alias);
+  public void appendTo(StringBuilder builder) {
+    builder.append('(').append(targetType.asCql(false, true)).append(')');
+    selector.appendTo(builder);
+    if (alias != null) {
+      builder.append(" AS ").append(alias.asCql(true));
+    }
   }
 
   public Selector getSelector() {
@@ -72,8 +70,8 @@ public class CastSelector implements Selector {
   public boolean equals(Object other) {
     if (other == this) {
       return true;
-    } else if (other instanceof CastSelector) {
-      CastSelector that = (CastSelector) other;
+    } else if (other instanceof TypeHintSelector) {
+      TypeHintSelector that = (TypeHintSelector) other;
       return this.selector.equals(that.selector)
           && this.targetType.equals(that.targetType)
           && Objects.equals(this.alias, that.alias);

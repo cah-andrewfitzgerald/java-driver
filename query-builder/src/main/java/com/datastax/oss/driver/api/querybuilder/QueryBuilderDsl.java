@@ -54,11 +54,12 @@ import com.datastax.oss.driver.internal.querybuilder.select.OppositeSelector;
 import com.datastax.oss.driver.internal.querybuilder.select.RangeSelector;
 import com.datastax.oss.driver.internal.querybuilder.select.SetSelector;
 import com.datastax.oss.driver.internal.querybuilder.select.TupleSelector;
+import com.datastax.oss.driver.internal.querybuilder.select.TypeHintSelector;
 import com.datastax.oss.driver.internal.querybuilder.term.BinaryArithmeticTerm;
-import com.datastax.oss.driver.internal.querybuilder.term.CastTerm;
 import com.datastax.oss.driver.internal.querybuilder.term.FunctionTerm;
 import com.datastax.oss.driver.internal.querybuilder.term.OppositeTerm;
 import com.datastax.oss.driver.internal.querybuilder.term.TupleTerm;
+import com.datastax.oss.driver.internal.querybuilder.term.TypeHintTerm;
 import com.google.common.collect.Iterables;
 import java.util.Arrays;
 import java.util.Map;
@@ -364,12 +365,12 @@ public interface QueryBuilderDsl {
   }
 
   /**
-   * Forces a selector to a particular type, as in {@code SELECT (int)a}.
+   * Provides a type hint for a selector, as in {@code SELECT (double)1/3}.
    *
    * <p>Use the constants and static methods in {@link DataTypes} to create the data type.
    */
-  static Selector getCast(Selector selector, DataType targetType) {
-    return new CastSelector(selector, targetType);
+  static Selector getTypeHint(Selector selector, DataType targetType) {
+    return new TypeHintSelector(selector, targetType);
   }
 
   /**
@@ -461,6 +462,17 @@ public interface QueryBuilderDsl {
   /** Shortcut for {@link #getTtl(CqlIdentifier) getTtl(CqlIdentifier.fromCql(columnName))}. */
   static Selector getTtl(String columnName) {
     return getTtl(CqlIdentifier.fromCql(columnName));
+  }
+
+  /**
+   * Casts a selector to a type, as in {@code SELECT CAST(a AS double)}.
+   *
+   * <p>Use the constants and static methods in {@link DataTypes} to create the data type.
+   *
+   * @throws IllegalArgumentException if the selector is aliased.
+   */
+  static Selector getCast(Selector selector, DataType targetType) {
+    return new CastSelector(selector, targetType);
   }
 
   /**
@@ -661,12 +673,12 @@ public interface QueryBuilderDsl {
   }
 
   /**
-   * Casts a term to a particular type, as in {@code WHERE k = (int)a}.
+   * Provides a type hint for an expression, as in {@code WHERE k = (double)1/3}.
    *
    * <p>Use the constants and static methods in {@link DataTypes} to create the data type.
    */
-  static Term cast(Term term, DataType targetType) {
-    return new CastTerm(term, targetType);
+  static Term typeHint(Term term, DataType targetType) {
+    return new TypeHintTerm(term, targetType);
   }
 
   /**
