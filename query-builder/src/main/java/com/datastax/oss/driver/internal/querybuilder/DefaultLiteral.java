@@ -17,9 +17,9 @@ package com.datastax.oss.driver.internal.querybuilder;
 
 import com.datastax.oss.driver.api.core.CqlIdentifier;
 import com.datastax.oss.driver.api.core.type.codec.TypeCodec;
-import com.datastax.oss.driver.api.core.type.codec.registry.CodecRegistry;
 import com.datastax.oss.driver.api.querybuilder.Literal;
 import com.datastax.oss.driver.api.querybuilder.select.Selector;
+import com.google.common.base.Preconditions;
 
 public class DefaultLiteral<T> implements Literal {
 
@@ -32,6 +32,8 @@ public class DefaultLiteral<T> implements Literal {
   }
 
   public DefaultLiteral(T value, TypeCodec<T> codec, CqlIdentifier alias) {
+    Preconditions.checkArgument(
+        value == null || codec != null, "Must provide a codec if the value is not null");
     this.value = value;
     this.codec = codec;
     this.alias = alias;
@@ -42,8 +44,7 @@ public class DefaultLiteral<T> implements Literal {
     if (value == null) {
       builder.append("NULL");
     } else {
-      TypeCodec<T> actualCodec = (codec == null) ? CodecRegistry.DEFAULT.codecFor(value) : codec;
-      builder.append(actualCodec.format(value));
+      builder.append(codec.format(value));
     }
     if (alias != null) {
       builder.append(" AS ").append(alias.asCql(true));

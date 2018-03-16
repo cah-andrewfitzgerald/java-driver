@@ -28,6 +28,7 @@ import static com.datastax.oss.driver.api.querybuilder.QueryBuilderDsl.raw;
 import static com.datastax.oss.driver.api.querybuilder.QueryBuilderDsl.selectFrom;
 
 import com.datastax.oss.driver.api.core.type.DataTypes;
+import com.datastax.oss.driver.api.core.type.codec.CodecNotFoundException;
 import com.datastax.oss.driver.api.querybuilder.CharsetCodec;
 import com.google.common.base.Charsets;
 import com.google.common.collect.ImmutableMap;
@@ -177,6 +178,14 @@ public class SelectSelectorTest {
     assertThat(selectFrom("foo").literal(1)).hasCql("SELECT 1 FROM foo");
     assertThat(selectFrom("foo").literal(Charsets.UTF_8, new CharsetCodec()))
         .hasCql("SELECT 'UTF-8' FROM foo");
+    assertThat(selectFrom("foo").literal(Charsets.UTF_8, CharsetCodec.TEST_REGISTRY))
+        .hasCql("SELECT 'UTF-8' FROM foo");
+    assertThat(selectFrom("foo").literal(null)).hasCql("SELECT NULL FROM foo");
+  }
+
+  @Test(expected = CodecNotFoundException.class)
+  public void should_fail_when_no_codec_for_literal() {
+    selectFrom("foo").literal(Charsets.UTF_8);
   }
 
   @Test

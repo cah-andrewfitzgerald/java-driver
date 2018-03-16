@@ -17,8 +17,11 @@ package com.datastax.oss.driver.api.querybuilder;
 
 import com.datastax.oss.driver.api.core.ProtocolVersion;
 import com.datastax.oss.driver.api.core.type.DataType;
+import com.datastax.oss.driver.api.core.type.DataTypes;
 import com.datastax.oss.driver.api.core.type.codec.TypeCodec;
+import com.datastax.oss.driver.api.core.type.codec.registry.CodecRegistry;
 import com.datastax.oss.driver.api.core.type.reflect.GenericType;
+import com.datastax.oss.driver.internal.core.type.codec.registry.DefaultCodecRegistry;
 import com.datastax.oss.driver.internal.querybuilder.DefaultLiteral;
 import java.nio.ByteBuffer;
 import java.nio.charset.Charset;
@@ -26,19 +29,23 @@ import java.nio.charset.Charset;
 /** Example codec implementation used for {@link DefaultLiteral} tests. */
 public class CharsetCodec implements TypeCodec<Charset> {
 
-  @Override
-  public String format(Charset value) {
-    return "'" + value.name() + "'";
-  }
+  /** A registry that contains an instance of this codec. */
+  public static final CodecRegistry TEST_REGISTRY =
+      new DefaultCodecRegistry("test", new CharsetCodec());
 
   @Override
   public GenericType<Charset> getJavaType() {
-    throw new UnsupportedOperationException("Not used in this test");
+    return GenericType.of(Charset.class);
   }
 
   @Override
   public DataType getCqlType() {
-    throw new UnsupportedOperationException("Not used in this test");
+    return DataTypes.TEXT;
+  }
+
+  @Override
+  public String format(Charset value) {
+    return "'" + value.name() + "'";
   }
 
   @Override

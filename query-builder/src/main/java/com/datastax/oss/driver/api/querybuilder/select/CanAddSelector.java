@@ -16,10 +16,12 @@
 package com.datastax.oss.driver.api.querybuilder.select;
 
 import com.datastax.oss.driver.api.core.CqlIdentifier;
+import com.datastax.oss.driver.api.core.context.DriverContext;
 import com.datastax.oss.driver.api.core.type.DataType;
 import com.datastax.oss.driver.api.core.type.DataTypes;
 import com.datastax.oss.driver.api.core.type.codec.CodecNotFoundException;
 import com.datastax.oss.driver.api.core.type.codec.TypeCodec;
+import com.datastax.oss.driver.api.core.type.codec.registry.CodecRegistry;
 import com.datastax.oss.driver.api.querybuilder.QueryBuilderDsl;
 import com.datastax.oss.driver.api.querybuilder.term.Term;
 import java.util.Arrays;
@@ -578,7 +580,7 @@ public interface CanAddSelector {
   }
 
   /**
-   * Selects a literal value, as in {@code SELECT 1}.
+   * Selects literal value, as in {@code WHERE k = 1}.
    *
    * <p>This method can process any type for which there is a default Java to CQL mapping, namely:
    * primitive types ({@code Integer=>int, Long=>bigint, String=>text, etc.}), and collections,
@@ -586,21 +588,38 @@ public interface CanAddSelector {
    *
    * <p>A null argument will be rendered as {@code NULL}.
    *
-   * <p>For custom mappings, use {@link #literal(Object, TypeCodec)}.
+   * <p>For custom mappings, use {@link #literal(Object, CodecRegistry)} or {@link #literal(Object,
+   * TypeCodec)}.
    *
    * @throws CodecNotFoundException if there is no default CQL mapping for the Java type of {@code
    *     value}.
    * @see QueryBuilderDsl#literal(Object)
    */
   default Select literal(Object value) {
-    return literal(value, null);
+    return literal(value, CodecRegistry.DEFAULT);
   }
 
   /**
-   * Select a literal value, as in {@code SELECT 1}.
+   * Selects a literal value, as in {@code WHERE k = 1}.
    *
-   * <p>This method is an alternative to {@link #literal(Object)} for custom or non-default type
-   * mappings.
+   * <p>This is an alternative to {@link #literal(Object)} for custom type mappings. The provided
+   * registry should contain a codec that can format the value. Typically, this will be your
+   * session's registry, which is accessible via {@code session.getContext().codecRegistry()}.
+   *
+   * @see DriverContext#codecRegistry()
+   * @throws CodecNotFoundException if {@code codecRegistry} does not contain any codec that can
+   *     handle {@code value}.
+   * @see QueryBuilderDsl#literal(Object, CodecRegistry)
+   */
+  default Select literal(Object value, CodecRegistry codecRegistry) {
+    return literal(value, (value == null) ? null : codecRegistry.codecFor(value));
+  }
+
+  /**
+   * Selects a literal value, as in {@code WHERE k = 1}.
+   *
+   * <p>This is an alternative to {@link #literal(Object)} for custom type mappings. The value will
+   * be turned into a string with {@link TypeCodec#format(Object)}, and inlined in the query.
    *
    * @see QueryBuilderDsl#literal(Object, TypeCodec)
    */

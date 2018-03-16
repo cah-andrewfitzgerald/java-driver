@@ -32,6 +32,7 @@ import com.datastax.oss.driver.api.core.data.UdtValue;
 import com.datastax.oss.driver.api.core.type.DataTypes;
 import com.datastax.oss.driver.api.core.type.TupleType;
 import com.datastax.oss.driver.api.core.type.UserDefinedType;
+import com.datastax.oss.driver.api.core.type.codec.CodecNotFoundException;
 import com.datastax.oss.driver.api.querybuilder.CharsetCodec;
 import com.datastax.oss.driver.internal.core.type.UserDefinedTypeBuilder;
 import com.google.common.base.Charsets;
@@ -86,7 +87,14 @@ public class TermTest {
     UdtValue udtValue =
         udtType.newValue().setString("first_name", "Jane").setString("last_name", "Doe");
     assertThat(literal(udtValue)).hasCql("{first_name:'Jane',last_name:'Doe'}");
+    assertThat(literal(null)).hasCql("NULL");
 
     assertThat(literal(Charsets.UTF_8, new CharsetCodec())).hasCql("'UTF-8'");
+    assertThat(literal(Charsets.UTF_8, CharsetCodec.TEST_REGISTRY)).hasCql("'UTF-8'");
+  }
+
+  @Test(expected = CodecNotFoundException.class)
+  public void should_fail_when_no_codec_for_literal() {
+    literal(Charsets.UTF_8);
   }
 }
