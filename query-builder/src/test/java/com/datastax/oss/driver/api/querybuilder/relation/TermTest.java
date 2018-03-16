@@ -27,20 +27,15 @@ import static com.datastax.oss.driver.api.querybuilder.QueryBuilderDsl.remainder
 import static com.datastax.oss.driver.api.querybuilder.QueryBuilderDsl.sum;
 
 import com.datastax.oss.driver.api.core.CqlIdentifier;
-import com.datastax.oss.driver.api.core.ProtocolVersion;
 import com.datastax.oss.driver.api.core.data.TupleValue;
 import com.datastax.oss.driver.api.core.data.UdtValue;
-import com.datastax.oss.driver.api.core.type.DataType;
 import com.datastax.oss.driver.api.core.type.DataTypes;
 import com.datastax.oss.driver.api.core.type.TupleType;
 import com.datastax.oss.driver.api.core.type.UserDefinedType;
-import com.datastax.oss.driver.api.core.type.codec.TypeCodec;
-import com.datastax.oss.driver.api.core.type.reflect.GenericType;
+import com.datastax.oss.driver.api.querybuilder.CharsetCodec;
 import com.datastax.oss.driver.internal.core.type.UserDefinedTypeBuilder;
 import com.google.common.base.Charsets;
 import com.google.common.collect.ImmutableList;
-import java.nio.ByteBuffer;
-import java.nio.charset.Charset;
 import org.junit.Test;
 
 public class TermTest {
@@ -93,38 +88,5 @@ public class TermTest {
     assertThat(literal(udtValue)).hasCql("{first_name:'Jane',last_name:'Doe'}");
 
     assertThat(literal(Charsets.UTF_8, new CharsetCodec())).hasCql("'UTF-8'");
-  }
-
-  static class CharsetCodec implements TypeCodec<Charset> {
-
-    @Override
-    public String format(Charset value) {
-      return "'" + value.name() + "'";
-    }
-
-    @Override
-    public GenericType<Charset> getJavaType() {
-      throw new UnsupportedOperationException("Not used in this test");
-    }
-
-    @Override
-    public DataType getCqlType() {
-      throw new UnsupportedOperationException("Not used in this test");
-    }
-
-    @Override
-    public ByteBuffer encode(Charset value, ProtocolVersion protocolVersion) {
-      throw new UnsupportedOperationException("Not used in this test");
-    }
-
-    @Override
-    public Charset decode(ByteBuffer bytes, ProtocolVersion protocolVersion) {
-      throw new UnsupportedOperationException("Not used in this test");
-    }
-
-    @Override
-    public Charset parse(String value) {
-      throw new UnsupportedOperationException("Not used in this test");
-    }
   }
 }

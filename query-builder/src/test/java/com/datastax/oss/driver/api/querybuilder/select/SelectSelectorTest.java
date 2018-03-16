@@ -28,6 +28,8 @@ import static com.datastax.oss.driver.api.querybuilder.QueryBuilderDsl.raw;
 import static com.datastax.oss.driver.api.querybuilder.QueryBuilderDsl.selectFrom;
 
 import com.datastax.oss.driver.api.core.type.DataTypes;
+import com.datastax.oss.driver.api.querybuilder.CharsetCodec;
+import com.google.common.base.Charsets;
 import com.google.common.collect.ImmutableMap;
 import org.junit.Test;
 
@@ -77,11 +79,12 @@ public class SelectSelectorTest {
         .hasCql("SELECT -(bar+baz) FROM foo");
     assertThat(
             selectFrom("foo")
-                .product(getOpposite(getColumn("bar")), getSum(getColumn("baz"), raw("1"))))
+                .product(getOpposite(getColumn("bar")), getSum(getColumn("baz"), literal(1))))
         .hasCql("SELECT -bar*(baz+1) FROM foo");
-    assertThat(selectFrom("foo").quotient(raw("1"), getSum(getColumn("bar"), getColumn("baz"))))
+    assertThat(selectFrom("foo").quotient(literal(1), getSum(getColumn("bar"), getColumn("baz"))))
         .hasCql("SELECT 1/(bar+baz) FROM foo");
-    assertThat(selectFrom("foo").quotient(raw("1"), getProduct(getColumn("bar"), getColumn("baz"))))
+    assertThat(
+            selectFrom("foo").quotient(literal(1), getProduct(getColumn("bar"), getColumn("baz"))))
         .hasCql("SELECT 1/(bar*baz) FROM foo");
   }
 
@@ -167,6 +170,13 @@ public class SelectSelectorTest {
         .hasCql("SELECT ks.f(c1,c2+1) FROM foo");
     assertThat(selectFrom("foo").writeTime("c1").ttl("c2"))
         .hasCql("SELECT writetime(c1),ttl(c2) FROM foo");
+  }
+
+  @Test
+  public void should_generate_literal_selectors() {
+    assertThat(selectFrom("foo").literal(1)).hasCql("SELECT 1 FROM foo");
+    assertThat(selectFrom("foo").literal(Charsets.UTF_8, new CharsetCodec()))
+        .hasCql("SELECT 'UTF-8' FROM foo");
   }
 
   @Test

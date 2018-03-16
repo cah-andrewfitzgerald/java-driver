@@ -18,6 +18,8 @@ package com.datastax.oss.driver.api.querybuilder.select;
 import com.datastax.oss.driver.api.core.CqlIdentifier;
 import com.datastax.oss.driver.api.core.type.DataType;
 import com.datastax.oss.driver.api.core.type.DataTypes;
+import com.datastax.oss.driver.api.core.type.codec.CodecNotFoundException;
+import com.datastax.oss.driver.api.core.type.codec.TypeCodec;
 import com.datastax.oss.driver.api.querybuilder.QueryBuilderDsl;
 import com.datastax.oss.driver.api.querybuilder.term.Term;
 import java.util.Arrays;
@@ -573,6 +575,37 @@ public interface CanAddSelector {
    */
   default Select ttl(String columnName) {
     return ttl(CqlIdentifier.fromCql(columnName));
+  }
+
+  /**
+   * Selects a literal value, as in {@code SELECT 1}.
+   *
+   * <p>This method can process any type for which there is a default Java to CQL mapping, namely:
+   * primitive types ({@code Integer=>int, Long=>bigint, String=>text, etc.}), and collections,
+   * tuples, and user defined types thereof.
+   *
+   * <p>A null argument will be rendered as {@code NULL}.
+   *
+   * <p>For custom mappings, use {@link #literal(Object, TypeCodec)}.
+   *
+   * @throws CodecNotFoundException if there is no default CQL mapping for the Java type of {@code
+   *     value}.
+   * @see QueryBuilderDsl#literal(Object)
+   */
+  default Select literal(Object value) {
+    return literal(value, null);
+  }
+
+  /**
+   * Select a literal value, as in {@code SELECT 1}.
+   *
+   * <p>This method is an alternative to {@link #literal(Object)} for custom or non-default type
+   * mappings.
+   *
+   * @see QueryBuilderDsl#literal(Object, TypeCodec)
+   */
+  default <T> Select literal(T value, TypeCodec<T> codec) {
+    return selector(QueryBuilderDsl.literal(value, codec));
   }
 
   /**

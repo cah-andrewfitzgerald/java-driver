@@ -29,6 +29,7 @@ import com.datastax.oss.driver.api.querybuilder.select.SelectFrom;
 import com.datastax.oss.driver.api.querybuilder.select.Selector;
 import com.datastax.oss.driver.api.querybuilder.term.Term;
 import com.datastax.oss.driver.internal.querybuilder.ArithmeticOperator;
+import com.datastax.oss.driver.internal.querybuilder.DefaultLiteral;
 import com.datastax.oss.driver.internal.querybuilder.DefaultRaw;
 import com.datastax.oss.driver.internal.querybuilder.relation.CustomIndexRelation;
 import com.datastax.oss.driver.internal.querybuilder.relation.DefaultColumnComponentRelationBuilder;
@@ -54,7 +55,6 @@ import com.datastax.oss.driver.internal.querybuilder.select.TupleSelector;
 import com.datastax.oss.driver.internal.querybuilder.term.BinaryArithmeticTerm;
 import com.datastax.oss.driver.internal.querybuilder.term.CastTerm;
 import com.datastax.oss.driver.internal.querybuilder.term.FunctionTerm;
-import com.datastax.oss.driver.internal.querybuilder.term.LiteralTerm;
 import com.datastax.oss.driver.internal.querybuilder.term.OppositeTerm;
 import com.datastax.oss.driver.internal.querybuilder.term.TupleTerm;
 import com.google.common.collect.Iterables;
@@ -681,7 +681,7 @@ public interface QueryBuilderDsl {
    * @throws CodecNotFoundException if there is no default CQL mapping for the Java type of {@code
    *     value}.
    */
-  static Term literal(Object value) {
+  static Literal literal(Object value) {
     return literal(value, null);
   }
 
@@ -691,8 +691,8 @@ public interface QueryBuilderDsl {
    * <p>This method is an alternative to {@link #literal(Object)} for custom or non-default type
    * mappings.
    */
-  static <T> Term literal(T value, TypeCodec<T> codec) {
-    return new LiteralTerm<>(value, codec);
+  static <T> Literal literal(T value, TypeCodec<T> codec) {
+    return new DefaultLiteral<>(value, codec);
   }
 
   /**

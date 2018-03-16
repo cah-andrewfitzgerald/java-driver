@@ -13,20 +13,28 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.datastax.oss.driver.internal.querybuilder.term;
+package com.datastax.oss.driver.internal.querybuilder;
 
+import com.datastax.oss.driver.api.core.CqlIdentifier;
 import com.datastax.oss.driver.api.core.type.codec.TypeCodec;
 import com.datastax.oss.driver.api.core.type.codec.registry.CodecRegistry;
-import com.datastax.oss.driver.api.querybuilder.term.Term;
+import com.datastax.oss.driver.api.querybuilder.Literal;
+import com.datastax.oss.driver.api.querybuilder.select.Selector;
 
-public class LiteralTerm<T> implements Term {
+public class DefaultLiteral<T> implements Literal {
 
   private final T value;
   private final TypeCodec<T> codec;
+  private final CqlIdentifier alias;
 
-  public LiteralTerm(T value, TypeCodec<T> codec) {
+  public DefaultLiteral(T value, TypeCodec<T> codec) {
+    this(value, codec, null);
+  }
+
+  public DefaultLiteral(T value, TypeCodec<T> codec, CqlIdentifier alias) {
     this.value = value;
     this.codec = codec;
+    this.alias = alias;
   }
 
   @Override
@@ -37,6 +45,14 @@ public class LiteralTerm<T> implements Term {
       TypeCodec<T> actualCodec = (codec == null) ? CodecRegistry.DEFAULT.codecFor(value) : codec;
       builder.append(actualCodec.format(value));
     }
+    if (alias != null) {
+      builder.append(" AS ").append(alias.asCql(true));
+    }
+  }
+
+  @Override
+  public Selector as(CqlIdentifier alias) {
+    return new DefaultLiteral<>(value, codec, alias);
   }
 
   public T getValue() {
@@ -45,5 +61,10 @@ public class LiteralTerm<T> implements Term {
 
   public TypeCodec<T> getCodec() {
     return codec;
+  }
+
+  @Override
+  public CqlIdentifier getAlias() {
+    return alias;
   }
 }
