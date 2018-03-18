@@ -81,13 +81,13 @@ public class SelectRelationTest {
             selectFrom("foo")
                 .all()
                 .where(isColumn("k").eq(bindMarker()))
-                .where(isTuple("c1", "c2", "c3").in(tuple(bindMarker(), bindMarker()))))
+                .where(isTuple("c1", "c2", "c3").in(bindMarker(), bindMarker())))
         .hasCql("SELECT * FROM foo WHERE k=? AND (c1,c2,c3) IN (?,?)");
     assertThat(
             selectFrom("foo")
                 .all()
                 .where(isColumn("k").eq(bindMarker()))
-                .where(isTuple("c1", "c2", "c3").in(tuple(bindMarker(), raw("(4,5,6)")))))
+                .where(isTuple("c1", "c2", "c3").in(bindMarker(), raw("(4,5,6)"))))
         .hasCql("SELECT * FROM foo WHERE k=? AND (c1,c2,c3) IN (?,(4,5,6))");
     assertThat(
             selectFrom("foo")
@@ -96,9 +96,8 @@ public class SelectRelationTest {
                 .where(
                     isTuple("c1", "c2", "c3")
                         .in(
-                            tuple(
-                                tuple(bindMarker(), bindMarker(), bindMarker()),
-                                tuple(bindMarker(), bindMarker(), bindMarker())))))
+                            tuple(bindMarker(), bindMarker(), bindMarker()),
+                            tuple(bindMarker(), bindMarker(), bindMarker()))))
         .hasCql("SELECT * FROM foo WHERE k=? AND (c1,c2,c3) IN ((?,?,?),(?,?,?))");
 
     assertThat(
