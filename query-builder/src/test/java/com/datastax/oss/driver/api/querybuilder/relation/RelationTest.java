@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.datastax.oss.driver.api.querybuilder.select;
+package com.datastax.oss.driver.api.querybuilder.relation;
 
 import static com.datastax.oss.driver.api.querybuilder.Assertions.assertThat;
 import static com.datastax.oss.driver.api.querybuilder.QueryBuilderDsl.bindMarker;
@@ -28,7 +28,7 @@ import static com.datastax.oss.driver.api.querybuilder.QueryBuilderDsl.tuple;
 
 import org.junit.Test;
 
-public class SelectRelationTest {
+public class RelationTest {
 
   @Test
   public void should_generate_comparison_relation() {
