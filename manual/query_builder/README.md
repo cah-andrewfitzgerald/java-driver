@@ -90,7 +90,7 @@ On the downside, immutability means that the query builder creates lots of short
 Modern garbage collectors are good at handling that, but still we recommend that you **avoid using
 the query builder in your hot path**:
 
-* favor [built statements](../core/statements/prepared) for queries that are used often. You can
+* favor [bound statements](../core/statements/prepared) for queries that are used often. You can
   still use the query builder and prepare the result:
   
   ```java
