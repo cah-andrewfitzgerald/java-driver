@@ -48,27 +48,27 @@ public interface BuildableQuery {
    * In addition, some query implementation might try to infer additional statement properties (such
    * as {@link Statement#isIdempotent()}).
    */
-  default SimpleStatement asSimpleStatement() {
+  default SimpleStatement build() {
     return SimpleStatement.newInstance(asCql());
   }
 
   /**
    * Builds the CQL query and wraps it in a simple statement builder.
    *
-   * <p>This is equivalent to {@link #asSimpleStatement()}, but the builder might be slightly more
-   * efficient if you plan to customize multiple properties on the statement, for example:
+   * <p>This is equivalent to {@link #build()}, but the builder might be slightly more efficient if
+   * you plan to customize multiple properties on the statement, for example:
    *
    * <pre>{@code
    * SimpleStatementBuilder builder =
    *     selectFrom("foo")
    *         .all()
    *         .where(isColumn("k").eq(bindMarker("k")), isColumn("c").lt(bindMarker("c")))
-   *         .asSimpleStatementBuilder();
+   *         .builder();
    * SimpleStatement statement =
    *     builder.addNamedValue("k", 1).addNamedValue("c", 2).withTracing().build();
    * }</pre>
    */
-  default SimpleStatementBuilder asSimpleStatementBuilder() {
+  default SimpleStatementBuilder builder() {
     return SimpleStatement.builder(asCql());
   }
 }

@@ -26,7 +26,7 @@ import static com.datastax.oss.driver.api.querybuilder.QueryBuilderDsl.*;
 try (CqlSession session = CqlSession.builder().build()) {
   
   Select query = selectFrom("system", "local").column("release_version"); // SELECT release_version FROM system.local
-  SimpleStatement statement = query.asSimpleStatement();
+  SimpleStatement statement = query.build();
   
   ResultSet rs = session.execute(statement);
   Row row = rs.one();
@@ -62,8 +62,8 @@ When your query is complete, you can either extract a raw query string, or turn 
 
 ```java
 String cql = select.asCql();
-SimpleStatement statement = select.asSimpleStatement();
-SimpleStatementBuilder builder = select.asSimpleStatementBuilder();
+SimpleStatement statement = select.build();
+SimpleStatementBuilder builder = select.builder();
 ```
 
 #### Immutability
@@ -96,7 +96,7 @@ the query builder in your hot path**:
   ```java
   // During application initialization:
   Select selectUser = selectFrom("user").all().where(isColumn("id").eq(bindMarker())); // SELECT * FROM ks.user WHERE id=?
-  PreparedStatement preparedSelectUser = session.prepare(selectUser.asSimpleStatement());
+  PreparedStatement preparedSelectUser = session.prepare(selectUser.build());
 
   // At runtime:
   session.execute(preparedSelectUser.bind(userId));
@@ -150,7 +150,7 @@ query builder is really buying you:
 ```java
 // Built version:
 private static final Statement SELECT_USERS =
-    selectFrom("user").all().limit(10).asSimpleStatement();
+    selectFrom("user").all().limit(10).build();
 
 // String version:
 private static final Statement SELECT_USERS =

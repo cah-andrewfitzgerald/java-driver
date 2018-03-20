@@ -407,7 +407,7 @@ public class DefaultSelect implements SelectFrom, Select {
   }
 
   @Override
-  public SimpleStatement asSimpleStatement() {
+  public SimpleStatement build() {
     // TODO compute idempotence
     return SimpleStatement.newInstance(asCql());
   }
