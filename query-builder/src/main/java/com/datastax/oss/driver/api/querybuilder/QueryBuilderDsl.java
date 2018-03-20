@@ -496,20 +496,19 @@ public interface QueryBuilderDsl {
     return isColumn(CqlIdentifier.fromCql(name));
   }
 
-  /**
-   * Builds a relation testing a qualified component of collection (as of Cassandra 4, this can only
-   * be used for map values).
-   */
-  static ColumnComponentRelationBuilder isColumnComponent(CqlIdentifier columnId, Term index) {
+  /** Builds a relation testing a value in a map (Cassandra 4 and above). */
+  static ColumnComponentRelationBuilder isMapValue(CqlIdentifier columnId, Term index) {
+    // The concept could easily be extended to list elements and tuple components, so use a generic
+    // name internally, we'll add other shortcuts if necessary.
     return new DefaultColumnComponentRelationBuilder(columnId, index);
   }
 
   /**
-   * Shortcut for {@link QueryBuilderDsl#isColumnComponent(CqlIdentifier, Term)
-   * isColumnComponent(CqlIdentifier.fromCql(columnName), index)}
+   * Shortcut for {@link QueryBuilderDsl#isMapValue(CqlIdentifier, Term)
+   * isMapValue(CqlIdentifier.fromCql(columnName), index)}
    */
-  static ColumnComponentRelationBuilder isColumnComponent(String columnName, Term index) {
-    return isColumnComponent(CqlIdentifier.fromCql(columnName), index);
+  static ColumnComponentRelationBuilder isMapValue(String columnName, Term index) {
+    return isMapValue(CqlIdentifier.fromCql(columnName), index);
   }
 
   /** Builds a relation testing a token generated from a set of columns. */

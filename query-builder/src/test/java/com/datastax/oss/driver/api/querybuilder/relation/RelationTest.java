@@ -18,8 +18,8 @@ package com.datastax.oss.driver.api.querybuilder.relation;
 import static com.datastax.oss.driver.api.querybuilder.Assertions.assertThat;
 import static com.datastax.oss.driver.api.querybuilder.QueryBuilderDsl.bindMarker;
 import static com.datastax.oss.driver.api.querybuilder.QueryBuilderDsl.isColumn;
-import static com.datastax.oss.driver.api.querybuilder.QueryBuilderDsl.isColumnComponent;
 import static com.datastax.oss.driver.api.querybuilder.QueryBuilderDsl.isCustomIndex;
+import static com.datastax.oss.driver.api.querybuilder.QueryBuilderDsl.isMapValue;
 import static com.datastax.oss.driver.api.querybuilder.QueryBuilderDsl.isToken;
 import static com.datastax.oss.driver.api.querybuilder.QueryBuilderDsl.isTuple;
 import static com.datastax.oss.driver.api.querybuilder.QueryBuilderDsl.raw;
@@ -65,7 +65,7 @@ public class RelationTest {
                 .all()
                 .where(
                     isColumn("id").eq(bindMarker()),
-                    isColumnComponent("user", raw("'name'")).eq(bindMarker())))
+                    isMapValue("user", raw("'name'")).eq(bindMarker())))
         .hasCql("SELECT * FROM foo WHERE id=? AND user['name']=?");
   }
 
