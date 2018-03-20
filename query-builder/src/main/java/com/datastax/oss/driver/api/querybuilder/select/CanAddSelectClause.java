@@ -19,6 +19,7 @@ import com.datastax.oss.driver.api.core.CqlIdentifier;
 import com.datastax.oss.driver.api.core.metadata.schema.ClusteringOrder;
 import com.datastax.oss.driver.api.querybuilder.BindMarker;
 import com.datastax.oss.driver.api.querybuilder.QueryBuilderDsl;
+import com.datastax.oss.driver.api.querybuilder.relation.CanAddRelation;
 import com.datastax.oss.driver.api.querybuilder.relation.Relation;
 import com.google.common.collect.ImmutableMap;
 import com.google.common.collect.Iterables;
@@ -29,37 +30,14 @@ import java.util.Map;
  * A SELECT query that accepts additional clauses: WHERE, GROUP BY, ORDER BY, LIMIT, PER PARTITION
  * LIMIT, ALLOW FILTERING.
  */
-public interface CanAddClause {
+public interface CanAddSelectClause extends CanAddRelation<Select> {
 
   // Implementation note - this interface is separate from CanAddSelector to make the following a
   // compile-time error:
   // selectFrom("foo").allowFiltering().build()
 
-  /**
-   * Adds a relation in the WHERE clause. All relations are logically joined with AND.
-   *
-   * <p>To create the argument, use one of the {@code isXxx} factory methods in {@link
-   * QueryBuilderDsl}, for example {@link QueryBuilderDsl#isColumn(CqlIdentifier) isColumn}.
-   *
-   * <p>If you add multiple selectors as once, consider {@link #where(Iterable)} as a more efficient
-   * alternative.
-   */
-  Select where(Relation relation);
-
-  /**
-   * Adds multiple relations at once. All relations are logically joined with AND.
-   *
-   * <p>This is slightly more efficient than adding the relations one by one (since the underlying
-   * implementation of this object is immutable).
-   *
-   * <p>To create the argument, use one of the {@code isXxx} factory methods in {@link
-   * QueryBuilderDsl}, for example {@link QueryBuilderDsl#isColumn(CqlIdentifier) isColumn}.
-   *
-   * @see #where(Relation)
-   */
-  Select where(Iterable<Relation> additionalRelations);
-
   /** Var-arg equivalent of {@link #where(Iterable)}. */
+  @Override
   default Select where(Relation... additionalRelations) {
     return where(Arrays.asList(additionalRelations));
   }

@@ -23,4 +23,4 @@ import com.datastax.oss.driver.api.querybuilder.BuildableQuery;
  * <p>It knows about the table and at least one selector, and is therefore buildable. Additional
  * selectors and clauses can still be added before building.
  */
-public interface Select extends CanAddSelector, CanAddClause, BuildableQuery {}
+public interface Select extends CanAddSelector, CanAddSelectClause, BuildableQuery {}
