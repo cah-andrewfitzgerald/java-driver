@@ -32,6 +32,16 @@ selectFrom("sensor_data").all()
 // SELECT * FROM sensor_data WHERE id=? AND date>?
 ```
 
+Finally, there are fluent shortcuts to create and add the selector in a single call. This is
+probably the most readable if you're building the query statically:
+
+```java
+selectFrom("sensor_data").all()
+    .whereColumn("id").eq(bindMarker())
+    .whereColumn("date").gt(bindMarker());
+// SELECT * FROM sensor_data WHERE id=? AND date>?
+```
+
 Relations are generally composed of a left-hand-side target, an operator, and an optional
 right-hand-side [term](../term/). The type of relation determines which operators are available.
  

@@ -17,25 +17,26 @@ package com.datastax.oss.driver.api.querybuilder.relation;
 
 import com.datastax.oss.driver.api.querybuilder.term.Term;
 
-public interface ColumnRelationBuilder extends ArithmeticRelationBuilder, InRelationBuilder {
+public interface ColumnRelationBuilder<ResultT>
+    extends ArithmeticRelationBuilder<ResultT>, InRelationBuilder<ResultT> {
 
   /** Builds a LIKE relation for the column. */
-  default Relation like(Term term) {
+  default ResultT like(Term term) {
     return build(" LIKE ", term);
   }
 
   /** Builds an IS NOT NULL relation for the column. */
-  default Relation notNull() {
+  default ResultT notNull() {
     return build(" IS NOT NULL", null);
   }
 
   /** Builds a CONTAINS relation for the column. */
-  default Relation contains(Term term) {
+  default ResultT contains(Term term) {
     return build(" CONTAINS ", term);
   }
 
   /** Builds a CONTAINS KEY relation for the column. */
-  default Relation containsKey(Term term) {
+  default ResultT containsKey(Term term) {
     return build(" CONTAINS KEY ", term);
   }
 }

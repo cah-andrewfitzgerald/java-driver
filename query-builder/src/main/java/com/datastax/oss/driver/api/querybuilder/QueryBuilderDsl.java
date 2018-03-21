@@ -478,13 +478,13 @@ public interface QueryBuilderDsl {
   /**
    * Builds a relation testing a column.
    *
-   * <p>This call must be chained with an operator, for example:
+   * <p>This must be chained with an operator call, for example:
    *
    * <pre>{@code
    * selectFrom("foo").getAll().where(isColumn("k").eq(bindMarker()));
    * }</pre>
    */
-  static ColumnRelationBuilder isColumn(CqlIdentifier id) {
+  static ColumnRelationBuilder<Relation> isColumn(CqlIdentifier id) {
     return new DefaultColumnRelationBuilder(id);
   }
 
@@ -492,12 +492,12 @@ public interface QueryBuilderDsl {
    * Shortcut for {@link QueryBuilderDsl#isColumn(CqlIdentifier)
    * isColumn(CqlIdentifier.fromCql(name))}
    */
-  static ColumnRelationBuilder isColumn(String name) {
+  static ColumnRelationBuilder<Relation> isColumn(String name) {
     return isColumn(CqlIdentifier.fromCql(name));
   }
 
   /** Builds a relation testing a value in a map (Cassandra 4 and above). */
-  static ColumnComponentRelationBuilder isMapValue(CqlIdentifier columnId, Term index) {
+  static ColumnComponentRelationBuilder<Relation> isMapValue(CqlIdentifier columnId, Term index) {
     // The concept could easily be extended to list elements and tuple components, so use a generic
     // name internally, we'll add other shortcuts if necessary.
     return new DefaultColumnComponentRelationBuilder(columnId, index);
@@ -507,17 +507,17 @@ public interface QueryBuilderDsl {
    * Shortcut for {@link QueryBuilderDsl#isMapValue(CqlIdentifier, Term)
    * isMapValue(CqlIdentifier.fromCql(columnName), index)}
    */
-  static ColumnComponentRelationBuilder isMapValue(String columnName, Term index) {
+  static ColumnComponentRelationBuilder<Relation> isMapValue(String columnName, Term index) {
     return isMapValue(CqlIdentifier.fromCql(columnName), index);
   }
 
   /** Builds a relation testing a token generated from a set of columns. */
-  static TokenRelationBuilder isTokenFromIds(Iterable<CqlIdentifier> identifiers) {
+  static TokenRelationBuilder<Relation> isTokenFromIds(Iterable<CqlIdentifier> identifiers) {
     return new DefaultTokenRelationBuilder(identifiers);
   }
 
   /** Var-arg equivalent of {@link QueryBuilderDsl#isTokenFromIds(Iterable)}. */
-  static TokenRelationBuilder isToken(CqlIdentifier... identifiers) {
+  static TokenRelationBuilder<Relation> isToken(CqlIdentifier... identifiers) {
     return isTokenFromIds(Arrays.asList(identifiers));
   }
 
@@ -525,22 +525,22 @@ public interface QueryBuilderDsl {
    * Equivalent of {@link QueryBuilderDsl#isTokenFromIds(Iterable)} with raw strings; the names are
    * converted with {@link CqlIdentifier#fromCql(String)}.
    */
-  static TokenRelationBuilder isToken(Iterable<String> names) {
+  static TokenRelationBuilder<Relation> isToken(Iterable<String> names) {
     return isTokenFromIds(Iterables.transform(names, CqlIdentifier::fromCql));
   }
 
   /** Var-arg equivalent of {@link #isToken(Iterable)}. */
-  static TokenRelationBuilder isToken(String... names) {
+  static TokenRelationBuilder<Relation> isToken(String... names) {
     return isToken(Arrays.asList(names));
   }
 
   /** Builds a relation testing a set of columns, as in {@code WHERE (c1, c2, c3) IN ...}. */
-  static TupleRelationBuilder isTupleOfIds(Iterable<CqlIdentifier> identifiers) {
+  static TupleRelationBuilder<Relation> isTupleOfIds(Iterable<CqlIdentifier> identifiers) {
     return new DefaultTupleRelationBuilder(identifiers);
   }
 
   /** Var-arg equivalent of {@link #isTupleOfIds(Iterable)}. */
-  static TupleRelationBuilder isTuple(CqlIdentifier... identifiers) {
+  static TupleRelationBuilder<Relation> isTuple(CqlIdentifier... identifiers) {
     return isTupleOfIds(Arrays.asList(identifiers));
   }
 
@@ -548,12 +548,12 @@ public interface QueryBuilderDsl {
    * Equivalent of {@link #isTupleOfIds(Iterable)} with raw strings; the names are converted with
    * {@link CqlIdentifier#fromCql(String)}.
    */
-  static TupleRelationBuilder isTuple(Iterable<String> names) {
+  static TupleRelationBuilder<Relation> isTuple(Iterable<String> names) {
     return isTupleOfIds(Iterables.transform(names, CqlIdentifier::fromCql));
   }
 
   /** Var-arg equivalent of {@link #isTuple(Iterable)}. */
-  static TupleRelationBuilder isTuple(String... names) {
+  static TupleRelationBuilder<Relation> isTuple(String... names) {
     return isTuple(Arrays.asList(names));
   }
 

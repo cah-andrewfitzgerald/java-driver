@@ -20,13 +20,13 @@ import com.datastax.oss.driver.api.querybuilder.QueryBuilderDsl;
 import com.datastax.oss.driver.api.querybuilder.term.Term;
 import java.util.Arrays;
 
-public interface InRelationBuilder {
+public interface InRelationBuilder<ResultT> {
 
   /**
    * Builds an IN relation where the whole set of possible values is a bound variable, as in {@code
    * IN ?}.
    */
-  default Relation in(BindMarker bindMarker) {
+  default ResultT in(BindMarker bindMarker) {
     return build(" IN ", bindMarker);
   }
 
@@ -34,14 +34,14 @@ public interface InRelationBuilder {
    * Builds an IN relation where the arguments are the possible values, as in {@code IN (term1,
    * term2...)}.
    */
-  default Relation in(Iterable<Term> alternatives) {
+  default ResultT in(Iterable<Term> alternatives) {
     return build(" IN ", QueryBuilderDsl.tuple(alternatives));
   }
 
   /** Var-arg equivalent of {@link #in(Iterable)} . */
-  default Relation in(Term... alternatives) {
+  default ResultT in(Term... alternatives) {
     return in(Arrays.asList(alternatives));
   }
 
-  Relation build(String operator, Term rightHandSide);
+  ResultT build(String operator, Term rightHandSide);
 }

@@ -16,12 +16,13 @@
 package com.datastax.oss.driver.internal.querybuilder.relation;
 
 import com.datastax.oss.driver.api.core.CqlIdentifier;
+import com.datastax.oss.driver.api.querybuilder.relation.CanAddRelation;
 import com.datastax.oss.driver.api.querybuilder.relation.ColumnRelationBuilder;
 import com.datastax.oss.driver.api.querybuilder.relation.Relation;
 import com.datastax.oss.driver.api.querybuilder.term.Term;
 import com.google.common.base.Preconditions;
 
-public class DefaultColumnRelationBuilder implements ColumnRelationBuilder {
+public class DefaultColumnRelationBuilder implements ColumnRelationBuilder<Relation> {
 
   private final CqlIdentifier columnId;
 
@@ -33,5 +34,22 @@ public class DefaultColumnRelationBuilder implements ColumnRelationBuilder {
   @Override
   public Relation build(String operator, Term rightHandSide) {
     return new DefaultRelation(new ColumnLeftHandSide(columnId), operator, rightHandSide);
+  }
+
+  public static class Fluent<StatementT extends CanAddRelation<StatementT>>
+      implements ColumnRelationBuilder<StatementT> {
+
+    private final CanAddRelation<StatementT> statement;
+    private final ColumnRelationBuilder<Relation> delegate;
+
+    public Fluent(CanAddRelation<StatementT> statement, CqlIdentifier columnId) {
+      this.statement = statement;
+      this.delegate = new DefaultColumnRelationBuilder(columnId);
+    }
+
+    @Override
+    public StatementT build(String operator, Term rightHandSide) {
+      return statement.where(delegate.build(operator, rightHandSide));
+    }
   }
 }

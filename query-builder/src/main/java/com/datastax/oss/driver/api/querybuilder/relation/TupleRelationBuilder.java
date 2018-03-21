@@ -15,4 +15,5 @@
  */
 package com.datastax.oss.driver.api.querybuilder.relation;
 
-public interface TupleRelationBuilder extends ArithmeticRelationBuilder, InRelationBuilder {}
+public interface TupleRelationBuilder<ResultT>
+    extends ArithmeticRelationBuilder<ResultT>, InRelationBuilder<ResultT> {}

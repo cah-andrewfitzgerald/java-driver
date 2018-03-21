@@ -16,12 +16,13 @@
 package com.datastax.oss.driver.internal.querybuilder.relation;
 
 import com.datastax.oss.driver.api.core.CqlIdentifier;
+import com.datastax.oss.driver.api.querybuilder.relation.CanAddRelation;
 import com.datastax.oss.driver.api.querybuilder.relation.Relation;
 import com.datastax.oss.driver.api.querybuilder.relation.TupleRelationBuilder;
 import com.datastax.oss.driver.api.querybuilder.term.Term;
 import com.google.common.base.Preconditions;
 
-public class DefaultTupleRelationBuilder implements TupleRelationBuilder {
+public class DefaultTupleRelationBuilder implements TupleRelationBuilder<Relation> {
 
   private final Iterable<CqlIdentifier> identifiers;
 
@@ -35,5 +36,22 @@ public class DefaultTupleRelationBuilder implements TupleRelationBuilder {
   @Override
   public Relation build(String operator, Term rightHandSide) {
     return new DefaultRelation(new TupleLeftHandSide(identifiers), operator, rightHandSide);
+  }
+
+  public static class Fluent<StatementT extends CanAddRelation<StatementT>>
+      implements TupleRelationBuilder<StatementT> {
+
+    private final CanAddRelation<StatementT> statement;
+    private final TupleRelationBuilder<Relation> delegate;
+
+    public Fluent(CanAddRelation<StatementT> statement, Iterable<CqlIdentifier> identifiers) {
+      this.statement = statement;
+      this.delegate = new DefaultTupleRelationBuilder(identifiers);
+    }
+
+    @Override
+    public StatementT build(String operator, Term rightHandSide) {
+      return statement.where(delegate.build(operator, rightHandSide));
+    }
   }
 }

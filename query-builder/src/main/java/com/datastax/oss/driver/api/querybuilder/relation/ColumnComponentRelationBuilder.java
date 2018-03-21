@@ -15,4 +15,5 @@
  */
 package com.datastax.oss.driver.api.querybuilder.relation;
 
-public interface ColumnComponentRelationBuilder extends ArithmeticRelationBuilder {}
+public interface ColumnComponentRelationBuilder<ResultT>
+    extends ArithmeticRelationBuilder<ResultT> {}

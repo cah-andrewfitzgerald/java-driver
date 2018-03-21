@@ -16,11 +16,13 @@
 package com.datastax.oss.driver.internal.querybuilder.relation;
 
 import com.datastax.oss.driver.api.core.CqlIdentifier;
+import com.datastax.oss.driver.api.querybuilder.relation.CanAddRelation;
 import com.datastax.oss.driver.api.querybuilder.relation.ColumnComponentRelationBuilder;
 import com.datastax.oss.driver.api.querybuilder.relation.Relation;
 import com.datastax.oss.driver.api.querybuilder.term.Term;
 
-public class DefaultColumnComponentRelationBuilder implements ColumnComponentRelationBuilder {
+public class DefaultColumnComponentRelationBuilder
+    implements ColumnComponentRelationBuilder<Relation> {
 
   private final CqlIdentifier columnId;
   private final Term index;
@@ -34,5 +36,22 @@ public class DefaultColumnComponentRelationBuilder implements ColumnComponentRel
   public Relation build(String operator, Term rightHandSide) {
     return new DefaultRelation(
         new ColumnComponentLeftHandSide(columnId, index), operator, rightHandSide);
+  }
+
+  public static class Fluent<StatementT extends CanAddRelation<StatementT>>
+      implements ColumnComponentRelationBuilder<StatementT> {
+
+    private final CanAddRelation<StatementT> statement;
+    private final ColumnComponentRelationBuilder<Relation> delegate;
+
+    public Fluent(CanAddRelation<StatementT> statement, CqlIdentifier columnId, Term index) {
+      this.statement = statement;
+      this.delegate = new DefaultColumnComponentRelationBuilder(columnId, index);
+    }
+
+    @Override
+    public StatementT build(String operator, Term rightHandSide) {
+      return statement.where(delegate.build(operator, rightHandSide));
+    }
   }
 }

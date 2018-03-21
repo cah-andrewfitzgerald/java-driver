@@ -17,14 +17,14 @@ package com.datastax.oss.driver.api.querybuilder.relation;
 
 import com.datastax.oss.driver.api.querybuilder.term.Term;
 
-public interface ArithmeticRelationBuilder {
+public interface ArithmeticRelationBuilder<ResultT> {
 
   /**
    * Builds an '=' relation with the given term.
    *
    * <p>Use one of the static factory method in {@link Term} to create the argument.
    */
-  default Relation eq(Term rightHandSide) {
+  default ResultT eq(Term rightHandSide) {
     return build("=", rightHandSide);
   }
 
@@ -33,7 +33,7 @@ public interface ArithmeticRelationBuilder {
    *
    * <p>Use one of the static factory method in {@link Term} to create the argument.
    */
-  default Relation lt(Term rightHandSide) {
+  default ResultT lt(Term rightHandSide) {
     return build("<", rightHandSide);
   }
 
@@ -42,7 +42,7 @@ public interface ArithmeticRelationBuilder {
    *
    * <p>Use one of the static factory method in {@link Term} to create the argument.
    */
-  default Relation lte(Term rightHandSide) {
+  default ResultT lte(Term rightHandSide) {
     return build("<=", rightHandSide);
   }
 
@@ -51,7 +51,7 @@ public interface ArithmeticRelationBuilder {
    *
    * <p>Use one of the static factory method in {@link Term} to create the argument.
    */
-  default Relation gt(Term rightHandSide) {
+  default ResultT gt(Term rightHandSide) {
     return build(">", rightHandSide);
   }
 
@@ -60,7 +60,7 @@ public interface ArithmeticRelationBuilder {
    *
    * <p>Use one of the static factory method in {@link Term} to create the argument.
    */
-  default Relation gte(Term rightHandSide) {
+  default ResultT gte(Term rightHandSide) {
     return build(">=", rightHandSide);
   }
 
@@ -69,9 +69,9 @@ public interface ArithmeticRelationBuilder {
    *
    * <p>Use one of the static factory method in {@link Term} to create the argument.
    */
-  default Relation ne(Term rightHandSide) {
+  default ResultT ne(Term rightHandSide) {
     return build("!=", rightHandSide);
   }
 
-  Relation build(String operator, Term rightHandSide);
+  ResultT build(String operator, Term rightHandSide);
 }

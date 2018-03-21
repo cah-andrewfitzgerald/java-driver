@@ -15,4 +15,4 @@
  */
 package com.datastax.oss.driver.api.querybuilder.relation;
 
-public interface TokenRelationBuilder extends ArithmeticRelationBuilder {}
+public interface TokenRelationBuilder<ResultT> extends ArithmeticRelationBuilder<ResultT> {}

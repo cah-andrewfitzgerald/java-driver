@@ -16,11 +16,12 @@
 package com.datastax.oss.driver.internal.querybuilder.relation;
 
 import com.datastax.oss.driver.api.core.CqlIdentifier;
+import com.datastax.oss.driver.api.querybuilder.relation.CanAddRelation;
 import com.datastax.oss.driver.api.querybuilder.relation.Relation;
 import com.datastax.oss.driver.api.querybuilder.relation.TokenRelationBuilder;
 import com.datastax.oss.driver.api.querybuilder.term.Term;
 
-public class DefaultTokenRelationBuilder implements TokenRelationBuilder {
+public class DefaultTokenRelationBuilder implements TokenRelationBuilder<Relation> {
 
   private final Iterable<CqlIdentifier> identifiers;
 
@@ -31,5 +32,22 @@ public class DefaultTokenRelationBuilder implements TokenRelationBuilder {
   @Override
   public Relation build(String operator, Term rightHandSide) {
     return new DefaultRelation(new TokenLeftHandSide(identifiers), operator, rightHandSide);
+  }
+
+  public static class Fluent<StatementT extends CanAddRelation<StatementT>>
+      implements TokenRelationBuilder<StatementT> {
+
+    private final CanAddRelation<StatementT> statement;
+    private final TokenRelationBuilder<Relation> delegate;
+
+    public Fluent(CanAddRelation<StatementT> statement, Iterable<CqlIdentifier> identifiers) {
+      this.statement = statement;
+      this.delegate = new DefaultTokenRelationBuilder(identifiers);
+    }
+
+    @Override
+    public StatementT build(String operator, Term rightHandSide) {
+      return statement.where(delegate.build(operator, rightHandSide));
+    }
   }
 }
