@@ -20,7 +20,6 @@ import com.datastax.oss.driver.api.core.metadata.schema.ClusteringOrder;
 import com.datastax.oss.driver.api.querybuilder.BindMarker;
 import com.datastax.oss.driver.api.querybuilder.QueryBuilderDsl;
 import com.datastax.oss.driver.api.querybuilder.relation.CanAddRelation;
-import com.datastax.oss.driver.api.querybuilder.relation.Relation;
 import com.google.common.collect.ImmutableMap;
 import com.google.common.collect.Iterables;
 import java.util.Arrays;
@@ -35,12 +34,6 @@ public interface CanAddSelectClause extends CanAddRelation<Select> {
   // Implementation note - this interface is separate from CanAddSelector to make the following a
   // compile-time error:
   // selectFrom("foo").allowFiltering().build()
-
-  /** Var-arg equivalent of {@link #where(Iterable)}. */
-  @Override
-  default Select where(Relation... additionalRelations) {
-    return where(Arrays.asList(additionalRelations));
-  }
 
   /**
    * Adds the provided GROUP BY clauses to the query.

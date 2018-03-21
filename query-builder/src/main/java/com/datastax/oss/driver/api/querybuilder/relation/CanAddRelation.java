@@ -55,7 +55,9 @@ public interface CanAddRelation<SelfT extends CanAddRelation<SelfT>> {
   SelfT where(Iterable<Relation> additionalRelations);
 
   /** Var-arg equivalent of {@link #where(Iterable)}. */
-  SelfT where(Relation... additionalRelations);
+  default SelfT where(Relation... additionalRelations) {
+    return where(Arrays.asList(additionalRelations));
+  }
 
   /**
    * Adds a relation testing a column.
