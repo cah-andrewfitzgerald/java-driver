@@ -20,6 +20,7 @@ import com.datastax.oss.driver.api.querybuilder.relation.CanAddRelation;
 import com.datastax.oss.driver.api.querybuilder.relation.ColumnComponentRelationBuilder;
 import com.datastax.oss.driver.api.querybuilder.relation.Relation;
 import com.datastax.oss.driver.api.querybuilder.term.Term;
+import com.datastax.oss.driver.internal.querybuilder.lhs.ColumnComponentLeftHandSide;
 
 public class DefaultColumnComponentRelationBuilder
     implements ColumnComponentRelationBuilder<Relation> {

@@ -20,6 +20,7 @@ import com.datastax.oss.driver.api.querybuilder.relation.CanAddRelation;
 import com.datastax.oss.driver.api.querybuilder.relation.Relation;
 import com.datastax.oss.driver.api.querybuilder.relation.TupleRelationBuilder;
 import com.datastax.oss.driver.api.querybuilder.term.Term;
+import com.datastax.oss.driver.internal.querybuilder.lhs.TupleLeftHandSide;
 import com.google.common.base.Preconditions;
 
 public class DefaultTupleRelationBuilder implements TupleRelationBuilder<Relation> {

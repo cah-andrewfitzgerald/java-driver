@@ -17,7 +17,7 @@ package com.datastax.oss.driver.internal.querybuilder.condition;
 
 import com.datastax.oss.driver.api.querybuilder.condition.Condition;
 import com.datastax.oss.driver.api.querybuilder.term.Term;
-import com.datastax.oss.driver.internal.querybuilder.relation.LeftHandSide;
+import com.datastax.oss.driver.internal.querybuilder.lhs.LeftHandSide;
 
 public class DefaultCondition implements Condition {
 

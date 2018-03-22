@@ -19,9 +19,9 @@ import com.datastax.oss.driver.api.core.CqlIdentifier;
 import com.datastax.oss.driver.api.querybuilder.QueryBuilderDsl;
 import com.datastax.oss.driver.api.querybuilder.term.Term;
 import com.datastax.oss.driver.internal.querybuilder.condition.DefaultConditionBuilder;
-import com.datastax.oss.driver.internal.querybuilder.relation.ColumnComponentLeftHandSide;
-import com.datastax.oss.driver.internal.querybuilder.relation.ColumnLeftHandSide;
-import com.datastax.oss.driver.internal.querybuilder.relation.FieldLeftHandSide;
+import com.datastax.oss.driver.internal.querybuilder.lhs.ColumnComponentLeftHandSide;
+import com.datastax.oss.driver.internal.querybuilder.lhs.ColumnLeftHandSide;
+import com.datastax.oss.driver.internal.querybuilder.lhs.FieldLeftHandSide;
 import java.util.Arrays;
 
 /**

@@ -19,7 +19,7 @@ import com.datastax.oss.driver.api.querybuilder.condition.Condition;
 import com.datastax.oss.driver.api.querybuilder.condition.ConditionBuilder;
 import com.datastax.oss.driver.api.querybuilder.condition.ConditionalStatement;
 import com.datastax.oss.driver.api.querybuilder.term.Term;
-import com.datastax.oss.driver.internal.querybuilder.relation.LeftHandSide;
+import com.datastax.oss.driver.internal.querybuilder.lhs.LeftHandSide;
 
 public class DefaultConditionBuilder implements ConditionBuilder<Condition> {
 

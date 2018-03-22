@@ -20,6 +20,7 @@ import com.datastax.oss.driver.api.querybuilder.relation.CanAddRelation;
 import com.datastax.oss.driver.api.querybuilder.relation.Relation;
 import com.datastax.oss.driver.api.querybuilder.relation.TokenRelationBuilder;
 import com.datastax.oss.driver.api.querybuilder.term.Term;
+import com.datastax.oss.driver.internal.querybuilder.lhs.TokenLeftHandSide;
 
 public class DefaultTokenRelationBuilder implements TokenRelationBuilder<Relation> {
 

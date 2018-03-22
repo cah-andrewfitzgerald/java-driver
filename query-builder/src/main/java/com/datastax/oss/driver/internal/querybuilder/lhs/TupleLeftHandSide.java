@@ -13,25 +13,25 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.datastax.oss.driver.internal.querybuilder.relation;
+package com.datastax.oss.driver.internal.querybuilder.lhs;
 
 import com.datastax.oss.driver.api.core.CqlIdentifier;
-import com.datastax.oss.driver.api.querybuilder.term.Term;
+import com.datastax.oss.driver.internal.querybuilder.CqlHelper;
 
-public class ColumnComponentLeftHandSide implements LeftHandSide {
+public class TupleLeftHandSide implements LeftHandSide {
 
-  private final CqlIdentifier columnId;
-  private final Term index;
+  private final Iterable<CqlIdentifier> identifiers;
 
-  public ColumnComponentLeftHandSide(CqlIdentifier columnId, Term index) {
-    this.columnId = columnId;
-    this.index = index;
+  public TupleLeftHandSide(Iterable<CqlIdentifier> identifiers) {
+    this.identifiers = identifiers;
   }
 
   @Override
   public void appendTo(StringBuilder builder) {
-    builder.append(columnId.asCql(true)).append('[');
-    index.appendTo(builder);
-    builder.append(']');
+    CqlHelper.appendIds(identifiers, builder, "(", ",", ")");
+  }
+
+  public Iterable<CqlIdentifier> getIdentifiers() {
+    return identifiers;
   }
 }
