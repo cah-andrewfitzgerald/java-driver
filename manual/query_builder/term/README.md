@@ -4,7 +4,7 @@ A term is an expression that does not involve the value of a column. It is used:
 
 * as an argument to some selectors, for example the indices of [sub-element](../select/#sub-element)
   selectors;
-* in the right-hand side of [relations](../relation).
+* as the right operand of [relations](../relation).
 
 To create a term, call one of the factory methods in `QueryBuilderDsl`:
 

@@ -16,22 +16,22 @@
 package com.datastax.oss.driver.internal.querybuilder.lhs;
 
 import com.datastax.oss.driver.api.core.CqlIdentifier;
-import com.datastax.oss.driver.internal.querybuilder.CqlHelper;
+import com.datastax.oss.driver.api.querybuilder.term.Term;
 
-public class TokenLeftHandSide implements LeftHandSide {
+public class ColumnComponentLeftOperand implements LeftOperand {
 
-  private final Iterable<CqlIdentifier> identifiers;
+  private final CqlIdentifier columnId;
+  private final Term index;
 
-  public TokenLeftHandSide(Iterable<CqlIdentifier> identifiers) {
-    this.identifiers = identifiers;
+  public ColumnComponentLeftOperand(CqlIdentifier columnId, Term index) {
+    this.columnId = columnId;
+    this.index = index;
   }
 
   @Override
   public void appendTo(StringBuilder builder) {
-    CqlHelper.appendIds(identifiers, builder, "token(", ",", ")");
-  }
-
-  public Iterable<CqlIdentifier> getIdentifiers() {
-    return identifiers;
+    builder.append(columnId.asCql(true)).append('[');
+    index.appendTo(builder);
+    builder.append(']');
   }
 }

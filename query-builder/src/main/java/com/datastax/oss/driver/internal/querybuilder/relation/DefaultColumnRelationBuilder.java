@@ -20,7 +20,7 @@ import com.datastax.oss.driver.api.querybuilder.relation.ColumnRelationBuilder;
 import com.datastax.oss.driver.api.querybuilder.relation.OngoingWhereClause;
 import com.datastax.oss.driver.api.querybuilder.relation.Relation;
 import com.datastax.oss.driver.api.querybuilder.term.Term;
-import com.datastax.oss.driver.internal.querybuilder.lhs.ColumnLeftHandSide;
+import com.datastax.oss.driver.internal.querybuilder.lhs.ColumnLeftOperand;
 import com.google.common.base.Preconditions;
 
 public class DefaultColumnRelationBuilder implements ColumnRelationBuilder<Relation> {
@@ -33,8 +33,8 @@ public class DefaultColumnRelationBuilder implements ColumnRelationBuilder<Relat
   }
 
   @Override
-  public Relation build(String operator, Term rightHandSide) {
-    return new DefaultRelation(new ColumnLeftHandSide(columnId), operator, rightHandSide);
+  public Relation build(String operator, Term rightOperand) {
+    return new DefaultRelation(new ColumnLeftOperand(columnId), operator, rightOperand);
   }
 
   public static class Fluent<StatementT extends OngoingWhereClause<StatementT>>
@@ -49,8 +49,8 @@ public class DefaultColumnRelationBuilder implements ColumnRelationBuilder<Relat
     }
 
     @Override
-    public StatementT build(String operator, Term rightHandSide) {
-      return statement.where(delegate.build(operator, rightHandSide));
+    public StatementT build(String operator, Term rightOperand) {
+      return statement.where(delegate.build(operator, rightOperand));
     }
   }
 }

@@ -18,17 +18,17 @@ package com.datastax.oss.driver.internal.querybuilder.lhs;
 import com.datastax.oss.driver.api.core.CqlIdentifier;
 import com.datastax.oss.driver.internal.querybuilder.CqlHelper;
 
-public class TupleLeftHandSide implements LeftHandSide {
+public class TokenLeftOperand implements LeftOperand {
 
   private final Iterable<CqlIdentifier> identifiers;
 
-  public TupleLeftHandSide(Iterable<CqlIdentifier> identifiers) {
+  public TokenLeftOperand(Iterable<CqlIdentifier> identifiers) {
     this.identifiers = identifiers;
   }
 
   @Override
   public void appendTo(StringBuilder builder) {
-    CqlHelper.appendIds(identifiers, builder, "(", ",", ")");
+    CqlHelper.appendIds(identifiers, builder, "token(", ",", ")");
   }
 
   public Iterable<CqlIdentifier> getIdentifiers() {

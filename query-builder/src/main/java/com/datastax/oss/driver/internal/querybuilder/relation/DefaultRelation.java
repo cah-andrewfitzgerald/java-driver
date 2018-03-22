@@ -17,41 +17,41 @@ package com.datastax.oss.driver.internal.querybuilder.relation;
 
 import com.datastax.oss.driver.api.querybuilder.relation.Relation;
 import com.datastax.oss.driver.api.querybuilder.term.Term;
-import com.datastax.oss.driver.internal.querybuilder.lhs.LeftHandSide;
+import com.datastax.oss.driver.internal.querybuilder.lhs.LeftOperand;
 import com.google.common.base.Preconditions;
 
 public class DefaultRelation implements Relation {
 
-  private final LeftHandSide leftHandSide;
+  private final LeftOperand leftOperand;
   private final String operator;
-  private final Term rightHandSide;
+  private final Term rightOperand;
 
-  public DefaultRelation(LeftHandSide leftHandSide, String operator, Term rightHandSide) {
-    Preconditions.checkNotNull(leftHandSide);
+  public DefaultRelation(LeftOperand leftOperand, String operator, Term rightOperand) {
+    Preconditions.checkNotNull(leftOperand);
     Preconditions.checkNotNull(operator);
-    this.leftHandSide = leftHandSide;
+    this.leftOperand = leftOperand;
     this.operator = operator;
-    this.rightHandSide = rightHandSide;
+    this.rightOperand = rightOperand;
   }
 
   @Override
   public void appendTo(StringBuilder builder) {
-    leftHandSide.appendTo(builder);
+    leftOperand.appendTo(builder);
     builder.append(operator);
-    if (rightHandSide != null) {
-      rightHandSide.appendTo(builder);
+    if (rightOperand != null) {
+      rightOperand.appendTo(builder);
     }
   }
 
-  public LeftHandSide getLeftHandSide() {
-    return leftHandSide;
+  public LeftOperand getLeftOperand() {
+    return leftOperand;
   }
 
   public String getOperator() {
     return operator;
   }
 
-  public Term getRightHandSide() {
-    return rightHandSide;
+  public Term getRightOperand() {
+    return rightOperand;
   }
 }

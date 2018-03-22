@@ -19,9 +19,9 @@ import com.datastax.oss.driver.api.core.CqlIdentifier;
 import com.datastax.oss.driver.api.querybuilder.QueryBuilderDsl;
 import com.datastax.oss.driver.api.querybuilder.term.Term;
 import com.datastax.oss.driver.internal.querybuilder.condition.DefaultConditionBuilder;
-import com.datastax.oss.driver.internal.querybuilder.lhs.ColumnComponentLeftHandSide;
-import com.datastax.oss.driver.internal.querybuilder.lhs.ColumnLeftHandSide;
-import com.datastax.oss.driver.internal.querybuilder.lhs.FieldLeftHandSide;
+import com.datastax.oss.driver.internal.querybuilder.lhs.ColumnComponentLeftOperand;
+import com.datastax.oss.driver.internal.querybuilder.lhs.ColumnLeftOperand;
+import com.datastax.oss.driver.internal.querybuilder.lhs.FieldLeftOperand;
 import java.util.Arrays;
 
 /**
@@ -74,7 +74,7 @@ public interface ConditionalStatement<SelfT extends ConditionalStatement<SelfT>>
    * QueryBuilderDsl#ifColumn(CqlIdentifier)} and passing it to {@link #if_(Condition)}.
    */
   default ConditionBuilder<SelfT> ifColumn(CqlIdentifier columnId) {
-    return new DefaultConditionBuilder.Fluent<>(this, new ColumnLeftHandSide(columnId));
+    return new DefaultConditionBuilder.Fluent<>(this, new ColumnLeftOperand(columnId));
   }
 
   /**
@@ -96,7 +96,7 @@ public interface ConditionalStatement<SelfT extends ConditionalStatement<SelfT>>
    * #if_(Condition)}.
    */
   default ConditionBuilder<SelfT> ifField(CqlIdentifier columnId, CqlIdentifier fieldId) {
-    return new DefaultConditionBuilder.Fluent<>(this, new FieldLeftHandSide(columnId, fieldId));
+    return new DefaultConditionBuilder.Fluent<>(this, new FieldLeftOperand(columnId, fieldId));
   }
 
   /**
@@ -119,7 +119,7 @@ public interface ConditionalStatement<SelfT extends ConditionalStatement<SelfT>>
    */
   default ConditionBuilder<SelfT> ifElement(CqlIdentifier columnId, Term index) {
     return new DefaultConditionBuilder.Fluent<>(
-        this, new ColumnComponentLeftHandSide(columnId, index));
+        this, new ColumnComponentLeftOperand(columnId, index));
   }
 
   /**

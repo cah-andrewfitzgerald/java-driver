@@ -40,7 +40,7 @@ deleteFrom("user")
 // DELETE FROM user WHERE k=? IF v1=1 AND v2=2    
 ```
 
-Conditions are composed of a left-hand-side target, an operator, and a right-hand-side
+Conditions are composed of a left operand, an operator, and a right-hand-side
 [term](../term/).
 
 ### Simple columns

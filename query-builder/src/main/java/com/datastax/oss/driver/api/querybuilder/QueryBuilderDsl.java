@@ -38,9 +38,9 @@ import com.datastax.oss.driver.internal.querybuilder.DefaultLiteral;
 import com.datastax.oss.driver.internal.querybuilder.DefaultRaw;
 import com.datastax.oss.driver.internal.querybuilder.condition.DefaultConditionBuilder;
 import com.datastax.oss.driver.internal.querybuilder.delete.DefaultDelete;
-import com.datastax.oss.driver.internal.querybuilder.lhs.ColumnComponentLeftHandSide;
-import com.datastax.oss.driver.internal.querybuilder.lhs.ColumnLeftHandSide;
-import com.datastax.oss.driver.internal.querybuilder.lhs.FieldLeftHandSide;
+import com.datastax.oss.driver.internal.querybuilder.lhs.ColumnComponentLeftOperand;
+import com.datastax.oss.driver.internal.querybuilder.lhs.ColumnLeftOperand;
+import com.datastax.oss.driver.internal.querybuilder.lhs.FieldLeftOperand;
 import com.datastax.oss.driver.internal.querybuilder.relation.CustomIndexRelation;
 import com.datastax.oss.driver.internal.querybuilder.relation.DefaultColumnComponentRelationBuilder;
 import com.datastax.oss.driver.internal.querybuilder.relation.DefaultColumnRelationBuilder;
@@ -605,7 +605,7 @@ public class QueryBuilderDsl {
 
   /** Builds a condition on a column for a conditional statement, as in {@code DELETE... IF k=1}. */
   public static ConditionBuilder<Condition> ifColumn(CqlIdentifier columnId) {
-    return new DefaultConditionBuilder(new ColumnLeftHandSide(columnId));
+    return new DefaultConditionBuilder(new ColumnLeftOperand(columnId));
   }
 
   /** Shortcut for {@link #ifColumn(CqlIdentifier) ifColumn(CqlIdentifier.fromCql(columnName))}. */
@@ -618,7 +618,7 @@ public class QueryBuilderDsl {
    * DELETE... IF address.street='test'}.
    */
   public static ConditionBuilder<Condition> ifField(CqlIdentifier columnId, CqlIdentifier fieldId) {
-    return new DefaultConditionBuilder(new FieldLeftHandSide(columnId, fieldId));
+    return new DefaultConditionBuilder(new FieldLeftOperand(columnId, fieldId));
   }
 
   /**
@@ -634,7 +634,7 @@ public class QueryBuilderDsl {
    * {@code DELETE... IF m[0]=1}.
    */
   public static ConditionBuilder<Condition> ifElement(CqlIdentifier columnId, Term index) {
-    return new DefaultConditionBuilder(new ColumnComponentLeftHandSide(columnId, index));
+    return new DefaultConditionBuilder(new ColumnComponentLeftOperand(columnId, index));
   }
 
   /**
@@ -649,7 +649,7 @@ public class QueryBuilderDsl {
    * An ordered set of anonymous terms, as in {@code WHERE (a, b) = (1, 2)} (on the right-hand
    * side).
    *
-   * <p>For example, this can be used for the right-hand side of {@link
+   * <p>For example, this can be used as the right operand of {@link
    * QueryBuilderDsl#isTuple(String...)}.
    */
   public static Term tuple(Iterable<? extends Term> components) {

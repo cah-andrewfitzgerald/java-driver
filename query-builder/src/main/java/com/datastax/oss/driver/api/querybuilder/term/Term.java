@@ -28,7 +28,7 @@ import com.datastax.oss.driver.api.querybuilder.relation.ArithmeticRelationBuild
  * <ul>
  *   <li>for the indices in a {@link QueryBuilderDsl#getRange(CqlIdentifier, Term, Term) range
  *       selection};
- *   <li>as the right-hand side of a {@link ArithmeticRelationBuilder#eq(Term) relation}.
+ *   <li>as the right operand of a {@link ArithmeticRelationBuilder#eq(Term) relation}.
  * </ul>
  *
  * To build instances of this type, use the factory methods in {@link QueryBuilderDsl}, such as

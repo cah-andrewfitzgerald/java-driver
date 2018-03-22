@@ -24,8 +24,8 @@ public interface ArithmeticRelationBuilder<ResultT> {
    *
    * <p>Use one of the static factory method in {@link Term} to create the argument.
    */
-  default ResultT eq(Term rightHandSide) {
-    return build("=", rightHandSide);
+  default ResultT eq(Term rightOperand) {
+    return build("=", rightOperand);
   }
 
   /**
@@ -33,8 +33,8 @@ public interface ArithmeticRelationBuilder<ResultT> {
    *
    * <p>Use one of the static factory method in {@link Term} to create the argument.
    */
-  default ResultT lt(Term rightHandSide) {
-    return build("<", rightHandSide);
+  default ResultT lt(Term rightOperand) {
+    return build("<", rightOperand);
   }
 
   /**
@@ -42,8 +42,8 @@ public interface ArithmeticRelationBuilder<ResultT> {
    *
    * <p>Use one of the static factory method in {@link Term} to create the argument.
    */
-  default ResultT lte(Term rightHandSide) {
-    return build("<=", rightHandSide);
+  default ResultT lte(Term rightOperand) {
+    return build("<=", rightOperand);
   }
 
   /**
@@ -51,8 +51,8 @@ public interface ArithmeticRelationBuilder<ResultT> {
    *
    * <p>Use one of the static factory method in {@link Term} to create the argument.
    */
-  default ResultT gt(Term rightHandSide) {
-    return build(">", rightHandSide);
+  default ResultT gt(Term rightOperand) {
+    return build(">", rightOperand);
   }
 
   /**
@@ -60,8 +60,8 @@ public interface ArithmeticRelationBuilder<ResultT> {
    *
    * <p>Use one of the static factory method in {@link Term} to create the argument.
    */
-  default ResultT gte(Term rightHandSide) {
-    return build(">=", rightHandSide);
+  default ResultT gte(Term rightOperand) {
+    return build(">=", rightOperand);
   }
 
   /**
@@ -69,9 +69,9 @@ public interface ArithmeticRelationBuilder<ResultT> {
    *
    * <p>Use one of the static factory method in {@link Term} to create the argument.
    */
-  default ResultT ne(Term rightHandSide) {
-    return build("!=", rightHandSide);
+  default ResultT ne(Term rightOperand) {
+    return build("!=", rightOperand);
   }
 
-  ResultT build(String operator, Term rightHandSide);
+  ResultT build(String operator, Term rightOperand);
 }

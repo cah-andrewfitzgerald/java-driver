@@ -19,19 +19,19 @@ import com.datastax.oss.driver.api.querybuilder.condition.Condition;
 import com.datastax.oss.driver.api.querybuilder.condition.ConditionBuilder;
 import com.datastax.oss.driver.api.querybuilder.condition.ConditionalStatement;
 import com.datastax.oss.driver.api.querybuilder.term.Term;
-import com.datastax.oss.driver.internal.querybuilder.lhs.LeftHandSide;
+import com.datastax.oss.driver.internal.querybuilder.lhs.LeftOperand;
 
 public class DefaultConditionBuilder implements ConditionBuilder<Condition> {
 
-  private final LeftHandSide leftHandSide;
+  private final LeftOperand leftOperand;
 
-  public DefaultConditionBuilder(LeftHandSide leftHandSide) {
-    this.leftHandSide = leftHandSide;
+  public DefaultConditionBuilder(LeftOperand leftOperand) {
+    this.leftOperand = leftOperand;
   }
 
   @Override
-  public Condition build(String operator, Term rightHandSide) {
-    return new DefaultCondition(leftHandSide, operator, rightHandSide);
+  public Condition build(String operator, Term rightOperand) {
+    return new DefaultCondition(leftOperand, operator, rightOperand);
   }
 
   public static class Fluent<StatementT extends ConditionalStatement<StatementT>>
@@ -40,14 +40,14 @@ public class DefaultConditionBuilder implements ConditionBuilder<Condition> {
     private final ConditionalStatement<StatementT> statement;
     private final ConditionBuilder<Condition> delegate;
 
-    public Fluent(ConditionalStatement<StatementT> statement, LeftHandSide leftHandSide) {
+    public Fluent(ConditionalStatement<StatementT> statement, LeftOperand leftOperand) {
       this.statement = statement;
-      this.delegate = new DefaultConditionBuilder(leftHandSide);
+      this.delegate = new DefaultConditionBuilder(leftOperand);
     }
 
     @Override
-    public StatementT build(String operator, Term rightHandSide) {
-      return statement.if_(delegate.build(operator, rightHandSide));
+    public StatementT build(String operator, Term rightOperand) {
+      return statement.if_(delegate.build(operator, rightOperand));
     }
   }
 }

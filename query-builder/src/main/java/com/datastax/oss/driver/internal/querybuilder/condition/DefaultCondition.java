@@ -17,38 +17,38 @@ package com.datastax.oss.driver.internal.querybuilder.condition;
 
 import com.datastax.oss.driver.api.querybuilder.condition.Condition;
 import com.datastax.oss.driver.api.querybuilder.term.Term;
-import com.datastax.oss.driver.internal.querybuilder.lhs.LeftHandSide;
+import com.datastax.oss.driver.internal.querybuilder.lhs.LeftOperand;
 
 public class DefaultCondition implements Condition {
 
-  private final LeftHandSide leftHandSide;
+  private final LeftOperand leftOperand;
   private final String operator;
-  private final Term rightHandSide;
+  private final Term rightOperand;
 
-  public DefaultCondition(LeftHandSide leftHandSide, String operator, Term rightHandSide) {
-    this.leftHandSide = leftHandSide;
+  public DefaultCondition(LeftOperand leftOperand, String operator, Term rightOperand) {
+    this.leftOperand = leftOperand;
     this.operator = operator;
-    this.rightHandSide = rightHandSide;
+    this.rightOperand = rightOperand;
   }
 
   @Override
   public void appendTo(StringBuilder builder) {
-    leftHandSide.appendTo(builder);
+    leftOperand.appendTo(builder);
     builder.append(operator);
-    if (rightHandSide != null) {
-      rightHandSide.appendTo(builder);
+    if (rightOperand != null) {
+      rightOperand.appendTo(builder);
     }
   }
 
-  public LeftHandSide getLeftHandSide() {
-    return leftHandSide;
+  public LeftOperand getLeftOperand() {
+    return leftOperand;
   }
 
   public String getOperator() {
     return operator;
   }
 
-  public Term getRightHandSide() {
-    return rightHandSide;
+  public Term getRightOperand() {
+    return rightOperand;
   }
 }

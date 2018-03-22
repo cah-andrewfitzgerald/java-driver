@@ -42,8 +42,8 @@ selectFrom("sensor_data").all()
 // SELECT * FROM sensor_data WHERE id=? AND date>?
 ```
 
-Relations are generally composed of a left-hand-side target, an operator, and an optional
-right-hand-side [term](../term/). The type of relation determines which operators are available.
+Relations are generally composed of a left operand, an operator, and an optional right-hand-side
+[term](../term/). The type of relation determines which operators are available.
  
 ### Simple columns
 

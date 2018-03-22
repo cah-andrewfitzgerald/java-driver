@@ -15,17 +15,28 @@
  */
 package com.datastax.oss.driver.internal.querybuilder.lhs;
 
-import com.datastax.oss.driver.api.querybuilder.CqlSnippet;
-import com.datastax.oss.driver.api.querybuilder.relation.Relation;
-import com.datastax.oss.driver.internal.querybuilder.relation.DefaultRelation;
+import com.datastax.oss.driver.api.core.CqlIdentifier;
 
-/**
- * The left-hand side of a relation.
- *
- * <p>Doesn't need to be in an API package since it's only used internally by {@link
- * DefaultRelation}.
- *
- * <p>Implementations of this interface are only used temporarily while building a {@link Relation},
- * so they don't need to provide introspection (i.e. public getters).
- */
-public interface LeftHandSide extends CqlSnippet {}
+public class FieldLeftOperand implements LeftOperand {
+
+  private final CqlIdentifier columnId;
+  private final CqlIdentifier fieldId;
+
+  public FieldLeftOperand(CqlIdentifier columnId, CqlIdentifier fieldId) {
+    this.columnId = columnId;
+    this.fieldId = fieldId;
+  }
+
+  @Override
+  public void appendTo(StringBuilder builder) {
+    builder.append(columnId.asCql(true)).append('.').append(fieldId.asCql(true));
+  }
+
+  public CqlIdentifier getColumnId() {
+    return columnId;
+  }
+
+  public CqlIdentifier getFieldId() {
+    return fieldId;
+  }
+}

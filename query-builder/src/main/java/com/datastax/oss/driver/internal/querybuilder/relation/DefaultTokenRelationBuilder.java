@@ -20,7 +20,7 @@ import com.datastax.oss.driver.api.querybuilder.relation.OngoingWhereClause;
 import com.datastax.oss.driver.api.querybuilder.relation.Relation;
 import com.datastax.oss.driver.api.querybuilder.relation.TokenRelationBuilder;
 import com.datastax.oss.driver.api.querybuilder.term.Term;
-import com.datastax.oss.driver.internal.querybuilder.lhs.TokenLeftHandSide;
+import com.datastax.oss.driver.internal.querybuilder.lhs.TokenLeftOperand;
 
 public class DefaultTokenRelationBuilder implements TokenRelationBuilder<Relation> {
 
@@ -31,8 +31,8 @@ public class DefaultTokenRelationBuilder implements TokenRelationBuilder<Relatio
   }
 
   @Override
-  public Relation build(String operator, Term rightHandSide) {
-    return new DefaultRelation(new TokenLeftHandSide(identifiers), operator, rightHandSide);
+  public Relation build(String operator, Term rightOperand) {
+    return new DefaultRelation(new TokenLeftOperand(identifiers), operator, rightOperand);
   }
 
   public static class Fluent<StatementT extends OngoingWhereClause<StatementT>>
@@ -47,8 +47,8 @@ public class DefaultTokenRelationBuilder implements TokenRelationBuilder<Relatio
     }
 
     @Override
-    public StatementT build(String operator, Term rightHandSide) {
-      return statement.where(delegate.build(operator, rightHandSide));
+    public StatementT build(String operator, Term rightOperand) {
+      return statement.where(delegate.build(operator, rightOperand));
     }
   }
 }

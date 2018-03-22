@@ -43,5 +43,5 @@ public interface InRelationBuilder<ResultT> {
     return in(Arrays.asList(alternatives));
   }
 
-  ResultT build(String operator, Term rightHandSide);
+  ResultT build(String operator, Term rightOperand);
 }
