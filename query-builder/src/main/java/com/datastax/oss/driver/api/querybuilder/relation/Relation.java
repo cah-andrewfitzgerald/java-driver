@@ -21,8 +21,8 @@ import com.datastax.oss.driver.api.querybuilder.term.Term;
 import com.datastax.oss.driver.internal.querybuilder.relation.CustomIndexRelation;
 import com.datastax.oss.driver.internal.querybuilder.relation.DefaultColumnComponentRelationBuilder;
 import com.datastax.oss.driver.internal.querybuilder.relation.DefaultColumnRelationBuilder;
+import com.datastax.oss.driver.internal.querybuilder.relation.DefaultMultiColumnRelationBuilder;
 import com.datastax.oss.driver.internal.querybuilder.relation.DefaultTokenRelationBuilder;
-import com.datastax.oss.driver.internal.querybuilder.relation.DefaultTupleRelationBuilder;
 import com.google.common.collect.Iterables;
 import java.util.Arrays;
 
@@ -105,27 +105,27 @@ public interface Relation extends CqlSnippet {
     return token(Arrays.asList(names));
   }
 
-  /** Builds a relation testing a set of columns, as in {@code WHERE (c1, c2, c3) IN ...}. */
-  static TupleRelationBuilder<Relation> tupleOfIds(Iterable<CqlIdentifier> identifiers) {
-    return new DefaultTupleRelationBuilder(identifiers);
+  /** Builds a multi-column relation, as in {@code WHERE (c1, c2, c3) IN ...}. */
+  static MultiColumnRelationBuilder<Relation> columnIds(Iterable<CqlIdentifier> identifiers) {
+    return new DefaultMultiColumnRelationBuilder(identifiers);
   }
 
-  /** Var-arg equivalent of {@link #tupleOfIds(Iterable)}. */
-  static TupleRelationBuilder<Relation> tuple(CqlIdentifier... identifiers) {
-    return tupleOfIds(Arrays.asList(identifiers));
+  /** Var-arg equivalent of {@link #columnIds(Iterable)}. */
+  static MultiColumnRelationBuilder<Relation> columns(CqlIdentifier... identifiers) {
+    return columnIds(Arrays.asList(identifiers));
   }
 
   /**
-   * Equivalent of {@link #tupleOfIds(Iterable)} with raw strings; the names are converted with
+   * Equivalent of {@link #columnIds(Iterable)} with raw strings; the names are converted with
    * {@link CqlIdentifier#fromCql(String)}.
    */
-  static TupleRelationBuilder<Relation> tuple(Iterable<String> names) {
-    return tupleOfIds(Iterables.transform(names, CqlIdentifier::fromCql));
+  static MultiColumnRelationBuilder<Relation> columns(Iterable<String> names) {
+    return columnIds(Iterables.transform(names, CqlIdentifier::fromCql));
   }
 
-  /** Var-arg equivalent of {@link #tuple(Iterable)}. */
-  static TupleRelationBuilder<Relation> tuple(String... names) {
-    return tuple(Arrays.asList(names));
+  /** Var-arg equivalent of {@link #columns(Iterable)}. */
+  static MultiColumnRelationBuilder<Relation> columns(String... names) {
+    return columns(Arrays.asList(names));
   }
 
   /** Builds a relation on a custom index. */

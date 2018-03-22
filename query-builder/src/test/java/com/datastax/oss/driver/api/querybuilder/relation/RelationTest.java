@@ -70,26 +70,26 @@ public class RelationTest {
             selectFrom("foo")
                 .all()
                 .where(Relation.column("k").isEqualTo(bindMarker()))
-                .where(Relation.tuple("c1", "c2", "c3").in(bindMarker())))
+                .where(Relation.columns("c1", "c2", "c3").in(bindMarker())))
         .hasCql("SELECT * FROM foo WHERE k=? AND (c1,c2,c3) IN ?");
     assertThat(
             selectFrom("foo")
                 .all()
                 .where(Relation.column("k").isEqualTo(bindMarker()))
-                .where(Relation.tuple("c1", "c2", "c3").in(bindMarker(), bindMarker())))
+                .where(Relation.columns("c1", "c2", "c3").in(bindMarker(), bindMarker())))
         .hasCql("SELECT * FROM foo WHERE k=? AND (c1,c2,c3) IN (?,?)");
     assertThat(
             selectFrom("foo")
                 .all()
                 .where(Relation.column("k").isEqualTo(bindMarker()))
-                .where(Relation.tuple("c1", "c2", "c3").in(bindMarker(), raw("(4,5,6)"))))
+                .where(Relation.columns("c1", "c2", "c3").in(bindMarker(), raw("(4,5,6)"))))
         .hasCql("SELECT * FROM foo WHERE k=? AND (c1,c2,c3) IN (?,(4,5,6))");
     assertThat(
             selectFrom("foo")
                 .all()
                 .where(Relation.column("k").isEqualTo(bindMarker()))
                 .where(
-                    Relation.tuple("c1", "c2", "c3")
+                    Relation.columns("c1", "c2", "c3")
                         .in(
                             tuple(bindMarker(), bindMarker(), bindMarker()),
                             tuple(bindMarker(), bindMarker(), bindMarker()))))
@@ -99,21 +99,21 @@ public class RelationTest {
             selectFrom("foo")
                 .all()
                 .where(Relation.column("k").isEqualTo(bindMarker()))
-                .where(Relation.tuple("c1", "c2", "c3").isEqualTo(bindMarker())))
+                .where(Relation.columns("c1", "c2", "c3").isEqualTo(bindMarker())))
         .hasCql("SELECT * FROM foo WHERE k=? AND (c1,c2,c3)=?");
     assertThat(
             selectFrom("foo")
                 .all()
                 .where(Relation.column("k").isEqualTo(bindMarker()))
                 .where(
-                    Relation.tuple("c1", "c2", "c3")
+                    Relation.columns("c1", "c2", "c3")
                         .isLessThan(tuple(bindMarker(), bindMarker(), bindMarker()))))
         .hasCql("SELECT * FROM foo WHERE k=? AND (c1,c2,c3)<(?,?,?)");
     assertThat(
             selectFrom("foo")
                 .all()
                 .where(Relation.column("k").isEqualTo(bindMarker()))
-                .where(Relation.tuple("c1", "c2", "c3").isGreaterThanOrEqualTo(raw("(1,2,3)"))))
+                .where(Relation.columns("c1", "c2", "c3").isGreaterThanOrEqualTo(raw("(1,2,3)"))))
         .hasCql("SELECT * FROM foo WHERE k=? AND (c1,c2,c3)>=(1,2,3)");
   }
 

@@ -98,7 +98,7 @@ public class QueryBuilderDsl {
    * An ordered set of anonymous terms, as in {@code WHERE (a, b) = (1, 2)} (on the right-hand
    * side).
    *
-   * <p>For example, this can be used as the right operand of {@link Relation#tuple(String...)}.
+   * <p>For example, this can be used as the right operand of {@link Relation#columns(String...)}.
    */
   public static Term tuple(Iterable<? extends Term> components) {
     return new TupleTerm(components);

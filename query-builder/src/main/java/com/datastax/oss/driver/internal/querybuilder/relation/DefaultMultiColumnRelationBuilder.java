@@ -16,18 +16,18 @@
 package com.datastax.oss.driver.internal.querybuilder.relation;
 
 import com.datastax.oss.driver.api.core.CqlIdentifier;
+import com.datastax.oss.driver.api.querybuilder.relation.MultiColumnRelationBuilder;
 import com.datastax.oss.driver.api.querybuilder.relation.OngoingWhereClause;
 import com.datastax.oss.driver.api.querybuilder.relation.Relation;
-import com.datastax.oss.driver.api.querybuilder.relation.TupleRelationBuilder;
 import com.datastax.oss.driver.api.querybuilder.term.Term;
 import com.datastax.oss.driver.internal.querybuilder.lhs.TupleLeftOperand;
 import com.google.common.base.Preconditions;
 
-public class DefaultTupleRelationBuilder implements TupleRelationBuilder<Relation> {
+public class DefaultMultiColumnRelationBuilder implements MultiColumnRelationBuilder<Relation> {
 
   private final Iterable<CqlIdentifier> identifiers;
 
-  public DefaultTupleRelationBuilder(Iterable<CqlIdentifier> identifiers) {
+  public DefaultMultiColumnRelationBuilder(Iterable<CqlIdentifier> identifiers) {
     Preconditions.checkNotNull(identifiers);
     Preconditions.checkArgument(
         identifiers.iterator().hasNext(), "Tuple must contain at least one column");
@@ -40,14 +40,14 @@ public class DefaultTupleRelationBuilder implements TupleRelationBuilder<Relatio
   }
 
   public static class Fluent<StatementT extends OngoingWhereClause<StatementT>>
-      implements TupleRelationBuilder<StatementT> {
+      implements MultiColumnRelationBuilder<StatementT> {
 
     private final OngoingWhereClause<StatementT> statement;
-    private final TupleRelationBuilder<Relation> delegate;
+    private final MultiColumnRelationBuilder<Relation> delegate;
 
     public Fluent(OngoingWhereClause<StatementT> statement, Iterable<CqlIdentifier> identifiers) {
       this.statement = statement;
-      this.delegate = new DefaultTupleRelationBuilder(identifiers);
+      this.delegate = new DefaultMultiColumnRelationBuilder(identifiers);
     }
 
     @Override

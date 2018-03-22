@@ -74,7 +74,7 @@ public class SelectFluentRelationTest {
                 .all()
                 .whereColumn("k")
                 .isEqualTo(bindMarker())
-                .whereTuple("c1", "c2", "c3")
+                .whereColumns("c1", "c2", "c3")
                 .in(bindMarker()))
         .hasCql("SELECT * FROM foo WHERE k=? AND (c1,c2,c3) IN ?");
     assertThat(
@@ -82,7 +82,7 @@ public class SelectFluentRelationTest {
                 .all()
                 .whereColumn("k")
                 .isEqualTo(bindMarker())
-                .whereTuple("c1", "c2", "c3")
+                .whereColumns("c1", "c2", "c3")
                 .in(bindMarker(), bindMarker()))
         .hasCql("SELECT * FROM foo WHERE k=? AND (c1,c2,c3) IN (?,?)");
     assertThat(
@@ -90,7 +90,7 @@ public class SelectFluentRelationTest {
                 .all()
                 .whereColumn("k")
                 .isEqualTo(bindMarker())
-                .whereTuple("c1", "c2", "c3")
+                .whereColumns("c1", "c2", "c3")
                 .in(bindMarker(), raw("(4,5,6)")))
         .hasCql("SELECT * FROM foo WHERE k=? AND (c1,c2,c3) IN (?,(4,5,6))");
     assertThat(
@@ -98,7 +98,7 @@ public class SelectFluentRelationTest {
                 .all()
                 .whereColumn("k")
                 .isEqualTo(bindMarker())
-                .whereTuple("c1", "c2", "c3")
+                .whereColumns("c1", "c2", "c3")
                 .in(
                     tuple(bindMarker(), bindMarker(), bindMarker()),
                     tuple(bindMarker(), bindMarker(), bindMarker())))
@@ -109,7 +109,7 @@ public class SelectFluentRelationTest {
                 .all()
                 .whereColumn("k")
                 .isEqualTo(bindMarker())
-                .whereTuple("c1", "c2", "c3")
+                .whereColumns("c1", "c2", "c3")
                 .isEqualTo(bindMarker()))
         .hasCql("SELECT * FROM foo WHERE k=? AND (c1,c2,c3)=?");
     assertThat(
@@ -117,7 +117,7 @@ public class SelectFluentRelationTest {
                 .all()
                 .whereColumn("k")
                 .isEqualTo(bindMarker())
-                .whereTuple("c1", "c2", "c3")
+                .whereColumns("c1", "c2", "c3")
                 .isLessThan(tuple(bindMarker(), bindMarker(), bindMarker())))
         .hasCql("SELECT * FROM foo WHERE k=? AND (c1,c2,c3)<(?,?,?)");
     assertThat(
@@ -125,7 +125,7 @@ public class SelectFluentRelationTest {
                 .all()
                 .whereColumn("k")
                 .isEqualTo(bindMarker())
-                .whereTuple("c1", "c2", "c3")
+                .whereColumns("c1", "c2", "c3")
                 .isGreaterThanOrEqualTo(raw("(1,2,3)")))
         .hasCql("SELECT * FROM foo WHERE k=? AND (c1,c2,c3)>=(1,2,3)");
   }

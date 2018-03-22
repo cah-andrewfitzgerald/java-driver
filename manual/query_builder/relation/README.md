@@ -131,16 +131,16 @@ selectFrom("user")
 
 It supports the six basic arithmetic comparison operators.
 
-### Tuples
+### Multi-column relations
 
-`whereTuple` compares a tuple of columns to tuple terms of the same arity. It supports the six basic
+`whereColumns` compares a set of columns to tuple terms of the same arity. It supports the six basic
 arithmetic comparison operators (using lexicographical order):
 
 ```java
 selectFrom("sensor_data")
     .all()
     .whereColumn("id").isEqualTo(bindMarker())
-    .whereTuple("date", "hour").isGreaterThan(tuple(bindMarker(), bindMarker()));
+    .whereColumns("date", "hour").isGreaterThan(tuple(bindMarker(), bindMarker()));
 // SELECT * FROM sensor_data WHERE id=? AND (date,hour)>(?,?)
 ```
 
@@ -152,21 +152,21 @@ at different levels:
 selectFrom("test")
     .all()
     .whereColumn("k").isEqualTo(literal(1))
-    .whereTuple("c1", "c2").in(bindMarker());
+    .whereColumns("c1", "c2").in(bindMarker());
 // SELECT * FROM test WHERE k=1 AND (c1,c2) IN ?
 
 // Bind each alternative as a value:
 selectFrom("test")
     .all()
     .whereColumn("k").isEqualTo(literal(1))
-    .whereTuple("c1", "c2").in(bindMarker(), bindMarker(), bindMarker());
+    .whereColumns("c1", "c2").in(bindMarker(), bindMarker(), bindMarker());
 // SELECT * FROM test WHERE k=1 AND (c1,c2) IN (?,?,?)
 
 // Bind each element in the alternatives as a value:
 selectFrom("test")
     .all()
     .whereColumn("k").isEqualTo(literal(1))
-    .whereTuple("c1", "c2").in(
+    .whereColumns("c1", "c2").in(
         tuple(bindMarker(), bindMarker()),
         tuple(bindMarker(), bindMarker()),
         tuple(bindMarker(), bindMarker()));

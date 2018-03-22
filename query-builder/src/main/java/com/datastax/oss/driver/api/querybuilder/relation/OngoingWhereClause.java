@@ -22,8 +22,8 @@ import com.datastax.oss.driver.internal.querybuilder.DefaultRaw;
 import com.datastax.oss.driver.internal.querybuilder.relation.CustomIndexRelation;
 import com.datastax.oss.driver.internal.querybuilder.relation.DefaultColumnComponentRelationBuilder;
 import com.datastax.oss.driver.internal.querybuilder.relation.DefaultColumnRelationBuilder;
+import com.datastax.oss.driver.internal.querybuilder.relation.DefaultMultiColumnRelationBuilder;
 import com.datastax.oss.driver.internal.querybuilder.relation.DefaultTokenRelationBuilder;
-import com.datastax.oss.driver.internal.querybuilder.relation.DefaultTupleRelationBuilder;
 import com.google.common.collect.Iterables;
 import java.util.Arrays;
 
@@ -148,44 +148,44 @@ public interface OngoingWhereClause<SelfT extends OngoingWhereClause<SelfT>> {
   }
 
   /**
-   * Adds a relation testing a set of columns, as in {@code WHERE (c1, c2, c3) IN ...}.
+   * Adds a multi-column relation, as in {@code WHERE (c1, c2, c3) IN ...}.
    *
-   * <p>This is the equivalent of creating a relation with {@link Relation#tupleOfIds(Iterable)} and
+   * <p>This is the equivalent of creating a relation with {@link Relation#columnIds(Iterable)} and
    * passing it to {@link #where(Relation)}.
    */
-  default TupleRelationBuilder<SelfT> whereTupleOfIds(Iterable<CqlIdentifier> identifiers) {
-    return new DefaultTupleRelationBuilder.Fluent<>(this, identifiers);
+  default MultiColumnRelationBuilder<SelfT> whereColumnIds(Iterable<CqlIdentifier> identifiers) {
+    return new DefaultMultiColumnRelationBuilder.Fluent<>(this, identifiers);
   }
 
   /**
-   * Var-arg equivalent of {@link #whereTupleOfIds(Iterable)}.
+   * Var-arg equivalent of {@link #whereColumnIds(Iterable)}.
    *
-   * <p>This is the equivalent of creating a relation with {@link Relation#tuple(CqlIdentifier...)}
-   * and passing it to {@link #where(Relation)}.
+   * <p>This is the equivalent of creating a relation with {@link
+   * Relation#columns(CqlIdentifier...)} and passing it to {@link #where(Relation)}.
    */
-  default TupleRelationBuilder<SelfT> whereTuple(CqlIdentifier... identifiers) {
-    return whereTupleOfIds(Arrays.asList(identifiers));
+  default MultiColumnRelationBuilder<SelfT> whereColumns(CqlIdentifier... identifiers) {
+    return whereColumnIds(Arrays.asList(identifiers));
   }
 
   /**
-   * Equivalent of {@link #whereTupleOfIds(Iterable)} with raw strings; the names are converted with
+   * Equivalent of {@link #whereColumnIds(Iterable)} with raw strings; the names are converted with
    * {@link CqlIdentifier#fromCql(String)}.
    *
-   * <p>This is the equivalent of creating a relation with {@link Relation#tuple(Iterable)} and
+   * <p>This is the equivalent of creating a relation with {@link Relation#columns(Iterable)} and
    * passing it to {@link #where(Relation)}.
    */
-  default TupleRelationBuilder<SelfT> whereTuple(Iterable<String> names) {
-    return whereTupleOfIds(Iterables.transform(names, CqlIdentifier::fromCql));
+  default MultiColumnRelationBuilder<SelfT> whereColumns(Iterable<String> names) {
+    return whereColumnIds(Iterables.transform(names, CqlIdentifier::fromCql));
   }
 
   /**
-   * Var-arg equivalent of {@link #whereTuple(Iterable)}.
+   * Var-arg equivalent of {@link #whereColumns(Iterable)}.
    *
-   * <p>This is the equivalent of creating a relation with {@link Relation#tuple(String...)} and
+   * <p>This is the equivalent of creating a relation with {@link Relation#columns(String...)} and
    * passing it to {@link #where(Relation)}.
    */
-  default TupleRelationBuilder<SelfT> whereTuple(String... names) {
-    return whereTuple(Arrays.asList(names));
+  default MultiColumnRelationBuilder<SelfT> whereColumns(String... names) {
+    return whereColumns(Arrays.asList(names));
   }
 
   /**
