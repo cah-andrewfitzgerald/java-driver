@@ -73,16 +73,16 @@ import java.util.Arrays;
 import java.util.Map;
 
 /** A Domain-Specific Language to build CQL queries using Java code. */
-public interface QueryBuilderDsl {
+public class QueryBuilderDsl {
 
   /** The identifier of the built-in {@code writetime} function. */
-  CqlIdentifier WRITETIME = CqlIdentifier.fromCql("writetime");
+  public static CqlIdentifier WRITETIME = CqlIdentifier.fromCql("writetime");
 
   /** The identifier of the built-in {@code ttl} function. */
-  CqlIdentifier TTL = CqlIdentifier.fromCql("ttl");
+  public static CqlIdentifier TTL = CqlIdentifier.fromCql("ttl");
 
   /** Starts a SELECT query for a qualified table. */
-  static SelectFrom selectFrom(CqlIdentifier keyspace, CqlIdentifier table) {
+  public static SelectFrom selectFrom(CqlIdentifier keyspace, CqlIdentifier table) {
     return new DefaultSelect(keyspace, table);
   }
 
@@ -90,22 +90,22 @@ public interface QueryBuilderDsl {
    * Shortcut for {@link #selectFrom(CqlIdentifier, CqlIdentifier)
    * selectFrom(CqlIdentifier.fromCql(keyspace), CqlIdentifier.fromCql(table))}
    */
-  static SelectFrom selectFrom(String keyspace, String table) {
+  public static SelectFrom selectFrom(String keyspace, String table) {
     return selectFrom(CqlIdentifier.fromCql(keyspace), CqlIdentifier.fromCql(table));
   }
 
   /** Starts a SELECT query for an unqualified table. */
-  static SelectFrom selectFrom(CqlIdentifier table) {
+  public static SelectFrom selectFrom(CqlIdentifier table) {
     return selectFrom(null, table);
   }
 
   /** Shortcut for {@link #selectFrom(CqlIdentifier) selectFrom(CqlIdentifier.fromCql(table))} */
-  static SelectFrom selectFrom(String table) {
+  public static SelectFrom selectFrom(String table) {
     return selectFrom(CqlIdentifier.fromCql(table));
   }
 
   /** Starts a DELETE query for a qualified table. */
-  static DeleteSelection deleteFrom(CqlIdentifier keyspace, CqlIdentifier table) {
+  public static DeleteSelection deleteFrom(CqlIdentifier keyspace, CqlIdentifier table) {
     return new DefaultDelete(keyspace, table);
   }
 
@@ -113,32 +113,32 @@ public interface QueryBuilderDsl {
    * Shortcut for {@link #deleteFrom(CqlIdentifier, CqlIdentifier)
    * deleteFrom(CqlIdentifier.fromCql(keyspace), CqlIdentifier.fromCql(table))}
    */
-  static DeleteSelection deleteFrom(String keyspace, String table) {
+  public static DeleteSelection deleteFrom(String keyspace, String table) {
     return deleteFrom(CqlIdentifier.fromCql(keyspace), CqlIdentifier.fromCql(table));
   }
 
   /** Starts a DELETE query for an unqualified table. */
-  static DeleteSelection deleteFrom(CqlIdentifier table) {
+  public static DeleteSelection deleteFrom(CqlIdentifier table) {
     return deleteFrom(null, table);
   }
 
   /** Shortcut for {@link #deleteFrom(CqlIdentifier) deleteFrom(CqlIdentifier.fromCql(table))} */
-  static DeleteSelection deleteFrom(String table) {
+  public static DeleteSelection deleteFrom(String table) {
     return deleteFrom(CqlIdentifier.fromCql(table));
   }
 
   /** Selects all columns, as in {@code SELECT *}. */
-  static Selector getAll() {
+  public static Selector getAll() {
     return AllSelector.INSTANCE;
   }
 
   /** Selects the count of all returned rows, as in {@code SELECT count(*)}. */
-  static Selector getCountAll() {
+  public static Selector getCountAll() {
     return new CountAllSelector();
   }
 
   /** Selects a particular column by its CQL identifier. */
-  static Selector getColumn(CqlIdentifier columnId) {
+  public static Selector getColumn(CqlIdentifier columnId) {
     return new ColumnSelector(columnId);
   }
 
@@ -146,7 +146,7 @@ public interface QueryBuilderDsl {
    * Shortcut for {@link QueryBuilderDsl#getColumn(CqlIdentifier)
    * getColumn(CqlIdentifier.fromCql(columnName))}
    */
-  static Selector getColumn(String columnName) {
+  public static Selector getColumn(String columnName) {
     return getColumn(CqlIdentifier.fromCql(columnName));
   }
 
@@ -155,7 +155,7 @@ public interface QueryBuilderDsl {
    *
    * <p>This is available in Cassandra 4 and above.
    */
-  static Selector getSum(Selector left, Selector right) {
+  public static Selector getSum(Selector left, Selector right) {
     return new BinaryArithmeticSelector(ArithmeticOperator.SUM, left, right);
   }
 
@@ -164,7 +164,7 @@ public interface QueryBuilderDsl {
    *
    * <p>This is available in Cassandra 4 and above.
    */
-  static Selector getDifference(Selector left, Selector right) {
+  public static Selector getDifference(Selector left, Selector right) {
     return new BinaryArithmeticSelector(ArithmeticOperator.DIFFERENCE, left, right);
   }
 
@@ -176,7 +176,7 @@ public interface QueryBuilderDsl {
    * <p>The arguments will be parenthesized if they are instances of {@link #getSum} or {@link
    * #getDifference}. If they are raw selectors, you might have to parenthesize them yourself.
    */
-  static Selector getProduct(Selector left, Selector right) {
+  public static Selector getProduct(Selector left, Selector right) {
     return new BinaryArithmeticSelector(ArithmeticOperator.PRODUCT, left, right);
   }
 
@@ -188,7 +188,7 @@ public interface QueryBuilderDsl {
    * <p>The arguments will be parenthesized if they are instances of {@link #getSum} or {@link
    * #getDifference}. If they are raw selectors, you might have to parenthesize them yourself.
    */
-  static Selector getQuotient(Selector left, Selector right) {
+  public static Selector getQuotient(Selector left, Selector right) {
     return new BinaryArithmeticSelector(ArithmeticOperator.QUOTIENT, left, right);
   }
 
@@ -200,7 +200,7 @@ public interface QueryBuilderDsl {
    * <p>The arguments will be parenthesized if they are instances of {@link #getSum} or {@link
    * #getDifference}. If they are raw selectors, you might have to parenthesize them yourself.
    */
-  static Selector getRemainder(Selector left, Selector right) {
+  public static Selector getRemainder(Selector left, Selector right) {
     return new BinaryArithmeticSelector(ArithmeticOperator.REMAINDER, left, right);
   }
 
@@ -212,12 +212,12 @@ public interface QueryBuilderDsl {
    * <p>The argument will be parenthesized if it is an instance of {@link #getSum} or {@link
    * #getDifference}. If it is a raw selector, you might have to parenthesize it yourself.
    */
-  static Selector getOpposite(Selector argument) {
+  public static Selector getOpposite(Selector argument) {
     return new OppositeSelector(argument);
   }
 
   /** Selects a field inside of a UDT column, as in {@code SELECT user.name}. */
-  static Selector getField(Selector udt, CqlIdentifier fieldId) {
+  public static Selector getField(Selector udt, CqlIdentifier fieldId) {
     return new FieldSelector(udt, fieldId);
   }
 
@@ -225,7 +225,7 @@ public interface QueryBuilderDsl {
    * Shortcut for {@link #getField(Selector, CqlIdentifier) getUdtField(udt,
    * CqlIdentifier.fromCql(fieldName))}.
    */
-  static Selector getField(Selector udt, String fieldName) {
+  public static Selector getField(Selector udt, String fieldName) {
     return getField(udt, CqlIdentifier.fromCql(fieldName));
   }
 
@@ -233,7 +233,7 @@ public interface QueryBuilderDsl {
    * Shortcut to select a UDT field when the UDT is a simple column (as opposed to a more complex
    * selection, like a nested UDT).
    */
-  static Selector getField(CqlIdentifier udtColumnId, CqlIdentifier fieldId) {
+  public static Selector getField(CqlIdentifier udtColumnId, CqlIdentifier fieldId) {
     return getField(getColumn(udtColumnId), fieldId);
   }
 
@@ -241,7 +241,7 @@ public interface QueryBuilderDsl {
    * Shortcut for {@link #getField(CqlIdentifier, CqlIdentifier)
    * getField(CqlIdentifier.fromCql(udtColumnName), CqlIdentifier.fromCql(fieldName))}.
    */
-  static Selector getField(String udtColumnName, String fieldName) {
+  public static Selector getField(String udtColumnName, String fieldName) {
     return getField(CqlIdentifier.fromCql(udtColumnName), CqlIdentifier.fromCql(fieldName));
   }
 
@@ -250,7 +250,7 @@ public interface QueryBuilderDsl {
    *
    * <p>As of Cassandra 4, this is only allowed for map and set columns.
    */
-  static Selector getElement(Selector collection, Term index) {
+  public static Selector getElement(Selector collection, Term index) {
     return new ElementSelector(collection, index);
   }
 
@@ -260,7 +260,7 @@ public interface QueryBuilderDsl {
    * <p>In other words, this is the equivalent of {@link #getElement(Selector, Term)
    * getElement(getColumn(collectionId), index)}.
    */
-  static Selector getElement(CqlIdentifier collectionId, Term index) {
+  public static Selector getElement(CqlIdentifier collectionId, Term index) {
     return getElement(getColumn(collectionId), index);
   }
 
@@ -268,7 +268,7 @@ public interface QueryBuilderDsl {
    * Shortcut for {@link #getElement(CqlIdentifier, Term)
    * getElement(CqlIdentifier.fromCql(collectionName), index)}.
    */
-  static Selector getElement(String collectionName, Term index) {
+  public static Selector getElement(String collectionName, Term index) {
     return getElement(CqlIdentifier.fromCql(collectionName), index);
   }
 
@@ -284,7 +284,7 @@ public interface QueryBuilderDsl {
    * @param right the right bound (inclusive). Can be {@code null} to indicate that the slice is
    *     only left-bound.
    */
-  static Selector getRange(Selector collection, Term left, Term right) {
+  public static Selector getRange(Selector collection, Term left, Term right) {
     return new RangeSelector(collection, left, right);
   }
 
@@ -294,7 +294,7 @@ public interface QueryBuilderDsl {
    * <p>In other words, this is the equivalent of {@link #getRange(Selector, Term, Term)}
    * getRange(getColumn(collectionId), left, right)}.
    */
-  static Selector getRange(CqlIdentifier collectionId, Term left, Term right) {
+  public static Selector getRange(CqlIdentifier collectionId, Term left, Term right) {
     return getRange(getColumn(collectionId), left, right);
   }
 
@@ -302,7 +302,7 @@ public interface QueryBuilderDsl {
    * Shortcut for {@link #getRange(CqlIdentifier, Term, Term)
    * getRange(CqlIdentifier.fromCql(collectionName), left, right)}.
    */
-  static Selector getRange(String collectionName, Term left, Term right) {
+  public static Selector getRange(String collectionName, Term left, Term right) {
     return getRange(CqlIdentifier.fromCql(collectionName), left, right);
   }
 
@@ -315,12 +315,12 @@ public interface QueryBuilderDsl {
    *
    * @throws IllegalArgumentException if any of the selectors is aliased.
    */
-  static Selector getListOf(Iterable<Selector> elementSelectors) {
+  public static Selector getListOf(Iterable<Selector> elementSelectors) {
     return new ListSelector(elementSelectors);
   }
 
   /** Var-arg equivalent of {@link #getListOf(Iterable)}. */
-  static Selector getListOf(Selector... elementSelectors) {
+  public static Selector getListOf(Selector... elementSelectors) {
     return getListOf(Arrays.asList(elementSelectors));
   }
 
@@ -333,12 +333,12 @@ public interface QueryBuilderDsl {
    *
    * @throws IllegalArgumentException if any of the selectors is aliased.
    */
-  static Selector getSetOf(Iterable<Selector> elementSelectors) {
+  public static Selector getSetOf(Iterable<Selector> elementSelectors) {
     return new SetSelector(elementSelectors);
   }
 
   /** Var-arg equivalent of {@link #getSetOf(Iterable)}. */
-  static Selector getSetOf(Selector... elementSelectors) {
+  public static Selector getSetOf(Selector... elementSelectors) {
     return getSetOf(Arrays.asList(elementSelectors));
   }
 
@@ -349,12 +349,12 @@ public interface QueryBuilderDsl {
    *
    * @throws IllegalArgumentException if any of the selectors is aliased.
    */
-  static Selector getTupleOf(Iterable<Selector> elementSelectors) {
+  public static Selector getTupleOf(Iterable<Selector> elementSelectors) {
     return new TupleSelector(elementSelectors);
   }
 
   /** Var-arg equivalent of {@link #getTupleOf(Iterable)}. */
-  static Selector getTupleOf(Selector... elementSelectors) {
+  public static Selector getTupleOf(Selector... elementSelectors) {
     return getTupleOf(Arrays.asList(elementSelectors));
   }
 
@@ -378,7 +378,7 @@ public interface QueryBuilderDsl {
    *
    * @throws IllegalArgumentException if any of the selectors is aliased.
    */
-  static Selector getMapOf(Map<Selector, Selector> elementSelectors) {
+  public static Selector getMapOf(Map<Selector, Selector> elementSelectors) {
     return getMapOf(elementSelectors, null, null);
   }
 
@@ -386,11 +386,11 @@ public interface QueryBuilderDsl {
    * Selects a group of elements as a map and force the resulting map type, as in {@code SELECT
    * (map<int,text>){a:b,c:d}}.
    *
-   * <p>Use the constants and static methods in {@link DataTypes} to create the data types.
+   * <p>Use the constants and public static methods in {@link DataTypes} to create the data types.
    *
    * @see #getMapOf(Map)
    */
-  static Selector getMapOf(
+  public static Selector getMapOf(
       Map<Selector, Selector> elementSelectors, DataType keyType, DataType valueType) {
     return new MapSelector(elementSelectors, keyType, valueType);
   }
@@ -398,9 +398,9 @@ public interface QueryBuilderDsl {
   /**
    * Provides a type hint for a selector, as in {@code SELECT (double)1/3}.
    *
-   * <p>Use the constants and static methods in {@link DataTypes} to create the data type.
+   * <p>Use the constants and public static methods in {@link DataTypes} to create the data type.
    */
-  static Selector getTypeHint(Selector selector, DataType targetType) {
+  public static Selector getTypeHint(Selector selector, DataType targetType) {
     return new TypeHintSelector(selector, targetType);
   }
 
@@ -411,12 +411,12 @@ public interface QueryBuilderDsl {
    *
    * @throws IllegalArgumentException if any of the selectors is aliased.
    */
-  static Selector getFunction(CqlIdentifier functionId, Iterable<Selector> arguments) {
+  public static Selector getFunction(CqlIdentifier functionId, Iterable<Selector> arguments) {
     return new FunctionSelector(null, functionId, arguments);
   }
 
   /** Var-arg equivalent of {@link #getFunction(CqlIdentifier, Iterable)}. */
-  static Selector getFunction(CqlIdentifier functionId, Selector... arguments) {
+  public static Selector getFunction(CqlIdentifier functionId, Selector... arguments) {
     return getFunction(functionId, Arrays.asList(arguments));
   }
 
@@ -424,12 +424,12 @@ public interface QueryBuilderDsl {
    * Shortcut for {@link #getFunction(CqlIdentifier, Iterable)
    * getFunction(CqlIdentifier.fromCql(functionName), arguments)}.
    */
-  static Selector getFunction(String functionName, Iterable<Selector> arguments) {
+  public static Selector getFunction(String functionName, Iterable<Selector> arguments) {
     return getFunction(CqlIdentifier.fromCql(functionName), arguments);
   }
 
   /** Var-arg equivalent of {@link #getFunction(String, Iterable)}. */
-  static Selector getFunction(String functionName, Selector... arguments) {
+  public static Selector getFunction(String functionName, Selector... arguments) {
     return getFunction(functionName, Arrays.asList(arguments));
   }
 
@@ -440,13 +440,13 @@ public interface QueryBuilderDsl {
    *
    * @throws IllegalArgumentException if any of the selectors is aliased.
    */
-  static Selector getFunction(
+  public static Selector getFunction(
       CqlIdentifier keyspaceId, CqlIdentifier functionId, Iterable<Selector> arguments) {
     return new FunctionSelector(keyspaceId, functionId, arguments);
   }
 
   /** Var-arg equivalent of {@link #getFunction(CqlIdentifier, CqlIdentifier, Iterable)}. */
-  static Selector getFunction(
+  public static Selector getFunction(
       CqlIdentifier keyspaceId, CqlIdentifier functionId, Selector... arguments) {
     return getFunction(keyspaceId, functionId, Arrays.asList(arguments));
   }
@@ -455,14 +455,15 @@ public interface QueryBuilderDsl {
    * Shortcut for {@link #getFunction(CqlIdentifier, CqlIdentifier, Iterable)}
    * getFunction(CqlIdentifier.fromCql(functionName), arguments)}.
    */
-  static Selector getFunction(
+  public static Selector getFunction(
       String keyspaceName, String functionName, Iterable<Selector> arguments) {
     return getFunction(
         CqlIdentifier.fromCql(keyspaceName), CqlIdentifier.fromCql(functionName), arguments);
   }
 
   /** Var-arg equivalent of {@link #getFunction(String, String, Iterable)}. */
-  static Selector getFunction(String keyspaceName, String functionName, Selector... arguments) {
+  public static Selector getFunction(
+      String keyspaceName, String functionName, Selector... arguments) {
     return getFunction(keyspaceName, functionName, Arrays.asList(arguments));
   }
 
@@ -470,7 +471,7 @@ public interface QueryBuilderDsl {
    * Shortcut to select the result of the built-in {@code writetime} function, as in {@code SELECT
    * writetime(c)}.
    */
-  static Selector getWriteTime(CqlIdentifier columnId) {
+  public static Selector getWriteTime(CqlIdentifier columnId) {
     return getFunction(WRITETIME, getColumn(columnId));
   }
 
@@ -478,7 +479,7 @@ public interface QueryBuilderDsl {
    * Shortcut for {@link #getWriteTime(CqlIdentifier)
    * getWriteTime(CqlIdentifier.fromCql(columnName))}.
    */
-  static Selector getWriteTime(String columnName) {
+  public static Selector getWriteTime(String columnName) {
     return getWriteTime(CqlIdentifier.fromCql(columnName));
   }
 
@@ -486,23 +487,23 @@ public interface QueryBuilderDsl {
    * Shortcut to select the result of the built-in {@code ttl} function, as in {@code SELECT
    * ttl(c)}.
    */
-  static Selector getTtl(CqlIdentifier columnId) {
+  public static Selector getTtl(CqlIdentifier columnId) {
     return getFunction(TTL, getColumn(columnId));
   }
 
   /** Shortcut for {@link #getTtl(CqlIdentifier) getTtl(CqlIdentifier.fromCql(columnName))}. */
-  static Selector getTtl(String columnName) {
+  public static Selector getTtl(String columnName) {
     return getTtl(CqlIdentifier.fromCql(columnName));
   }
 
   /**
    * Casts a selector to a type, as in {@code SELECT CAST(a AS double)}.
    *
-   * <p>Use the constants and static methods in {@link DataTypes} to create the data type.
+   * <p>Use the constants and public static methods in {@link DataTypes} to create the data type.
    *
    * @throws IllegalArgumentException if the selector is aliased.
    */
-  static Selector getCast(Selector selector, DataType targetType) {
+  public static Selector getCast(Selector selector, DataType targetType) {
     return new CastSelector(selector, targetType);
   }
 
@@ -515,7 +516,7 @@ public interface QueryBuilderDsl {
    * selectFrom("foo").getAll().where(isColumn("k").eq(bindMarker()));
    * }</pre>
    */
-  static ColumnRelationBuilder<Relation> isColumn(CqlIdentifier id) {
+  public static ColumnRelationBuilder<Relation> isColumn(CqlIdentifier id) {
     return new DefaultColumnRelationBuilder(id);
   }
 
@@ -523,12 +524,13 @@ public interface QueryBuilderDsl {
    * Shortcut for {@link QueryBuilderDsl#isColumn(CqlIdentifier)
    * isColumn(CqlIdentifier.fromCql(name))}
    */
-  static ColumnRelationBuilder<Relation> isColumn(String name) {
+  public static ColumnRelationBuilder<Relation> isColumn(String name) {
     return isColumn(CqlIdentifier.fromCql(name));
   }
 
   /** Builds a relation testing a value in a map (Cassandra 4 and above). */
-  static ColumnComponentRelationBuilder<Relation> isMapValue(CqlIdentifier columnId, Term index) {
+  public static ColumnComponentRelationBuilder<Relation> isMapValue(
+      CqlIdentifier columnId, Term index) {
     // The concept could easily be extended to list elements and tuple components, so use a generic
     // name internally, we'll add other shortcuts if necessary.
     return new DefaultColumnComponentRelationBuilder(columnId, index);
@@ -538,17 +540,17 @@ public interface QueryBuilderDsl {
    * Shortcut for {@link QueryBuilderDsl#isMapValue(CqlIdentifier, Term)
    * isMapValue(CqlIdentifier.fromCql(columnName), index)}
    */
-  static ColumnComponentRelationBuilder<Relation> isMapValue(String columnName, Term index) {
+  public static ColumnComponentRelationBuilder<Relation> isMapValue(String columnName, Term index) {
     return isMapValue(CqlIdentifier.fromCql(columnName), index);
   }
 
   /** Builds a relation testing a token generated from a set of columns. */
-  static TokenRelationBuilder<Relation> isTokenFromIds(Iterable<CqlIdentifier> identifiers) {
+  public static TokenRelationBuilder<Relation> isTokenFromIds(Iterable<CqlIdentifier> identifiers) {
     return new DefaultTokenRelationBuilder(identifiers);
   }
 
   /** Var-arg equivalent of {@link QueryBuilderDsl#isTokenFromIds(Iterable)}. */
-  static TokenRelationBuilder<Relation> isToken(CqlIdentifier... identifiers) {
+  public static TokenRelationBuilder<Relation> isToken(CqlIdentifier... identifiers) {
     return isTokenFromIds(Arrays.asList(identifiers));
   }
 
@@ -556,22 +558,22 @@ public interface QueryBuilderDsl {
    * Equivalent of {@link QueryBuilderDsl#isTokenFromIds(Iterable)} with raw strings; the names are
    * converted with {@link CqlIdentifier#fromCql(String)}.
    */
-  static TokenRelationBuilder<Relation> isToken(Iterable<String> names) {
+  public static TokenRelationBuilder<Relation> isToken(Iterable<String> names) {
     return isTokenFromIds(Iterables.transform(names, CqlIdentifier::fromCql));
   }
 
   /** Var-arg equivalent of {@link #isToken(Iterable)}. */
-  static TokenRelationBuilder<Relation> isToken(String... names) {
+  public static TokenRelationBuilder<Relation> isToken(String... names) {
     return isToken(Arrays.asList(names));
   }
 
   /** Builds a relation testing a set of columns, as in {@code WHERE (c1, c2, c3) IN ...}. */
-  static TupleRelationBuilder<Relation> isTupleOfIds(Iterable<CqlIdentifier> identifiers) {
+  public static TupleRelationBuilder<Relation> isTupleOfIds(Iterable<CqlIdentifier> identifiers) {
     return new DefaultTupleRelationBuilder(identifiers);
   }
 
   /** Var-arg equivalent of {@link #isTupleOfIds(Iterable)}. */
-  static TupleRelationBuilder<Relation> isTuple(CqlIdentifier... identifiers) {
+  public static TupleRelationBuilder<Relation> isTuple(CqlIdentifier... identifiers) {
     return isTupleOfIds(Arrays.asList(identifiers));
   }
 
@@ -579,17 +581,17 @@ public interface QueryBuilderDsl {
    * Equivalent of {@link #isTupleOfIds(Iterable)} with raw strings; the names are converted with
    * {@link CqlIdentifier#fromCql(String)}.
    */
-  static TupleRelationBuilder<Relation> isTuple(Iterable<String> names) {
+  public static TupleRelationBuilder<Relation> isTuple(Iterable<String> names) {
     return isTupleOfIds(Iterables.transform(names, CqlIdentifier::fromCql));
   }
 
   /** Var-arg equivalent of {@link #isTuple(Iterable)}. */
-  static TupleRelationBuilder<Relation> isTuple(String... names) {
+  public static TupleRelationBuilder<Relation> isTuple(String... names) {
     return isTuple(Arrays.asList(names));
   }
 
   /** Builds a relation on a custom index. */
-  static Relation isCustomIndex(CqlIdentifier indexId, Term expression) {
+  public static Relation isCustomIndex(CqlIdentifier indexId, Term expression) {
     return new CustomIndexRelation(indexId, expression);
   }
 
@@ -597,17 +599,17 @@ public interface QueryBuilderDsl {
    * Shortcut for {@link #isCustomIndex(CqlIdentifier, Term)
    * isCustomIndex(CqlIdentifier.fromCql(indexName), expression)}
    */
-  static Relation isCustomIndex(String indexName, Term expression) {
+  public static Relation isCustomIndex(String indexName, Term expression) {
     return isCustomIndex(CqlIdentifier.fromCql(indexName), expression);
   }
 
   /** Builds a condition on a column for a conditional statement, as in {@code DELETE... IF k=1}. */
-  static ConditionBuilder<Condition> ifColumn(CqlIdentifier columnId) {
+  public static ConditionBuilder<Condition> ifColumn(CqlIdentifier columnId) {
     return new DefaultConditionBuilder(new ColumnLeftHandSide(columnId));
   }
 
   /** Shortcut for {@link #ifColumn(CqlIdentifier) ifColumn(CqlIdentifier.fromCql(columnName))}. */
-  static ConditionBuilder<Condition> ifColumn(String columnName) {
+  public static ConditionBuilder<Condition> ifColumn(String columnName) {
     return ifColumn(CqlIdentifier.fromCql(columnName));
   }
 
@@ -615,7 +617,7 @@ public interface QueryBuilderDsl {
    * Builds a condition on a field in a UDT column for a conditional statement, as in {@code
    * DELETE... IF address.street='test'}.
    */
-  static ConditionBuilder<Condition> ifField(CqlIdentifier columnId, CqlIdentifier fieldId) {
+  public static ConditionBuilder<Condition> ifField(CqlIdentifier columnId, CqlIdentifier fieldId) {
     return new DefaultConditionBuilder(new FieldLeftHandSide(columnId, fieldId));
   }
 
@@ -623,7 +625,7 @@ public interface QueryBuilderDsl {
    * Shortcut for {@link #ifField(CqlIdentifier, CqlIdentifier)
    * ifField(CqlIdentifier.fromCql(columnName), CqlIdentifier.fromCql(fieldName))}.
    */
-  static ConditionBuilder<Condition> ifField(String columnName, String fieldName) {
+  public static ConditionBuilder<Condition> ifField(String columnName, String fieldName) {
     return ifField(CqlIdentifier.fromCql(columnName), CqlIdentifier.fromCql(fieldName));
   }
 
@@ -631,7 +633,7 @@ public interface QueryBuilderDsl {
    * Builds a condition on an element in a collection column for a conditional statement, as in
    * {@code DELETE... IF m[0]=1}.
    */
-  static ConditionBuilder<Condition> ifElement(CqlIdentifier columnId, Term index) {
+  public static ConditionBuilder<Condition> ifElement(CqlIdentifier columnId, Term index) {
     return new DefaultConditionBuilder(new ColumnComponentLeftHandSide(columnId, index));
   }
 
@@ -639,7 +641,7 @@ public interface QueryBuilderDsl {
    * Shortcut for {@link #ifElement(CqlIdentifier, Term)
    * ifElement(CqlIdentifier.fromCql(columnName), index)}.
    */
-  static ConditionBuilder<Condition> ifElement(String columnName, Term index) {
+  public static ConditionBuilder<Condition> ifElement(String columnName, Term index) {
     return ifElement(CqlIdentifier.fromCql(columnName), index);
   }
 
@@ -650,52 +652,52 @@ public interface QueryBuilderDsl {
    * <p>For example, this can be used for the right-hand side of {@link
    * QueryBuilderDsl#isTuple(String...)}.
    */
-  static Term tuple(Iterable<? extends Term> components) {
+  public static Term tuple(Iterable<? extends Term> components) {
     return new TupleTerm(components);
   }
 
   /** Var-arg equivalent of {@link #tuple(Iterable)}. */
-  static Term tuple(Term... components) {
+  public static Term tuple(Term... components) {
     return tuple(Arrays.asList(components));
   }
 
   /** The sum of two terms, as in {@code WHERE k = left + right}. */
-  static Term sum(Term left, Term right) {
+  public static Term sum(Term left, Term right) {
     return new BinaryArithmeticTerm(ArithmeticOperator.SUM, left, right);
   }
 
   /** The difference of two terms, as in {@code WHERE k = left - right}. */
-  static Term difference(Term left, Term right) {
+  public static Term difference(Term left, Term right) {
     return new BinaryArithmeticTerm(ArithmeticOperator.DIFFERENCE, left, right);
   }
 
   /** The product of two terms, as in {@code WHERE k = left * right}. */
-  static Term product(Term left, Term right) {
+  public static Term product(Term left, Term right) {
     return new BinaryArithmeticTerm(ArithmeticOperator.PRODUCT, left, right);
   }
 
   /** The quotient of two terms, as in {@code WHERE k = left / right}. */
-  static Term quotient(Term left, Term right) {
+  public static Term quotient(Term left, Term right) {
     return new BinaryArithmeticTerm(ArithmeticOperator.QUOTIENT, left, right);
   }
 
   /** The remainder of two terms, as in {@code WHERE k = left % right}. */
-  static Term remainder(Term left, Term right) {
+  public static Term remainder(Term left, Term right) {
     return new BinaryArithmeticTerm(ArithmeticOperator.REMAINDER, left, right);
   }
 
   /** The opposite of a term, as in {@code WHERE k = -argument}. */
-  static Term opposite(Term argument) {
+  public static Term opposite(Term argument) {
     return new OppositeTerm(argument);
   }
 
   /** A function call as a term, as in {@code WHERE = f(arguments)}. */
-  static Term function(CqlIdentifier functionId, Iterable<Term> arguments) {
+  public static Term function(CqlIdentifier functionId, Iterable<Term> arguments) {
     return function(null, functionId, arguments);
   }
 
   /** Var-arg equivalent of {@link #function(CqlIdentifier, Iterable)}. */
-  static Term function(CqlIdentifier functionId, Term... arguments) {
+  public static Term function(CqlIdentifier functionId, Term... arguments) {
     return function(functionId, Arrays.asList(arguments));
   }
 
@@ -703,7 +705,7 @@ public interface QueryBuilderDsl {
    * Shortcut for {@link #function(CqlIdentifier, Iterable)
    * function(CqlIdentifier.fromCql(functionName), arguments)}.
    */
-  static Term function(String functionName, Iterable<Term> arguments) {
+  public static Term function(String functionName, Iterable<Term> arguments) {
     return function(CqlIdentifier.fromCql(functionName), arguments);
   }
 
@@ -711,18 +713,19 @@ public interface QueryBuilderDsl {
    * Shortcut for {@link #function(CqlIdentifier, Term...)
    * function(CqlIdentifier.fromCql(functionName), arguments)}.
    */
-  static Term function(String functionName, Term... arguments) {
+  public static Term function(String functionName, Term... arguments) {
     return function(CqlIdentifier.fromCql(functionName), arguments);
   }
 
   /** A function call as a term, as in {@code WHERE = ks.f(arguments)}. */
-  static Term function(
+  public static Term function(
       CqlIdentifier keyspaceId, CqlIdentifier functionId, Iterable<Term> arguments) {
     return new FunctionTerm(keyspaceId, functionId, arguments);
   }
 
   /** Var-arg equivalent of {@link #function(CqlIdentifier, CqlIdentifier, Iterable)}. */
-  static Term function(CqlIdentifier keyspaceId, CqlIdentifier functionId, Term... arguments) {
+  public static Term function(
+      CqlIdentifier keyspaceId, CqlIdentifier functionId, Term... arguments) {
     return function(keyspaceId, functionId, Arrays.asList(arguments));
   }
 
@@ -730,7 +733,7 @@ public interface QueryBuilderDsl {
    * Shortcut for {@link #function(CqlIdentifier, CqlIdentifier, Iterable)
    * function(CqlIdentifier.fromCql(keyspaceName), CqlIdentifier.fromCql(functionName), arguments)}.
    */
-  static Term function(String keyspaceName, String functionName, Iterable<Term> arguments) {
+  public static Term function(String keyspaceName, String functionName, Iterable<Term> arguments) {
     return function(
         CqlIdentifier.fromCql(keyspaceName), CqlIdentifier.fromCql(functionName), arguments);
   }
@@ -739,7 +742,7 @@ public interface QueryBuilderDsl {
    * Shortcut for {@link #function(CqlIdentifier, CqlIdentifier, Term...)
    * function(CqlIdentifier.fromCql(keyspaceName), CqlIdentifier.fromCql(functionName), arguments)}.
    */
-  static Term function(String keyspaceName, String functionName, Term... arguments) {
+  public static Term function(String keyspaceName, String functionName, Term... arguments) {
     return function(
         CqlIdentifier.fromCql(keyspaceName), CqlIdentifier.fromCql(functionName), arguments);
   }
@@ -747,9 +750,9 @@ public interface QueryBuilderDsl {
   /**
    * Provides a type hint for an expression, as in {@code WHERE k = (double)1/3}.
    *
-   * <p>Use the constants and static methods in {@link DataTypes} to create the data type.
+   * <p>Use the constants and public static methods in {@link DataTypes} to create the data type.
    */
-  static Term typeHint(Term term, DataType targetType) {
+  public static Term typeHint(Term term, DataType targetType) {
     return new TypeHintTerm(term, targetType);
   }
 
@@ -768,7 +771,7 @@ public interface QueryBuilderDsl {
    * @throws CodecNotFoundException if there is no default CQL mapping for the Java type of {@code
    *     value}.
    */
-  static Literal literal(Object value) {
+  public static Literal literal(Object value) {
     return literal(value, CodecRegistry.DEFAULT);
   }
 
@@ -783,7 +786,7 @@ public interface QueryBuilderDsl {
    * @throws CodecNotFoundException if {@code codecRegistry} does not contain any codec that can
    *     handle {@code value}.
    */
-  static Literal literal(Object value, CodecRegistry codecRegistry) {
+  public static Literal literal(Object value, CodecRegistry codecRegistry) {
     return literal(value, (value == null) ? null : codecRegistry.codecFor(value));
   }
 
@@ -793,7 +796,7 @@ public interface QueryBuilderDsl {
    * <p>This is an alternative to {@link #literal(Object)} for custom type mappings. The value will
    * be turned into a string with {@link TypeCodec#format(Object)}, and inlined in the query.
    */
-  static <T> Literal literal(T value, TypeCodec<T> codec) {
+  public static <T> Literal literal(T value, TypeCodec<T> codec) {
     return new DefaultLiteral<>(value, codec);
   }
 
@@ -805,22 +808,22 @@ public interface QueryBuilderDsl {
    * fail at execution time; on the other hand, it can be used as a workaround to handle new CQL
    * features that are not yet covered by the query builder.
    */
-  static Raw raw(String raw) {
+  public static Raw raw(String raw) {
     return new DefaultRaw(raw);
   }
 
   /** Creates an anonymous bind marker, which appears as {@code ?} in the generated CQL. */
-  static BindMarker bindMarker() {
+  public static BindMarker bindMarker() {
     return bindMarker((CqlIdentifier) null);
   }
 
   /** Creates a named bind marker, which appears as {@code :id} in the generated CQL. */
-  static BindMarker bindMarker(CqlIdentifier id) {
+  public static BindMarker bindMarker(CqlIdentifier id) {
     return new DefaultBindMarker(id);
   }
 
   /** Shortcut for {@link #bindMarker(CqlIdentifier) bindMarker(CqlIdentifier.fromCql(name))} */
-  static BindMarker bindMarker(String name) {
+  public static BindMarker bindMarker(String name) {
     return bindMarker(CqlIdentifier.fromCql(name));
   }
 }
