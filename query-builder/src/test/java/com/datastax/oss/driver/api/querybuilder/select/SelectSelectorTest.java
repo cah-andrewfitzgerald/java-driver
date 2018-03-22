@@ -68,6 +68,7 @@ public class SelectSelectorTest {
     assertThat(selectFrom("foo").column("bar").column("baz")).hasCql("SELECT bar,baz FROM foo");
     assertThat(selectFrom("foo").selectors(getColumn("bar"), getColumn("baz")))
         .hasCql("SELECT bar,baz FROM foo");
+    assertThat(selectFrom("foo").columns("a", "b", "c")).hasCql("SELECT a,b,c FROM foo");
   }
 
   @Test

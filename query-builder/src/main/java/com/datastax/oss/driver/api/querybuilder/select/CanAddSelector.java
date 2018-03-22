@@ -24,6 +24,7 @@ import com.datastax.oss.driver.api.core.type.codec.TypeCodec;
 import com.datastax.oss.driver.api.core.type.codec.registry.CodecRegistry;
 import com.datastax.oss.driver.api.querybuilder.QueryBuilderDsl;
 import com.datastax.oss.driver.api.querybuilder.term.Term;
+import com.google.common.collect.Iterables;
 import java.util.Arrays;
 import java.util.Map;
 
@@ -106,6 +107,34 @@ public interface CanAddSelector {
   /** Shortcut for {@link #column(CqlIdentifier) column(CqlIdentifier.fromCql(columnName))} */
   default Select column(String columnName) {
     return column(CqlIdentifier.fromCql(columnName));
+  }
+
+  /**
+   * Convenience method to select multiple simple columns at once, as in {@code SELECT a,b,c}.
+   *
+   * <p>This is the same as calling {@link #column(CqlIdentifier)} for each element.
+   */
+  default Select columnsIds(Iterable<CqlIdentifier> columnIds) {
+    return selectors(Iterables.transform(columnIds, QueryBuilderDsl::getColumn));
+  }
+
+  /** Var-arg equivalent of {@link #columnsIds(Iterable)}. */
+  default Select columns(CqlIdentifier... columnIds) {
+    return columnsIds(Arrays.asList(columnIds));
+  }
+
+  /**
+   * Convenience method to select multiple simple columns at once, as in {@code SELECT a,b,c}.
+   *
+   * <p>This is the same as calling {@link #column(String)} for each element.
+   */
+  default Select columns(Iterable<String> columnNames) {
+    return selectors(Iterables.transform(columnNames, QueryBuilderDsl::getColumn));
+  }
+
+  /** Var-arg equivalent of {@link #columns(Iterable)}. */
+  default Select columns(String... columnNames) {
+    return columns(Arrays.asList(columnNames));
   }
 
   /**
