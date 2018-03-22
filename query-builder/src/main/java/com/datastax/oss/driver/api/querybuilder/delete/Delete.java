@@ -17,8 +17,8 @@ package com.datastax.oss.driver.api.querybuilder.delete;
 
 import com.datastax.oss.driver.api.querybuilder.BuildableQuery;
 import com.datastax.oss.driver.api.querybuilder.condition.ConditionalStatement;
-import com.datastax.oss.driver.api.querybuilder.relation.CanAddRelation;
+import com.datastax.oss.driver.api.querybuilder.relation.OngoingWhereClause;
 
 /** A complete DELETE statement, with at least one WHERE clause. */
 public interface Delete
-    extends CanAddRelation<Delete>, ConditionalStatement<Delete>, BuildableQuery {}
+    extends OngoingWhereClause<Delete>, ConditionalStatement<Delete>, BuildableQuery {}

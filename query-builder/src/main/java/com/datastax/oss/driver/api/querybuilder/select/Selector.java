@@ -26,8 +26,8 @@ import com.datastax.oss.driver.api.querybuilder.QueryBuilderDsl;
  * QueryBuilderDsl}, such as {@link QueryBuilderDsl#getColumn(CqlIdentifier) getColumn}, {@link
  * QueryBuilderDsl#getFunction(CqlIdentifier, Iterable) getFunction}, etc.
  *
- * <p>They are used as arguments to the {@link CanAddSelector#selectors(Iterable) selectors} method,
- * for example:
+ * <p>They are used as arguments to the {@link OngoingSelection#selectors(Iterable) selectors}
+ * method, for example:
  *
  * <pre>{@code
  * selectFrom("foo").selectors(getColumn("bar"), getColumn("baz"))

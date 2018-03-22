@@ -32,7 +32,7 @@ import java.util.Map;
  * A SELECT query that accepts additional selectors (that is, elements in the SELECT clause to
  * return as columns in the result set, as in: {@code SELECT count(*), sku, price...}).
  */
-public interface CanAddSelector {
+public interface OngoingSelection {
 
   /**
    * Adds a selector.

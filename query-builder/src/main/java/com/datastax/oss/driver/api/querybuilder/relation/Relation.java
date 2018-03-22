@@ -17,7 +17,6 @@ package com.datastax.oss.driver.api.querybuilder.relation;
 
 import com.datastax.oss.driver.api.querybuilder.CqlSnippet;
 import com.datastax.oss.driver.api.querybuilder.QueryBuilderDsl;
-import com.datastax.oss.driver.api.querybuilder.select.CanAddSelectClause;
 
 /**
  * A relation in a WHERE clause.
@@ -26,7 +25,7 @@ import com.datastax.oss.driver.api.querybuilder.select.CanAddSelectClause;
  * QueryBuilderDsl}, such as {@link QueryBuilderDsl#isColumn(String) isColumn}, {@link
  * QueryBuilderDsl#isToken(String...) isToken}, etc.
  *
- * <p>They are used as arguments to the {@link CanAddSelectClause#where(Iterable) where} method, for
+ * <p>They are used as arguments to the {@link OngoingWhereClause#where(Iterable) where} method, for
  * example:
  *
  * <pre>{@code

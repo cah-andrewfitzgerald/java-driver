@@ -18,7 +18,7 @@ package com.datastax.oss.driver.api.querybuilder.delete;
 import com.datastax.oss.driver.api.core.CqlIdentifier;
 import com.datastax.oss.driver.api.querybuilder.BindMarker;
 import com.datastax.oss.driver.api.querybuilder.QueryBuilderDsl;
-import com.datastax.oss.driver.api.querybuilder.relation.CanAddRelation;
+import com.datastax.oss.driver.api.querybuilder.relation.OngoingWhereClause;
 import com.datastax.oss.driver.api.querybuilder.select.Selector;
 import com.datastax.oss.driver.api.querybuilder.term.Term;
 import java.util.Arrays;
@@ -27,7 +27,7 @@ import java.util.Arrays;
  * An in-progress DELETE statement: it targets a table and optionally a list of columns to delete;
  * it needs at least one WHERE relation to become buildable.
  */
-public interface DeleteSelection extends CanAddRelation<Delete> {
+public interface DeleteSelection extends OngoingWhereClause<Delete> {
 
   /**
    * Adds a selector.

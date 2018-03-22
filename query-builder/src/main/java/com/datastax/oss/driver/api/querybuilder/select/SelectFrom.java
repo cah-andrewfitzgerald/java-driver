@@ -21,7 +21,7 @@ package com.datastax.oss.driver.api.querybuilder.select;
  * <p>It only knows about the table, and optionally whether the statement uses JSON or DISTINCT. It
  * is not buildable yet: at least one selector needs to be specified.
  */
-public interface SelectFrom extends CanAddSelector {
+public interface SelectFrom extends OngoingSelection {
 
   // Implementation note - this interface exists to make the following a compile-time error:
   // selectFrom("foo").distinct().build()

@@ -28,7 +28,7 @@ import com.google.common.collect.Iterables;
 import java.util.Arrays;
 
 /** A statement that is ready to accept relations in its WHERE clause. */
-public interface CanAddRelation<SelfT extends CanAddRelation<SelfT>> {
+public interface OngoingWhereClause<SelfT extends OngoingWhereClause<SelfT>> {
 
   /**
    * Adds a relation in the WHERE clause. All relations are logically joined with AND.

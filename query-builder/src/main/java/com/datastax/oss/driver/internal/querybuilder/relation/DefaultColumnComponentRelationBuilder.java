@@ -16,8 +16,8 @@
 package com.datastax.oss.driver.internal.querybuilder.relation;
 
 import com.datastax.oss.driver.api.core.CqlIdentifier;
-import com.datastax.oss.driver.api.querybuilder.relation.CanAddRelation;
 import com.datastax.oss.driver.api.querybuilder.relation.ColumnComponentRelationBuilder;
+import com.datastax.oss.driver.api.querybuilder.relation.OngoingWhereClause;
 import com.datastax.oss.driver.api.querybuilder.relation.Relation;
 import com.datastax.oss.driver.api.querybuilder.term.Term;
 import com.datastax.oss.driver.internal.querybuilder.lhs.ColumnComponentLeftHandSide;
@@ -39,13 +39,13 @@ public class DefaultColumnComponentRelationBuilder
         new ColumnComponentLeftHandSide(columnId, index), operator, rightHandSide);
   }
 
-  public static class Fluent<StatementT extends CanAddRelation<StatementT>>
+  public static class Fluent<StatementT extends OngoingWhereClause<StatementT>>
       implements ColumnComponentRelationBuilder<StatementT> {
 
-    private final CanAddRelation<StatementT> statement;
+    private final OngoingWhereClause<StatementT> statement;
     private final ColumnComponentRelationBuilder<Relation> delegate;
 
-    public Fluent(CanAddRelation<StatementT> statement, CqlIdentifier columnId, Term index) {
+    public Fluent(OngoingWhereClause<StatementT> statement, CqlIdentifier columnId, Term index) {
       this.statement = statement;
       this.delegate = new DefaultColumnComponentRelationBuilder(columnId, index);
     }

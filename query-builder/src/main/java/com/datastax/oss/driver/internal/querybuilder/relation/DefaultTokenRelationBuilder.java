@@ -16,7 +16,7 @@
 package com.datastax.oss.driver.internal.querybuilder.relation;
 
 import com.datastax.oss.driver.api.core.CqlIdentifier;
-import com.datastax.oss.driver.api.querybuilder.relation.CanAddRelation;
+import com.datastax.oss.driver.api.querybuilder.relation.OngoingWhereClause;
 import com.datastax.oss.driver.api.querybuilder.relation.Relation;
 import com.datastax.oss.driver.api.querybuilder.relation.TokenRelationBuilder;
 import com.datastax.oss.driver.api.querybuilder.term.Term;
@@ -35,13 +35,13 @@ public class DefaultTokenRelationBuilder implements TokenRelationBuilder<Relatio
     return new DefaultRelation(new TokenLeftHandSide(identifiers), operator, rightHandSide);
   }
 
-  public static class Fluent<StatementT extends CanAddRelation<StatementT>>
+  public static class Fluent<StatementT extends OngoingWhereClause<StatementT>>
       implements TokenRelationBuilder<StatementT> {
 
-    private final CanAddRelation<StatementT> statement;
+    private final OngoingWhereClause<StatementT> statement;
     private final TokenRelationBuilder<Relation> delegate;
 
-    public Fluent(CanAddRelation<StatementT> statement, Iterable<CqlIdentifier> identifiers) {
+    public Fluent(OngoingWhereClause<StatementT> statement, Iterable<CqlIdentifier> identifiers) {
       this.statement = statement;
       this.delegate = new DefaultTokenRelationBuilder(identifiers);
     }
