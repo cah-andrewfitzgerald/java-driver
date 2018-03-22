@@ -25,7 +25,7 @@ public class DeleteFluentRelationTest {
 
   @Test
   public void should_generate_delete_with_column_relation() {
-    assertThat(deleteFrom("foo").whereColumn("k").eq(bindMarker()))
+    assertThat(deleteFrom("foo").whereColumn("k").isEqualTo(bindMarker()))
         .hasCql("DELETE FROM foo WHERE k=?");
   }
 }

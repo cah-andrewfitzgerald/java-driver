@@ -62,7 +62,8 @@ public interface BuildableQuery {
    * SimpleStatementBuilder builder =
    *     selectFrom("foo")
    *         .all()
-   *         .where(isColumn("k").eq(bindMarker("k")), isColumn("c").lt(bindMarker("c")))
+   *         .whereColumn("k").isEqualTo(bindMarker("k"))
+   *         .whereColumn("c").isLessThan(bindMarker("c"))
    *         .builder();
    * SimpleStatement statement =
    *     builder.addNamedValue("k", 1).addNamedValue("c", 2).withTracing().build();

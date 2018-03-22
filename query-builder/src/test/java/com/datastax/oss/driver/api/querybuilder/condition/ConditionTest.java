@@ -18,9 +18,6 @@ package com.datastax.oss.driver.api.querybuilder.condition;
 import static com.datastax.oss.driver.api.querybuilder.Assertions.assertThat;
 import static com.datastax.oss.driver.api.querybuilder.QueryBuilderDsl.bindMarker;
 import static com.datastax.oss.driver.api.querybuilder.QueryBuilderDsl.deleteFrom;
-import static com.datastax.oss.driver.api.querybuilder.QueryBuilderDsl.ifColumn;
-import static com.datastax.oss.driver.api.querybuilder.QueryBuilderDsl.ifElement;
-import static com.datastax.oss.driver.api.querybuilder.QueryBuilderDsl.ifField;
 import static com.datastax.oss.driver.api.querybuilder.QueryBuilderDsl.literal;
 
 import org.junit.Test;
@@ -29,14 +26,20 @@ public class ConditionTest {
 
   @Test
   public void should_generate_simple_column_condition() {
+    deleteFrom("foo").whereColumn("k").isEqualTo(bindMarker()).ifColumn("v").isEqualTo(literal(1));
     assertThat(
-            deleteFrom("foo").whereColumn("k").eq(bindMarker()).if_(ifColumn("v").eq(literal(1))))
+            deleteFrom("foo")
+                .whereColumn("k")
+                .isEqualTo(bindMarker())
+                .if_(Condition.column("v").isEqualTo(literal(1))))
         .hasCql("DELETE FROM foo WHERE k=? IF v=1");
     assertThat(
             deleteFrom("foo")
                 .whereColumn("k")
-                .eq(bindMarker())
-                .if_(ifColumn("v1").eq(literal(1)), ifColumn("v2").eq(literal(2))))
+                .isEqualTo(bindMarker())
+                .if_(
+                    Condition.column("v1").isEqualTo(literal(1)),
+                    Condition.column("v2").isEqualTo(literal(2))))
         .hasCql("DELETE FROM foo WHERE k=? IF v1=1 AND v2=2");
   }
 
@@ -45,8 +48,8 @@ public class ConditionTest {
     assertThat(
             deleteFrom("foo")
                 .whereColumn("k")
-                .eq(bindMarker())
-                .if_(ifField("v", "f").eq(literal(1))))
+                .isEqualTo(bindMarker())
+                .if_(Condition.field("v", "f").isEqualTo(literal(1))))
         .hasCql("DELETE FROM foo WHERE k=? IF v.f=1");
   }
 
@@ -55,8 +58,8 @@ public class ConditionTest {
     assertThat(
             deleteFrom("foo")
                 .whereColumn("k")
-                .eq(bindMarker())
-                .if_(ifElement("v", literal(1)).eq(literal(1))))
+                .isEqualTo(bindMarker())
+                .if_(Condition.element("v", literal(1)).isEqualTo(literal(1))))
         .hasCql("DELETE FROM foo WHERE k=? IF v[1]=1");
   }
 }

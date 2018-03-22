@@ -38,22 +38,22 @@ try (CqlSession session = CqlSession.builder().build()) {
 
 #### Fluent API
 
-All the necessary methods are centralized in the [QueryBuilderDsl] class. To get started, add the
+All the starting methods are centralized in the [QueryBuilderDsl] class. To get started, add the
 following import:
 
 ```java
 import static com.datastax.oss.driver.api.querybuilder.QueryBuilderDsl.*;
 ```
 
-Choose the starting method matching your desired statement, for example `selectFrom`. Then use your
-IDE's completion and the javadocs to add query parts:
+Choose the method matching your desired statement, for example `selectFrom`. Then use your IDE's
+completion and the javadocs to add query parts:
 
 ```java
 Select select =
     selectFrom("ks", "user")
-        .column("first_name")
-        .column("last_name")
-        .where(isColumn("id").eq(bindMarker()));
+          .column("first_name")
+          .column("last_name")
+          .whereColumn("id").isEqualTo(bindMarker());
 // SELECT first_name,last_name FROM ks.user WHERE id=?
 ```
 
@@ -95,7 +95,8 @@ the query builder in your hot path**:
   
   ```java
   // During application initialization:
-  Select selectUser = selectFrom("user").all().where(isColumn("id").eq(bindMarker())); // SELECT * FROM ks.user WHERE id=?
+  Select selectUser = selectFrom("user").all().whereColumn("id").isEqualTo(bindMarker());
+  // SELECT * FROM user WHERE id=?
   PreparedStatement preparedSelectUser = session.prepare(selectUser.build());
 
   // At runtime:
@@ -140,7 +141,7 @@ for (String columnName : columnNames) {
 
 // If a search parameter is present, add the corresponding WHERE clause:
 if (name != null) {
-  select = select.where(isColumn("name").eq(name));
+  select = select.whereColumn("name").isEqualTo(name);
 }
 ```
 

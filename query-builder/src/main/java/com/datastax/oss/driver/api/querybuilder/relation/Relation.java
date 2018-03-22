@@ -15,22 +15,129 @@
  */
 package com.datastax.oss.driver.api.querybuilder.relation;
 
+import com.datastax.oss.driver.api.core.CqlIdentifier;
 import com.datastax.oss.driver.api.querybuilder.CqlSnippet;
-import com.datastax.oss.driver.api.querybuilder.QueryBuilderDsl;
+import com.datastax.oss.driver.api.querybuilder.term.Term;
+import com.datastax.oss.driver.internal.querybuilder.relation.CustomIndexRelation;
+import com.datastax.oss.driver.internal.querybuilder.relation.DefaultColumnComponentRelationBuilder;
+import com.datastax.oss.driver.internal.querybuilder.relation.DefaultColumnRelationBuilder;
+import com.datastax.oss.driver.internal.querybuilder.relation.DefaultTokenRelationBuilder;
+import com.datastax.oss.driver.internal.querybuilder.relation.DefaultTupleRelationBuilder;
+import com.google.common.collect.Iterables;
+import java.util.Arrays;
 
 /**
  * A relation in a WHERE clause.
  *
- * <p>To build instances of this type, use the {@code isXxx} factory methods in {@link
- * QueryBuilderDsl}, such as {@link QueryBuilderDsl#isColumn(String) isColumn}, {@link
- * QueryBuilderDsl#isToken(String...) isToken}, etc.
+ * <p>To build instances of this type, use the factory methods, such as {@link #column(String)
+ * column}, {@link #token(String...) token}, etc.
  *
  * <p>They are used as arguments to the {@link OngoingWhereClause#where(Iterable) where} method, for
  * example:
  *
  * <pre>{@code
- * selectFrom("foo").all().where(isColumn("k").eq(literal(1)))
+ * selectFrom("foo").all().whereColumn("k").isEqualTo(literal(1))
+ * // SELECT * FROM foo WHERE k=1
+ * }</pre>
+ *
+ * There are also shortcuts in the fluent API when you build a statement, for example:
+ *
+ * <pre>{@code
+ * selectFrom("foo").all().whereColumn("k").isEqualTo(literal(1))
  * // SELECT * FROM foo WHERE k=1
  * }</pre>
  */
-public interface Relation extends CqlSnippet {}
+public interface Relation extends CqlSnippet {
+
+  /**
+   * Builds a relation testing a column.
+   *
+   * <p>This must be chained with an operator call, for example:
+   *
+   * <pre>{@code
+   * Relation r = Relation.column("k").isEqualTo(bindMarker());
+   * }</pre>
+   */
+  static ColumnRelationBuilder<Relation> column(CqlIdentifier id) {
+    return new DefaultColumnRelationBuilder(id);
+  }
+
+  /** Shortcut for {@link #column(CqlIdentifier) column(CqlIdentifier.fromCql(name))} */
+  static ColumnRelationBuilder<Relation> column(String name) {
+    return column(CqlIdentifier.fromCql(name));
+  }
+
+  /** Builds a relation testing a value in a map (Cassandra 4 and above). */
+  static ColumnComponentRelationBuilder<Relation> mapValue(CqlIdentifier columnId, Term index) {
+    // The concept could easily be extended to list elements and tuple components, so use a generic
+    // name internally, we'll add other shortcuts if necessary.
+    return new DefaultColumnComponentRelationBuilder(columnId, index);
+  }
+
+  /**
+   * Shortcut for {@link #mapValue(CqlIdentifier, Term) mapValue(CqlIdentifier.fromCql(columnName),
+   * index)}
+   */
+  static ColumnComponentRelationBuilder<Relation> mapValue(String columnName, Term index) {
+    return mapValue(CqlIdentifier.fromCql(columnName), index);
+  }
+
+  /** Builds a relation testing a token generated from a set of columns. */
+  static TokenRelationBuilder<Relation> tokenFromIds(Iterable<CqlIdentifier> identifiers) {
+    return new DefaultTokenRelationBuilder(identifiers);
+  }
+
+  /** Var-arg equivalent of {@link #tokenFromIds(Iterable)}. */
+  static TokenRelationBuilder<Relation> token(CqlIdentifier... identifiers) {
+    return tokenFromIds(Arrays.asList(identifiers));
+  }
+
+  /**
+   * Equivalent of {@link #tokenFromIds(Iterable)} with raw strings; the names are converted with
+   * {@link CqlIdentifier#fromCql(String)}.
+   */
+  static TokenRelationBuilder<Relation> token(Iterable<String> names) {
+    return tokenFromIds(Iterables.transform(names, CqlIdentifier::fromCql));
+  }
+
+  /** Var-arg equivalent of {@link #token(Iterable)}. */
+  static TokenRelationBuilder<Relation> token(String... names) {
+    return token(Arrays.asList(names));
+  }
+
+  /** Builds a relation testing a set of columns, as in {@code WHERE (c1, c2, c3) IN ...}. */
+  static TupleRelationBuilder<Relation> tupleOfIds(Iterable<CqlIdentifier> identifiers) {
+    return new DefaultTupleRelationBuilder(identifiers);
+  }
+
+  /** Var-arg equivalent of {@link #tupleOfIds(Iterable)}. */
+  static TupleRelationBuilder<Relation> tuple(CqlIdentifier... identifiers) {
+    return tupleOfIds(Arrays.asList(identifiers));
+  }
+
+  /**
+   * Equivalent of {@link #tupleOfIds(Iterable)} with raw strings; the names are converted with
+   * {@link CqlIdentifier#fromCql(String)}.
+   */
+  static TupleRelationBuilder<Relation> tuple(Iterable<String> names) {
+    return tupleOfIds(Iterables.transform(names, CqlIdentifier::fromCql));
+  }
+
+  /** Var-arg equivalent of {@link #tuple(Iterable)}. */
+  static TupleRelationBuilder<Relation> tuple(String... names) {
+    return tuple(Arrays.asList(names));
+  }
+
+  /** Builds a relation on a custom index. */
+  static Relation customIndex(CqlIdentifier indexId, Term expression) {
+    return new CustomIndexRelation(indexId, expression);
+  }
+
+  /**
+   * Shortcut for {@link #customIndex(CqlIdentifier, Term)
+   * customIndex(CqlIdentifier.fromCql(indexName), expression)}
+   */
+  static Relation customIndex(String indexName, Term expression) {
+    return customIndex(CqlIdentifier.fromCql(indexName), expression);
+  }
+}

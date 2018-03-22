@@ -23,10 +23,10 @@ import com.datastax.oss.driver.api.querybuilder.term.Term;
  * <p>It can be anonymous or named, for example:
  *
  * <pre>{@code
- * selectFrom("foo").all().where(isColumn("k").eq(bindMarker()))
+ * selectFrom("foo").all().whereColumn("k").isEqualTo(bindMarker())
  * // SELECT * FROM foo WHERE k=?
  *
- * selectFrom("foo").all().where(isColumn("k").eq(bindMarker("key")))
+ * selectFrom("foo").all().whereColumn("k").isEqualTo(bindMarker("key"))
  * // SELECT * FROM foo WHERE k=:key
  * }</pre>
  */

@@ -1,7 +1,8 @@
 ## SELECT
 
-Start your SELECT with the `selectFrom` method. There are several variants depending on whether your
-table name is qualified, and whether you use case-sensitive identifiers or case-insensitive strings:
+Start your SELECT with the `selectFrom` method in [QueryBuilderDsl]. There are several variants
+depending on whether your table name is qualified, and whether you use case-sensitive identifiers or
+case-insensitive strings:
 
 ```java
 import static com.datastax.oss.driver.api.querybuilder.QueryBuilderDsl.*;
@@ -16,27 +17,7 @@ Note that, at this stage, the query can't be built yet. You need at least one se
 A selector is something that appears after the `SELECT` keyword, and will become a column in the
 result set. Its simplest form is a column identifier, but it can be a more complex expression.
 
-To create a selector, use one of the `getXxx()` methods of `QueryBuilderDsl`, and pass it to the
-`selector()` method:
-
-```java
-Selector getFirstName = getColumn("first_name");
-selectFrom("user").selector(getFirstName);
-// SELECT first_name FROM user
-```
-
-If you have multiple selectors, you can also use `selectors()` to add them all in a single call.
-This is a bit more efficient since it creates less temporary objects: 
-
-```java
-selectFrom("user").selectors(
-    getColumn("first_name"),
-    getColumn("last_name"));
-// SELECT first_name,last_name FROM user
-```
-
-Finally, there are fluent shortcuts to create and add the selector in a single call. This is
-probably the most readable if you're building the query statically:
+The easiest way to add a selector is with one of the fluent shortcuts:
 
 ```java
 selectFrom("user")
@@ -45,22 +26,38 @@ selectFrom("user")
 // SELECT first_name,last_name FROM user
 ```
 
-Use an alias to give a selector a different name in the result set:
+You can also create it manually with one of the factory methods in [Selector], and then pass it to
+`selector()`:
 
 ```java
-selectFrom("user").selector(getColumn("first_name").as("first"));
-// SELECT first_name AS first FROM user
+selectFrom("user").selector(
+    Selector.column("first_name"));
+// SELECT first_name FROM user
 ```
 
-With the fluent shortcuts, chain the call after the selector:
+If you have multiple selectors, you can also use `selectors()` to add them all in a single call.
+This is a bit more efficient since it creates less temporary objects: 
+
+```java
+selectFrom("user").selectors(
+    Selector.column("first_name"),
+    Selector.column("last_name"));
+// SELECT first_name,last_name FROM user
+```
+
+Use an alias to give a selector a different name in the result set:
 
 ```java
 selectFrom("user").column("first_name").as("first");
 // SELECT first_name AS first FROM user
+
+selectFrom("user").selector(
+    Selector.column("first_name").as("first"));
+// SELECT first_name AS first FROM user
 ```
 
-In addition to `column`, the query builder provides many other selectors. Some of them only work
-with newer Cassandra versions, always check what your target platform supports.
+The query builder provides many kinds of selectors. Some of them only work with newer Cassandra
+versions, always check what your target platform supports.
 
 #### Star selector and count
 
@@ -93,7 +90,10 @@ selectFrom("user").all().column("first_name");
 If you add multiple selectors at once, and one of them is the star selector, an exception is thrown: 
 
 ```java
-selectFrom("user").selectors(getColumn("first_name"), getAll(), getColumn("last_name"));
+selectFrom("user").selectors(
+    Selector.column("first_name"),
+    Selector.all(),
+    Selector.column("last_name"));
 // throws IllegalArgumentException: Can't pass the * selector to selectors()
 ```
 
@@ -104,21 +104,41 @@ selectFrom("user").countAll();
 // SELECT count(*) FROM user
 ```
 
+#### Columns
+
+We've already shown how `column` works:
+
+```java
+selectFrom("user")
+    .column("first_name")
+    .column("last_name");
+// SELECT first_name,last_name FROM user
+```
+
+When all your selectors are simple columns, there is a convenience shortcut to add them in one call:
+
+```java
+selectFrom("user").columns("first_name", "last_name");
+// SELECT first_name,last_name FROM user
+```
+
 #### Arithmetic operations
 
 Selectors can be combined with arithmetic operations. 
 
 | CQL Operator | Selector name |
 |--------------|---------------|
-| `a+b`        | `sum`         |
-| `a-b`        | `difference`  |
-| `-a`         | `opposite`    |
-| `a*b`        | `product`     |
-| `a/b`        | `quotient`    |
+| `a+b`        | `add`         |
+| `a-b`        | `subtract`    |
+| `-a`         | `negate`      |
+| `a*b`        | `multiply`    |
+| `a/b`        | `divide`      |
 | `a%b`        | `remainder`   |
 
 ```java
-selectFrom("rooms").product(getColumn("length"), getColumn("width")).as("surface");
+selectFrom("rooms")
+    .multiply(Selector.column("length"), Selector.column("width"))
+    .as("surface");
 // SELECT length*width AS surface FROM rooms
 ```
 
@@ -126,10 +146,25 @@ Operations can be nested, and will get parenthesized according to the usual prec
 
 ```java
 selectFrom("foo")
-    .product(
-        getOpposite(getColumn("a")),
-        getSum(getColumn("b"), getColumn("c")));
+    .multiply(
+        Selector.negate(Selector.column("a")),
+        Selector.add(Selector.column("b"), Selector.column("c")));
 // SELECT -a*(b+c) FROM foo
+```
+
+Note: as shown in the examples above, arithmetic operations can get verbose very quickly. If you
+have common expressions that get reused throughout your application code, consider writing your own
+shortcuts:
+
+```java
+public static Selector multiplyColumns(String left, String right) {
+  return Selector.multiply(Selector.column(left), Selector.column(right));
+}
+
+selectFrom("rooms")
+    .selector(multiplyColumns("length", "width"))
+    .as("surface");
+// SELECT length*width AS surface FROM rooms
 ```
 
 #### Casts
@@ -140,9 +175,9 @@ expression uses integer division and returns an `int`:
 
 ```java
 selectFrom("user")
-    .quotient(
-        getProduct(getColumn("weight"), literal(10_000)),
-        getProduct(getColumn("height"), getColumn("height")))
+    .divide(
+        Selector.multiply(Selector.column("weight"), literal(10_000)),
+        Selector.multiply(Selector.column("height"), Selector.column("height")))
     .as("bmi");
 // SELECT weight*10000/(height*height) AS bmi FROM user
 ```
@@ -151,9 +186,11 @@ What if you want a floating-point result instead? You have to introduce a cast:
 
 ```java
 selectFrom("user")
-    .quotient(
-        getProduct(getCast(getColumn("weight"), DataTypes.DOUBLE), literal(10_000)),
-        getProduct(getColumn("height"), getColumn("height")))
+    .divide(
+        Selector.multiply(
+            Selector.cast(Selector.column("weight"), DataTypes.DOUBLE),
+            literal(10_000)),
+        Selector.multiply(Selector.column("height"), Selector.column("height")))
     .as("bmi");
 // SELECT CAST(weight AS double)*10000/(height*height) AS bmi FROM user
 ```
@@ -163,11 +200,11 @@ already well-established type, whereas a hint is used with a literal, where the 
 ambiguous.
 
 ```java
-selectFrom("foo").quotient(
+selectFrom("foo").divide(
     // A literal 1 can be any numeric type (int, bigint, double, etc.)
     // It defaults to int, which is wrong here if we want a floating-point result.
-    getTypeHint(literal(1), DataTypes.DOUBLE),
-    getColumn("a"));
+    Selector.typeHint(literal(1), DataTypes.DOUBLE),
+    Selector.column("a"));
 // SELECT (double)1/a FROM foo
 ```
 
@@ -205,10 +242,14 @@ Groups of selectors can be extracted as a single collection, such as:
 * a list or set. All inner selectors must return the same CQL type:
 
   ```java
-  selectFrom("user").listOf(getColumn("first_name"), getColumn("last_name"));
+  selectFrom("user").listOf(
+      Selector.column("first_name"),
+      Selector.column("last_name"));
   // SELECT [first_name,last_name] FROM user
   
-  selectFrom("user").setOf(getColumn("first_name"), getColumn("last_name"));
+  selectFrom("user").setOf(
+      Selector.column("first_name"),
+      Selector.column("last_name"));
   // SELECT {first_name,last_name} FROM user
   ```
 
@@ -218,8 +259,8 @@ Groups of selectors can be extracted as a single collection, such as:
 
   ```java
   Map<Selector, Selector> mapSelector = new HashMap<>();
-  mapSelector.put(literal("first"), getColumn("first_name"));
-  mapSelector.put(literal("last"), getColumn("last_name"));
+  mapSelector.put(literal("first"), Selector.column("first_name"));
+  mapSelector.put(literal("last"), Selector.column("last_name"));
   
   selectFrom("user").mapOf(mapSelector, DataTypes.TEXT, DataTypes.TEXT);
   // SELECT (map<text,text>){'first':first_name,'last':last_name} FROM user
@@ -228,7 +269,9 @@ Groups of selectors can be extracted as a single collection, such as:
 * a tuple. This time the types can be heterogeneous:
 
   ```java
-  selectFrom("user").tupleOf(getColumn("first_name"), getColumn("birth_date"));
+  selectFrom("user").tupleOf(
+      Selector.column("first_name"),
+      Selector.column("birth_date"));
   // SELECT (first_name,birth_date) FROM user
   ```
 
@@ -238,7 +281,7 @@ Function calls take a function name (optionally qualified with a keyspace), and 
 that will be passed as arguments:
 
 ```java
-selectFrom("user").function("utils", "bmi", getColumn("weight"), getColumn("height"));
+selectFrom("user").function("utils", "bmi", Selector.column("weight"), Selector.column("height"));
 // SELECT utils.bmi(weight,height) FROM user
 ```
 
@@ -255,7 +298,7 @@ Occasionally, you'll need to inline a CQL literal in your query; this is not ver
 top-level selector, but could happen as part of an arithmetic operation:
 
 ```java
-selectFrom("foo").quotient(literal(1), getColumn("a"));
+selectFrom("foo").quotient(literal(1), Selector.column("a"));
 // SELECT 1/a FROM foo
 ```
 
@@ -277,19 +320,23 @@ are not yet covered by the query builder.
 
 ### Relations
 
-Relations get added with the `where()` method:
+Relations get added with the `whereXxx()` methods:
 
 ```java
-selectFrom("user").all().where(isColumn("id").eq(literal(1)));
+selectFrom("user").all().whereColumn("id").isEqualTo(literal(1));
+// SELECT * FROM user WHERE id=1
+```
+
+You can also create and add them manually:
+
+```java
+selectFrom("user").all().where(
+    Relation.column("id").isEqualTo(literal(1)));
 // SELECT * FROM user WHERE id=1
 ```
 
 Like selectors, they also have fluent shortcuts to build and add in a single call:
 
-```java
-selectFrom("user").all().whereColumn("id").eq(literal(1));
-// SELECT * FROM user WHERE id=1
-```
 
 Relations are a common feature used by many types of statements, so they have a
 [dedicated page](../relation) in this manual.
@@ -303,8 +350,8 @@ Groupings:
 
 ```java
 selectFrom("sensor_data")
-    .function("max", getColumn("reading"))
-    .where(isColumn("id").eq(bindMarker()))
+    .function("max", Selector.column("reading"))
+    .whereColumn("id").isEqualTo(bindMarker())
     .groupBy("date");
 // SELECT max(reading) FROM sensor_data WHERE id=? GROUP BY date
 ```
@@ -316,7 +363,7 @@ import com.datastax.oss.driver.api.core.metadata.schema.ClusteringOrder;
 
 selectFrom("sensor_data")
     .column("reading")
-    .where(isColumn("id").eq(bindMarker()))
+    .whereColumn("id").isEqualTo(bindMarker())
     .orderBy("date", ClusteringOrder.DESC);
 // SELECT reading FROM sensor_data WHERE id=? ORDER BY date DESC
 ```
@@ -326,13 +373,13 @@ Limits:
 ```java
 selectFrom("sensor_data")
     .column("reading")
-    .where(isColumn("id").eq(bindMarker()))
+    .whereColumn("id").isEqualTo(bindMarker())
     .limit(10);
 // SELECT reading FROM sensor_data WHERE id=? LIMIT 10
 
 selectFrom("sensor_data")
     .column("reading")
-    .where(isColumn("id").in(bindMarker()))
+    .whereColumn("id").isEqualTo(bindMarker())
     .perPartitionLimit(bindMarker("l"));
 // SELECT reading FROM sensor_data WHERE id IN ? PER PARTITION LIMIT :l
 ```
@@ -343,3 +390,6 @@ Filtering:
 selectFrom("user").all().allowFiltering();
 // SELECT * FROM user ALLOW FILTERING
 ```
+
+[QueryBuilderDsl]: http://docs.datastax.com/en/drivers/java/4.0/com/datastax/oss/driver/api/query-builder/QueryBuilderDsl.html
+[Selector]:        http://docs.datastax.com/en/drivers/java/4.0/com/datastax/oss/driver/api/query-builder/select/Selector.html

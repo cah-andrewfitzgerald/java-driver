@@ -26,22 +26,32 @@ public class DeleteFluentConditionTest {
 
   @Test
   public void should_generate_simple_column_condition() {
-    assertThat(deleteFrom("foo").whereColumn("k").eq(bindMarker()).ifColumn("v").eq(literal(1)))
+    assertThat(
+            deleteFrom("foo")
+                .whereColumn("k")
+                .isEqualTo(bindMarker())
+                .ifColumn("v")
+                .isEqualTo(literal(1)))
         .hasCql("DELETE FROM foo WHERE k=? IF v=1");
     assertThat(
             deleteFrom("foo")
                 .whereColumn("k")
-                .eq(bindMarker())
+                .isEqualTo(bindMarker())
                 .ifColumn("v1")
-                .eq(literal(1))
+                .isEqualTo(literal(1))
                 .ifColumn("v2")
-                .eq(literal(2)))
+                .isEqualTo(literal(2)))
         .hasCql("DELETE FROM foo WHERE k=? IF v1=1 AND v2=2");
   }
 
   @Test
   public void should_generate_field_condition() {
-    assertThat(deleteFrom("foo").whereColumn("k").eq(bindMarker()).ifField("v", "f").eq(literal(1)))
+    assertThat(
+            deleteFrom("foo")
+                .whereColumn("k")
+                .isEqualTo(bindMarker())
+                .ifField("v", "f")
+                .isEqualTo(literal(1)))
         .hasCql("DELETE FROM foo WHERE k=? IF v.f=1");
   }
 
@@ -50,15 +60,15 @@ public class DeleteFluentConditionTest {
     assertThat(
             deleteFrom("foo")
                 .whereColumn("k")
-                .eq(bindMarker())
+                .isEqualTo(bindMarker())
                 .ifElement("v", literal(1))
-                .eq(literal(1)))
+                .isEqualTo(literal(1)))
         .hasCql("DELETE FROM foo WHERE k=? IF v[1]=1");
   }
 
   @Test
   public void should_generate_if_exists_condition() {
-    assertThat(deleteFrom("foo").whereColumn("k").eq(bindMarker()).ifExists())
+    assertThat(deleteFrom("foo").whereColumn("k").isEqualTo(bindMarker()).ifExists())
         .hasCql("DELETE FROM foo WHERE k=? IF EXISTS");
   }
 
@@ -67,10 +77,10 @@ public class DeleteFluentConditionTest {
     assertThat(
             deleteFrom("foo")
                 .whereColumn("k")
-                .eq(bindMarker())
+                .isEqualTo(bindMarker())
                 .ifExists()
                 .ifColumn("v")
-                .eq(literal(1)))
+                .isEqualTo(literal(1)))
         .hasCql("DELETE FROM foo WHERE k=? IF v=1");
   }
 
@@ -79,11 +89,11 @@ public class DeleteFluentConditionTest {
     assertThat(
             deleteFrom("foo")
                 .whereColumn("k")
-                .eq(bindMarker())
+                .isEqualTo(bindMarker())
                 .ifColumn("v1")
-                .eq(literal(1))
+                .isEqualTo(literal(1))
                 .ifColumn("v2")
-                .eq(literal(2))
+                .isEqualTo(literal(2))
                 .ifExists())
         .hasCql("DELETE FROM foo WHERE k=? IF EXISTS");
   }

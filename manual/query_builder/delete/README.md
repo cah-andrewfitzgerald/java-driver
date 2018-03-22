@@ -20,11 +20,18 @@ affected row(s).
 
 Selectors are optional; if you don't provide any, the whole row will be deleted.
 
-To create a selector, use one of the `getXxx()` methods of `QueryBuilderDsl`, and pass it to the
-`selector()` method:
+The easiest way to add a selector is with a fluent API method:
 
 ```java
-deleteFrom("user").selector(getColumn("v"))
+deleteFrom("user").column("v1").column("v2");
+// DELETE v1,v2 FROM user...
+```
+
+You can also create it manually with one of the factory methods in [Selector], and then pass it to
+`selector()`:
+
+```java
+deleteFrom("user").selector(Selector.getColumn("v"))
 // DELETE v FROM user ...
 ```
 
@@ -33,14 +40,6 @@ This is a bit more efficient since it creates less temporary objects:
 
 ```java
 deleteFrom("user").selectors(getColumn("v1"), getColumn("v2"));
-// DELETE v1,v2 FROM user...
-```
-
-Finally, there are fluent shortcuts to create and add the selector in a single call. This is
-probably the most readable if you're building the query statically:
-
-```java
-deleteFrom("user").column("v1").column("v2");
 // DELETE v1,v2 FROM user...
 ```
 
@@ -94,24 +93,25 @@ If you call the method multiple times, the last value will be used.
 
 ### Relations
 
-Relations get added with the `where()` method:
+Relations get added with the fluent `whereXxx()` methods:
 
 ```java
-deleteFrom("user").where(isColumn("k").eq(bindMarker()));
+deleteFrom("user").whereColumn("k").isEqualTo(bindMarker());
 // DELETE FROM user WHERE k=?
 ```
 
-Like selectors, they also have fluent shortcuts to build and add in a single call:
+Or you can build and add them manually:
 
 ```java
-deleteFrom("user").whereColumn("k").eq(bindMarker());
+deleteFrom("user").where(
+    Relation.column("k").isEqualTo(bindMarker()));
 // DELETE FROM user WHERE k=?
 ```
 
 Once there is at least one relation, the statement can be built:
 
 ```java
-SimpleStatement statement = deleteFrom("user").whereColumn("k").eq(bindMarker()).build();
+SimpleStatement statement = deleteFrom("user").whereColumn("k").isEqualTo(bindMarker()).build();
 ```
 
 Relations are a common feature used by many types of statements, so they have a
@@ -119,17 +119,22 @@ Relations are a common feature used by many types of statements, so they have a
 
 ### Conditions
 
-Conditions get added with the `if_()` method:
+Conditions get added with the fluent `isXxx()` method:
 
 ```java
-deleteFrom("user").whereColumn("k").eq(bindMarker()).if_(ifColumn("v").eq(literal(1)));
+deleteFrom("user")
+    .whereColumn("k").isEqualTo(bindMarker())
+    .ifColumn("v").isEqualTo(literal(1));
 // DELETE FROM user WHERE k=? IF v=1
 ```
 
-Like selectors and relations, they also have fluent shortcuts to build and add in a single call:
+Or you can build and add them manually:
 
 ```java
-deleteFrom("user").whereColumn("k").eq(bindMarker()).ifColumn("v").eq(literal(1));
+deleteFrom("user")
+    .whereColumn("k").isEqualTo(bindMarker())
+    .if_(
+        Condition.Column("v").isEqualTo(literal(1)));
 // DELETE FROM user WHERE k=? IF v=1
 ```
 
@@ -137,3 +142,4 @@ Conditions are a common feature used by UPDATE and DELETE, so they have a
 [dedicated page](../condition) in this manual.
 
 [QueryBuilderDsl]: http://docs.datastax.com/en/drivers/java/4.0/com/datastax/oss/driver/api/query-builder/QueryBuilderDsl.html
+[Selector]:        http://docs.datastax.com/en/drivers/java/4.0/com/datastax/oss/driver/api/query-builder/select/Selector.html

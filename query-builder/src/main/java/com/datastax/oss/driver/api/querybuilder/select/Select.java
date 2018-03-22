@@ -49,10 +49,10 @@ public interface Select extends OngoingSelection, OngoingWhereClause<Select>, Bu
 
   /**
    * Shortcut for {@link #groupBy(Iterable)} where all the clauses are simple columns. The arguments
-   * are wrapped with {@link QueryBuilderDsl#getColumn(CqlIdentifier)}.
+   * are wrapped with {@link Selector#column(CqlIdentifier)}.
    */
   default Select groupByColumnIds(Iterable<CqlIdentifier> columnIds) {
-    return groupBy(Iterables.transform(columnIds, QueryBuilderDsl::getColumn));
+    return groupBy(Iterables.transform(columnIds, Selector::column));
   }
 
   /** Var-arg equivalent of {@link #groupByColumnIds(Iterable)}. */
@@ -62,10 +62,10 @@ public interface Select extends OngoingSelection, OngoingWhereClause<Select>, Bu
 
   /**
    * Shortcut for {@link #groupBy(Iterable)} where all the clauses are simple columns. The arguments
-   * are wrapped with {@link QueryBuilderDsl#getColumn(String)}.
+   * are wrapped with {@link Selector#column(String)}.
    */
   default Select groupByColumns(Iterable<String> columnNames) {
-    return groupBy(Iterables.transform(columnNames, QueryBuilderDsl::getColumn));
+    return groupBy(Iterables.transform(columnNames, Selector::column));
   }
 
   /** Var-arg equivalent of {@link #groupByColumns(Iterable)}. */
@@ -81,14 +81,14 @@ public interface Select extends OngoingSelection, OngoingWhereClause<Select>, Bu
    */
   Select groupBy(Selector selector);
 
-  /** Shortcut for {@link #groupBy(Selector) groupBy(QueryBuilderDsl.getColumn(columnId))}. */
+  /** Shortcut for {@link #groupBy(Selector) groupBy(Selector.column(columnId))}. */
   default Select groupBy(CqlIdentifier columnId) {
-    return groupBy(QueryBuilderDsl.getColumn(columnId));
+    return groupBy(Selector.column(columnId));
   }
 
-  /** Shortcut for {@link #groupBy(Selector) groupBy(QueryBuilderDsl.getColumn(columnName))}. */
+  /** Shortcut for {@link #groupBy(Selector) groupBy(Selector.column(columnName))}. */
   default Select groupBy(String columnName) {
-    return groupBy(QueryBuilderDsl.getColumn(columnName));
+    return groupBy(Selector.column(columnName));
   }
 
   /**

@@ -24,7 +24,7 @@ public interface ArithmeticRelationBuilder<ResultT> {
    *
    * <p>Use one of the static factory method in {@link Term} to create the argument.
    */
-  default ResultT eq(Term rightOperand) {
+  default ResultT isEqualTo(Term rightOperand) {
     return build("=", rightOperand);
   }
 
@@ -33,7 +33,7 @@ public interface ArithmeticRelationBuilder<ResultT> {
    *
    * <p>Use one of the static factory method in {@link Term} to create the argument.
    */
-  default ResultT lt(Term rightOperand) {
+  default ResultT isLessThan(Term rightOperand) {
     return build("<", rightOperand);
   }
 
@@ -42,7 +42,7 @@ public interface ArithmeticRelationBuilder<ResultT> {
    *
    * <p>Use one of the static factory method in {@link Term} to create the argument.
    */
-  default ResultT lte(Term rightOperand) {
+  default ResultT isLessThanOrEqualTo(Term rightOperand) {
     return build("<=", rightOperand);
   }
 
@@ -51,7 +51,7 @@ public interface ArithmeticRelationBuilder<ResultT> {
    *
    * <p>Use one of the static factory method in {@link Term} to create the argument.
    */
-  default ResultT gt(Term rightOperand) {
+  default ResultT isGreaterThan(Term rightOperand) {
     return build(">", rightOperand);
   }
 
@@ -60,7 +60,7 @@ public interface ArithmeticRelationBuilder<ResultT> {
    *
    * <p>Use one of the static factory method in {@link Term} to create the argument.
    */
-  default ResultT gte(Term rightOperand) {
+  default ResultT isGreaterThanOrEqualTo(Term rightOperand) {
     return build(">=", rightOperand);
   }
 
@@ -69,7 +69,7 @@ public interface ArithmeticRelationBuilder<ResultT> {
    *
    * <p>Use one of the static factory method in {@link Term} to create the argument.
    */
-  default ResultT ne(Term rightOperand) {
+  default ResultT isNotEqualTo(Term rightOperand) {
     return build("!=", rightOperand);
   }
 

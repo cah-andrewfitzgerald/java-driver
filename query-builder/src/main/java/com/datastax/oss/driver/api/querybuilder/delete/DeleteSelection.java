@@ -32,10 +32,10 @@ public interface DeleteSelection extends OngoingWhereClause<Delete> {
   /**
    * Adds a selector.
    *
-   * <p>To create the argument, use one of the {@code getXxx} factory methods in {@link
-   * QueryBuilderDsl}, for example {@link QueryBuilderDsl#getColumn(CqlIdentifier) getColumn}. This
-   * type also provides shortcuts to create and add the selector in one call, for example {@link
-   * #column(CqlIdentifier)} for {@code selector(getColumn(...))}.
+   * <p>To create the argument, use one of the factory methods in {@link Selector}, for example
+   * {@link Selector#column(CqlIdentifier) column}. This type also provides shortcuts to create and
+   * add the selector in one call, for example {@link #column(CqlIdentifier)} for {@code
+   * selector(column(...))}.
    *
    * <p>Note that the only valid arguments for DELETE are a column, a field in a UDT column (nested
    * UDTs are not supported), and an element in a collection column (nested collections are not
@@ -52,15 +52,13 @@ public interface DeleteSelection extends OngoingWhereClause<Delete> {
    * <p>This is slightly more efficient than adding the selectors one by one (since the underlying
    * implementation of this object is immutable).
    *
-   * <p>To create the arguments, use one of the {@code getXxx} factory methods in {@link
-   * QueryBuilderDsl}, for example {@link QueryBuilderDsl#getColumn(CqlIdentifier) getColumn}.
+   * <p>To create the arguments, use one of the factory methods in {@link Selector}, for example
+   * {@link Selector#column(CqlIdentifier) column}.
    *
    * <p>Note that the only valid arguments for DELETE are a column, a field in a UDT column (nested
    * UDTs are not supported), and an element in a collection column (nested collections are not
    * supported).
    *
-   * @throws IllegalArgumentException if one of the selectors is {@link QueryBuilderDsl#getAll()}
-   *     ({@code *} can only be used on its own).
    * @see #selector(Selector)
    */
   DeleteSelection selectors(Iterable<Selector> additionalSelectors);
@@ -73,13 +71,12 @@ public interface DeleteSelection extends OngoingWhereClause<Delete> {
   /**
    * Deletes a particular column by its CQL identifier.
    *
-   * <p>This is a shortcut for {@link #selector(Selector)
-   * selector(QueryBuilderDsl.getColumn(columnId))}.
+   * <p>This is a shortcut for {@link #selector(Selector) selector(Selector.column(columnId))}.
    *
-   * @see QueryBuilderDsl#getColumn(CqlIdentifier)
+   * @see Selector#column(CqlIdentifier)
    */
   default DeleteSelection column(CqlIdentifier columnId) {
-    return selector(QueryBuilderDsl.getColumn(columnId));
+    return selector(Selector.column(columnId));
   }
 
   /** Shortcut for {@link #column(CqlIdentifier) column(CqlIdentifier.fromCql(columnName))} */
@@ -90,20 +87,20 @@ public interface DeleteSelection extends OngoingWhereClause<Delete> {
   /**
    * Deletes a field inside of a UDT column, as in {@code DELETE user.name}.
    *
-   * <p>This is a shortcut for {@link #selector(Selector)
-   * selector(QueryBuilderDsl.getField(udtColumnId, fieldId))}.
+   * <p>This is a shortcut for {@link #selector(Selector) selector(Selector.field(udtColumnId,
+   * fieldId))}.
    *
-   * @see QueryBuilderDsl#getField(CqlIdentifier, CqlIdentifier)
+   * @see Selector#field(CqlIdentifier, CqlIdentifier)
    */
   default DeleteSelection field(CqlIdentifier udtColumnId, CqlIdentifier fieldId) {
-    return selector(QueryBuilderDsl.getField(udtColumnId, fieldId));
+    return selector(Selector.field(udtColumnId, fieldId));
   }
 
   /**
    * Shortcut for {@link #field(CqlIdentifier, CqlIdentifier)
    * field(CqlIdentifier.fromCql(udtColumnName), CqlIdentifier.fromCql(fieldName))}.
    *
-   * @see QueryBuilderDsl#getField(String, String)
+   * @see Selector#field(String, String)
    */
   default DeleteSelection field(String udtColumnName, String fieldName) {
     return field(CqlIdentifier.fromCql(udtColumnName), CqlIdentifier.fromCql(fieldName));
@@ -112,20 +109,20 @@ public interface DeleteSelection extends OngoingWhereClause<Delete> {
   /**
    * Deletes an element in a collection column, as in {@code DELETE m['key']}.
    *
-   * <p>This is a shortcut for {@link #selector(Selector)
-   * selector(QueryBuilderDsl.getElement(collectionId, index))}.
+   * <p>This is a shortcut for {@link #selector(Selector) selector(Selector.element(collectionId,
+   * index))}.
    *
-   * @see QueryBuilderDsl#getElement(CqlIdentifier, Term)
+   * @see Selector#element(CqlIdentifier, Term)
    */
   default DeleteSelection element(CqlIdentifier collectionId, Term index) {
-    return selector(QueryBuilderDsl.getElement(collectionId, index));
+    return selector(Selector.element(collectionId, index));
   }
 
   /**
    * Shortcut for {@link #element(CqlIdentifier, Term)
    * element(CqlIdentifier.fromCql(collectionName), index)}.
    *
-   * @see QueryBuilderDsl#getElement(String, Term)
+   * @see Selector#element(String, Term)
    */
   default DeleteSelection element(String collectionName, Term index) {
     return element(CqlIdentifier.fromCql(collectionName), index);

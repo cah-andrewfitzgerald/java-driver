@@ -26,19 +26,20 @@ public class DeleteSelectorTest {
 
   @Test
   public void should_generate_column_deletion() {
-    assertThat(deleteFrom("foo").column("v").whereColumn("k").eq(bindMarker()))
+    assertThat(deleteFrom("foo").column("v").whereColumn("k").isEqualTo(bindMarker()))
         .hasCql("DELETE v FROM foo WHERE k=?");
   }
 
   @Test
   public void should_generate_field_deletion() {
-    assertThat(deleteFrom("foo").field("address", "street").whereColumn("k").eq(bindMarker()))
+    assertThat(
+            deleteFrom("foo").field("address", "street").whereColumn("k").isEqualTo(bindMarker()))
         .hasCql("DELETE address.street FROM foo WHERE k=?");
   }
 
   @Test
   public void should_generate_element_deletion() {
-    assertThat(deleteFrom("foo").element("m", literal(1)).whereColumn("k").eq(bindMarker()))
+    assertThat(deleteFrom("foo").element("m", literal(1)).whereColumn("k").isEqualTo(bindMarker()))
         .hasCql("DELETE m[1] FROM foo WHERE k=?");
   }
 }

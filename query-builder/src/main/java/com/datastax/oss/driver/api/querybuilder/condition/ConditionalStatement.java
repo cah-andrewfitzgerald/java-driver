@@ -42,8 +42,8 @@ public interface ConditionalStatement<SelfT extends ConditionalStatement<SelfT>>
    * Adds an IF condition. All conditions are logically joined with AND. If {@link #ifExists()} was
    * invoked on this statement before, it will get cancelled.
    *
-   * <p>To create the argument, use one of the {@code ifXxx} factory methods in {@link
-   * QueryBuilderDsl}, for example {@link QueryBuilderDsl#ifColumn(CqlIdentifier) isColumn}.
+   * <p>To create the argument, use one of the factory methods in {@link Condition}, for example
+   * {@link Condition#column(CqlIdentifier) column}.
    *
    * <p>If you add multiple conditions as once, consider {@link #if_(Iterable)} as a more efficient
    * alternative.
@@ -57,8 +57,8 @@ public interface ConditionalStatement<SelfT extends ConditionalStatement<SelfT>>
    * <p>This is slightly more efficient than adding the relations one by one (since the underlying
    * implementation of this object is immutable).
    *
-   * <p>To create the arguments, use one of the {@code ifXxx} factory methods in {@link
-   * QueryBuilderDsl}, for example {@link QueryBuilderDsl#ifColumn(CqlIdentifier) isColumn}.
+   * <p>To create the arguments, use one of the factory methods in {@link Condition}, for example
+   * {@link Condition#column(CqlIdentifier) column}.
    */
   SelfT if_(Iterable<Condition> conditions);
 
@@ -70,18 +70,18 @@ public interface ConditionalStatement<SelfT extends ConditionalStatement<SelfT>>
   /**
    * Adds an IF condition on a simple column, as in {@code DELETE... IF k=1}.
    *
-   * <p>This is the equivalent of creating a condition with {@link
-   * QueryBuilderDsl#ifColumn(CqlIdentifier)} and passing it to {@link #if_(Condition)}.
+   * <p>This is the equivalent of creating a condition with {@link Condition#column(CqlIdentifier)}
+   * and passing it to {@link #if_(Condition)}.
    */
   default ConditionBuilder<SelfT> ifColumn(CqlIdentifier columnId) {
     return new DefaultConditionBuilder.Fluent<>(this, new ColumnLeftOperand(columnId));
   }
 
   /**
-   * Shortcut for {@link #ifColumn(CqlIdentifier) ifColumn(CqlIdentifier.fromCql(columnName))}.
+   * Shortcut for {@link #ifColumn(CqlIdentifier) column(CqlIdentifier.fromCql(columnName))}.
    *
-   * <p>This is the equivalent of creating a condition with {@link QueryBuilderDsl#ifColumn(String)}
-   * and passing it to {@link #if_(Condition)}.
+   * <p>This is the equivalent of creating a condition with {@link Condition#column(String)} and
+   * passing it to {@link #if_(Condition)}.
    */
   default ConditionBuilder<SelfT> ifColumn(String columnName) {
     return ifColumn(CqlIdentifier.fromCql(columnName));
@@ -91,9 +91,8 @@ public interface ConditionalStatement<SelfT extends ConditionalStatement<SelfT>>
    * Adds an IF condition on a field in a UDT column for a conditional statement, as in {@code
    * DELETE... IF address.street='test'}.
    *
-   * <p>This is the equivalent of creating a condition with {@link
-   * QueryBuilderDsl#ifField(CqlIdentifier, CqlIdentifier)} and passing it to {@link
-   * #if_(Condition)}.
+   * <p>This is the equivalent of creating a condition with {@link Condition#field(CqlIdentifier,
+   * CqlIdentifier)} and passing it to {@link #if_(Condition)}.
    */
   default ConditionBuilder<SelfT> ifField(CqlIdentifier columnId, CqlIdentifier fieldId) {
     return new DefaultConditionBuilder.Fluent<>(this, new FieldLeftOperand(columnId, fieldId));
@@ -101,10 +100,10 @@ public interface ConditionalStatement<SelfT extends ConditionalStatement<SelfT>>
 
   /**
    * Shortcut for {@link #ifField(CqlIdentifier, CqlIdentifier)
-   * ifField(CqlIdentifier.fromCql(columnName), CqlIdentifier.fromCql(fieldName))}.
+   * field(CqlIdentifier.fromCql(columnName), CqlIdentifier.fromCql(fieldName))}.
    *
-   * <p>This is the equivalent of creating a condition with {@link QueryBuilderDsl#ifField(String,
-   * String)} and passing it to {@link #if_(Condition)}.
+   * <p>This is the equivalent of creating a condition with {@link Condition#field(String, String)}
+   * and passing it to {@link #if_(Condition)}.
    */
   default ConditionBuilder<SelfT> ifField(String columnName, String fieldName) {
     return ifField(CqlIdentifier.fromCql(columnName), CqlIdentifier.fromCql(fieldName));
@@ -114,8 +113,8 @@ public interface ConditionalStatement<SelfT extends ConditionalStatement<SelfT>>
    * Adds an IF condition on an element in a collection column for a conditional statement, as in
    * {@code DELETE... IF m[0]=1}.
    *
-   * <p>This is the equivalent of creating a condition with {@link
-   * QueryBuilderDsl#ifElement(CqlIdentifier, Term)} and passing it to {@link #if_(Condition)}.
+   * <p>This is the equivalent of creating a condition with {@link Condition#element(CqlIdentifier,
+   * Term)} and passing it to {@link #if_(Condition)}.
    */
   default ConditionBuilder<SelfT> ifElement(CqlIdentifier columnId, Term index) {
     return new DefaultConditionBuilder.Fluent<>(
@@ -123,11 +122,11 @@ public interface ConditionalStatement<SelfT extends ConditionalStatement<SelfT>>
   }
 
   /**
-   * Shortcut for {@link #ifElement(CqlIdentifier, Term)
-   * ifElement(CqlIdentifier.fromCql(columnName), index)}.
+   * Shortcut for {@link #ifElement(CqlIdentifier, Term) element(CqlIdentifier.fromCql(columnName),
+   * index)}.
    *
-   * <p>This is the equivalent of creating a condition with {@link QueryBuilderDsl#ifElement(String,
-   * Term)} and passing it to {@link #if_(Condition)}.
+   * <p>This is the equivalent of creating a condition with {@link Condition#element(String, Term)}
+   * and passing it to {@link #if_(Condition)}.
    */
   default ConditionBuilder<SelfT> ifElement(String columnName, Term index) {
     return ifElement(CqlIdentifier.fromCql(columnName), index);

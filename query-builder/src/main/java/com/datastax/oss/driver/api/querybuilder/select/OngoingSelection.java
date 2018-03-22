@@ -37,10 +37,10 @@ public interface OngoingSelection {
   /**
    * Adds a selector.
    *
-   * <p>To create the argument, use one of the {@code getXxx} factory methods in {@link
-   * QueryBuilderDsl}, for example {@link QueryBuilderDsl#getColumn(CqlIdentifier) getColumn}. This
-   * type also provides shortcuts to create and add the selector in one call, for example {@link
-   * #column(CqlIdentifier)} for {@code selector(getColumn(...))}.
+   * <p>To create the argument, use one of the factory methods in {@link Selector}, for example
+   * {@link Selector#column(CqlIdentifier) column}. This type also provides shortcuts to create and
+   * add the selector in one call, for example {@link #column(CqlIdentifier)} for {@code
+   * selector(Selector.column(...))}.
    *
    * <p>If you add multiple selectors as once, consider {@link #selectors(Iterable)} as a more
    * efficient alternative.
@@ -53,11 +53,11 @@ public interface OngoingSelection {
    * <p>This is slightly more efficient than adding the selectors one by one (since the underlying
    * implementation of this object is immutable).
    *
-   * <p>To create the arguments, use one of the {@code getXxx} factory methods in {@link
-   * QueryBuilderDsl}, for example {@link QueryBuilderDsl#getColumn(CqlIdentifier) getColumn}.
+   * <p>To create the arguments, use one of the factory methods in {@link Selector}, for example
+   * {@link Selector#column(CqlIdentifier) column}.
    *
-   * @throws IllegalArgumentException if one of the selectors is {@link QueryBuilderDsl#getAll()}
-   *     ({@code *} can only be used on its own).
+   * @throws IllegalArgumentException if one of the selectors is {@link Selector#all()} ({@code *}
+   *     can only be used on its own).
    * @see #selector(Selector)
    */
   Select selectors(Iterable<Selector> additionalSelectors);
@@ -73,35 +73,34 @@ public interface OngoingSelection {
    * <p>This will clear any previously configured selector. Similarly, if any other selector is
    * added later, it will cancel this one.
    *
-   * <p>This is a shortcut for {@link #selector(Selector) selector(QueryBuilderDsl.getAll())}.
+   * <p>This is a shortcut for {@link #selector(Selector) selector(Selector.all())}.
    *
-   * @see QueryBuilderDsl#getAll()
+   * @see Selector#all()
    */
   default Select all() {
-    return selector(QueryBuilderDsl.getAll());
+    return selector(Selector.all());
   }
 
   /**
    * Selects the count of all returned rows, as in {@code SELECT count(*)}.
    *
-   * <p>This is a shortcut for {@link #selector(Selector) selector(QueryBuilderDsl.getCountAll())}.
+   * <p>This is a shortcut for {@link #selector(Selector) selector(Selector.countAll())}.
    *
-   * @see QueryBuilderDsl#getCountAll()
+   * @see Selector#countAll()
    */
   default Select countAll() {
-    return selector(QueryBuilderDsl.getCountAll());
+    return selector(Selector.countAll());
   }
 
   /**
    * Selects a particular column by its CQL identifier.
    *
-   * <p>This is a shortcut for {@link #selector(Selector)
-   * selector(QueryBuilderDsl.getColumn(columnId))}.
+   * <p>This is a shortcut for {@link #selector(Selector) selector(Selector.column(columnId))}.
    *
-   * @see QueryBuilderDsl#getColumn(CqlIdentifier)
+   * @see Selector#column(CqlIdentifier)
    */
   default Select column(CqlIdentifier columnId) {
-    return selector(QueryBuilderDsl.getColumn(columnId));
+    return selector(Selector.column(columnId));
   }
 
   /** Shortcut for {@link #column(CqlIdentifier) column(CqlIdentifier.fromCql(columnName))} */
@@ -115,7 +114,7 @@ public interface OngoingSelection {
    * <p>This is the same as calling {@link #column(CqlIdentifier)} for each element.
    */
   default Select columnsIds(Iterable<CqlIdentifier> columnIds) {
-    return selectors(Iterables.transform(columnIds, QueryBuilderDsl::getColumn));
+    return selectors(Iterables.transform(columnIds, Selector::column));
   }
 
   /** Var-arg equivalent of {@link #columnsIds(Iterable)}. */
@@ -129,7 +128,7 @@ public interface OngoingSelection {
    * <p>This is the same as calling {@link #column(String)} for each element.
    */
   default Select columns(Iterable<String> columnNames) {
-    return selectors(Iterables.transform(columnNames, QueryBuilderDsl::getColumn));
+    return selectors(Iterables.transform(columnNames, Selector::column));
   }
 
   /** Var-arg equivalent of {@link #columns(Iterable)}. */
@@ -142,13 +141,12 @@ public interface OngoingSelection {
    *
    * <p>This is available in Cassandra 4 and above.
    *
-   * <p>This is a shortcut for {@link #selector(Selector) selector(QueryBuilderDsl.getSum(left,
-   * right))}.
+   * <p>This is a shortcut for {@link #selector(Selector) selector(Selector.add(left, right))}.
    *
-   * @see QueryBuilderDsl#getSum(Selector, Selector)
+   * @see Selector#add(Selector, Selector)
    */
-  default Select sum(Selector left, Selector right) {
-    return selector(QueryBuilderDsl.getSum(left, right));
+  default Select add(Selector left, Selector right) {
+    return selector(Selector.add(left, right));
   }
 
   /**
@@ -156,13 +154,12 @@ public interface OngoingSelection {
    *
    * <p>This is available in Cassandra 4 and above.
    *
-   * <p>This is a shortcut for {@link #selector(Selector)
-   * selector(QueryBuilderDsl.getDifference(left, right))}.
+   * <p>This is a shortcut for {@link #selector(Selector) selector(Selector.subtract(left, right))}.
    *
-   * @see QueryBuilderDsl#getDifference(Selector, Selector)
+   * @see Selector#subtract(Selector, Selector)
    */
-  default Select difference(Selector left, Selector right) {
-    return selector(QueryBuilderDsl.getDifference(left, right));
+  default Select subtract(Selector left, Selector right) {
+    return selector(Selector.subtract(left, right));
   }
 
   /**
@@ -170,17 +167,15 @@ public interface OngoingSelection {
    *
    * <p>This is available in Cassandra 4 and above.
    *
-   * <p>This is a shortcut for {@link #selector(Selector) selector(QueryBuilderDsl.getProduct(left,
-   * right))}.
+   * <p>This is a shortcut for {@link #selector(Selector) selector(Selector.multiply(left, right))}.
    *
-   * <p>The arguments will be parenthesized if they are instances of {@link QueryBuilderDsl#getSum}
-   * or {@link QueryBuilderDsl#getDifference}. If they are raw selectors, you might have to
-   * parenthesize them yourself.
+   * <p>The arguments will be parenthesized if they are instances of {@link Selector#add} or {@link
+   * Selector#subtract}. If they are raw selectors, you might have to parenthesize them yourself.
    *
-   * @see QueryBuilderDsl#getProduct(Selector, Selector)
+   * @see Selector#multiply(Selector, Selector)
    */
-  default Select product(Selector left, Selector right) {
-    return selector(QueryBuilderDsl.getProduct(left, right));
+  default Select multiply(Selector left, Selector right) {
+    return selector(Selector.multiply(left, right));
   }
 
   /**
@@ -188,17 +183,15 @@ public interface OngoingSelection {
    *
    * <p>This is available in Cassandra 4 and above.
    *
-   * <p>This is a shortcut for {@link #selector(Selector) selector(QueryBuilderDsl.getQuotient(left,
-   * right))}.
+   * <p>This is a shortcut for {@link #selector(Selector) selector(Selector.divide(left, right))}.
    *
-   * <p>The arguments will be parenthesized if they are instances of {@link QueryBuilderDsl#getSum}
-   * or {@link QueryBuilderDsl#getDifference}. If they are raw selectors, you might have to
-   * parenthesize them yourself.
+   * <p>The arguments will be parenthesized if they are instances of {@link Selector#add} or {@link
+   * Selector#subtract}. If they are raw selectors, you might have to parenthesize them yourself.
    *
-   * @see QueryBuilderDsl#getQuotient(Selector, Selector)
+   * @see Selector#divide(Selector, Selector)
    */
-  default Select quotient(Selector left, Selector right) {
-    return selector(QueryBuilderDsl.getQuotient(left, right));
+  default Select divide(Selector left, Selector right) {
+    return selector(Selector.divide(left, right));
   }
 
   /**
@@ -206,17 +199,16 @@ public interface OngoingSelection {
    *
    * <p>This is available in Cassandra 4 and above.
    *
-   * <p>This is a shortcut for {@link #selector(Selector)
-   * selector(QueryBuilderDsl.getRemainder(left, right))}.
+   * <p>This is a shortcut for {@link #selector(Selector) selector(Selector.remainder(left,
+   * right))}.
    *
-   * <p>The arguments will be parenthesized if they are instances of {@link QueryBuilderDsl#getSum}
-   * or {@link QueryBuilderDsl#getDifference}. If they are raw selectors, you might have to
-   * parenthesize them yourself.
+   * <p>The arguments will be parenthesized if they are instances of {@link Selector#add} or {@link
+   * Selector#subtract}. If they are raw selectors, you might have to parenthesize them yourself.
    *
-   * @see QueryBuilderDsl#getRemainder(Selector, Selector)
+   * @see Selector#remainder(Selector, Selector)
    */
   default Select remainder(Selector left, Selector right) {
-    return selector(QueryBuilderDsl.getRemainder(left, right));
+    return selector(Selector.remainder(left, right));
   }
 
   /**
@@ -224,29 +216,26 @@ public interface OngoingSelection {
    *
    * <p>This is available in Cassandra 4 and above.
    *
-   * <p>This is a shortcut for {@link #selector(Selector)
-   * selector(QueryBuilderDsl.getOpposite(argument))}.
+   * <p>This is a shortcut for {@link #selector(Selector) selector(Selector.negate(argument))}.
    *
-   * <p>The argument will be parenthesized if it is an instance of {@link QueryBuilderDsl#getSum} or
-   * {@link QueryBuilderDsl#getDifference}. If it is a raw selector, you might have to parenthesize
-   * it yourself.
+   * <p>The argument will be parenthesized if it is an instance of {@link Selector#add} or {@link
+   * Selector#subtract}. If it is a raw selector, you might have to parenthesize it yourself.
    *
-   * @see QueryBuilderDsl#getOpposite(Selector)
+   * @see Selector#negate(Selector)
    */
-  default Select opposite(Selector argument) {
-    return selector(QueryBuilderDsl.getOpposite(argument));
+  default Select negate(Selector argument) {
+    return selector(Selector.negate(argument));
   }
 
   /**
    * Selects a field inside of a UDT column, as in {@code SELECT user.name}.
    *
-   * <p>This is a shortcut for {@link #selector(Selector) selector(QueryBuilderDsl.getField(udt,
-   * fieldId))}.
+   * <p>This is a shortcut for {@link #selector(Selector) selector(Selector.field(udt, fieldId))}.
    *
-   * @see QueryBuilderDsl#getField(Selector, CqlIdentifier)
+   * @see Selector#field(Selector, CqlIdentifier)
    */
   default Select field(Selector udt, CqlIdentifier fieldId) {
-    return selector(QueryBuilderDsl.getField(udt, fieldId));
+    return selector(Selector.field(udt, fieldId));
   }
 
   /**
@@ -262,19 +251,19 @@ public interface OngoingSelection {
    * selection, like a nested UDT).
    *
    * <p>In other words, this is a shortcut for {{@link #field(Selector, CqlIdentifier)
-   * field(QueryBuilderDsl.getColumn(udtColumnId), fieldId)}.
+   * field(QueryBuilderDsl.column(udtColumnId), fieldId)}.
    *
-   * @see QueryBuilderDsl#getField(CqlIdentifier, CqlIdentifier)
+   * @see Selector#field(CqlIdentifier, CqlIdentifier)
    */
   default Select field(CqlIdentifier udtColumnId, CqlIdentifier fieldId) {
-    return field(QueryBuilderDsl.getColumn(udtColumnId), fieldId);
+    return field(Selector.column(udtColumnId), fieldId);
   }
 
   /**
    * Shortcut for {@link #field(CqlIdentifier, CqlIdentifier)
    * field(CqlIdentifier.fromCql(udtColumnName), CqlIdentifier.fromCql(fieldName))}.
    *
-   * @see QueryBuilderDsl#getField(String, String)
+   * @see Selector#field(String, String)
    */
   default Select field(String udtColumnName, String fieldName) {
     return field(CqlIdentifier.fromCql(udtColumnName), CqlIdentifier.fromCql(fieldName));
@@ -285,32 +274,32 @@ public interface OngoingSelection {
    *
    * <p>As of Cassandra 4, this is only allowed for map and set columns.
    *
-   * <p>This is a shortcut for {@link #selector(Selector)
-   * selector(QueryBuilderDsl.getElement(collection, index))}.
+   * <p>This is a shortcut for {@link #selector(Selector) selector(Selector.element(collection,
+   * index))}.
    *
-   * @see QueryBuilderDsl#getElement(Selector, Term)
+   * @see Selector#element(Selector, Term)
    */
   default Select element(Selector collection, Term index) {
-    return selector(QueryBuilderDsl.getElement(collection, index));
+    return selector(Selector.element(collection, index));
   }
 
   /**
    * Shortcut for element selection when the target collection is a simple column.
    *
    * <p>In other words, this is the equivalent of {@link #element(Selector, Term)
-   * element(QueryBuilderDsl.getColumn(collection), index)}.
+   * element(QueryBuilderDsl.column(collection), index)}.
    *
-   * @see QueryBuilderDsl#getElement(CqlIdentifier, Term)
+   * @see Selector#element(CqlIdentifier, Term)
    */
   default Select element(CqlIdentifier collectionId, Term index) {
-    return element(QueryBuilderDsl.getColumn(collectionId), index);
+    return element(Selector.column(collectionId), index);
   }
 
   /**
    * Shortcut for {@link #element(CqlIdentifier, Term)
    * element(CqlIdentifier.fromCql(collectionName), index)}.
    *
-   * @see QueryBuilderDsl#getElement(String, Term)
+   * @see Selector#element(String, Term)
    */
   default Select element(String collectionName, Term index) {
     return element(CqlIdentifier.fromCql(collectionName), index);
@@ -323,36 +312,36 @@ public interface OngoingSelection {
    * ordered, the elements (or keys in the case of a map), will be compared to the bounds for
    * inclusions. Either bound can be unspecified, but not both.
    *
-   * <p>This is a shortcut for {@link #selector(Selector)
-   * selector(QueryBuilderDsl.getRange(collection, left, right))}.
+   * <p>This is a shortcut for {@link #selector(Selector) selector(Selector.range(collection, left,
+   * right))}.
    *
    * @param left the left bound (inclusive). Can be {@code null} to indicate that the slice is only
    *     right-bound.
    * @param right the right bound (inclusive). Can be {@code null} to indicate that the slice is
    *     only left-bound.
-   * @see QueryBuilderDsl#getRange(Selector, Term, Term)
+   * @see Selector#range(Selector, Term, Term)
    */
   default Select range(Selector collection, Term left, Term right) {
-    return selector(QueryBuilderDsl.getRange(collection, left, right));
+    return selector(Selector.range(collection, left, right));
   }
 
   /**
    * Shortcut for slice selection when the target collection is a simple column.
    *
    * <p>In other words, this is the equivalent of {@link #range(Selector, Term, Term)}
-   * range(QueryBuilderDsl.getColumn(collectionId), left, right)}.
+   * range(Selector.column(collectionId), left, right)}.
    *
-   * @see QueryBuilderDsl#getRange(CqlIdentifier, Term, Term)
+   * @see Selector#range(CqlIdentifier, Term, Term)
    */
   default Select range(CqlIdentifier collectionId, Term left, Term right) {
-    return range(QueryBuilderDsl.getColumn(collectionId), left, right);
+    return range(Selector.column(collectionId), left, right);
   }
 
   /**
    * Shortcut for {@link #range(CqlIdentifier, Term, Term)
    * range(CqlIdentifier.fromCql(collectionName), left, right)}.
    *
-   * @see QueryBuilderDsl#getRange(String, Term, Term)
+   * @see Selector#range(String, Term, Term)
    */
   default Select range(String collectionName, Term left, Term right) {
     return range(CqlIdentifier.fromCql(collectionName), left, right);
@@ -366,13 +355,13 @@ public interface OngoingSelection {
    * fail at execution time).
    *
    * <p>This is a shortcut for {@link #selector(Selector)
-   * selector(QueryBuilderDsl.getListOf(elementSelectors))}.
+   * selector(Selector.listOf(elementSelectors))}.
    *
    * @throws IllegalArgumentException if any of the selectors is aliased.
-   * @see QueryBuilderDsl#getListOf(Iterable)
+   * @see Selector#listOf(Iterable)
    */
   default Select listOf(Iterable<Selector> elementSelectors) {
-    return selector(QueryBuilderDsl.getListOf(elementSelectors));
+    return selector(Selector.listOf(elementSelectors));
   }
 
   /** Var-arg equivalent of {@link #listOf(Iterable)}. */
@@ -388,13 +377,13 @@ public interface OngoingSelection {
    * fail at execution time).
    *
    * <p>This is a shortcut for {@link #selector(Selector)
-   * selector(QueryBuilderDsl.getSetOf(elementSelectors))}.
+   * selector(Selector.setOf(elementSelectors))}.
    *
    * @throws IllegalArgumentException if any of the selectors is aliased.
-   * @see QueryBuilderDsl#getSetOf(Iterable)
+   * @see Selector#setOf(Iterable)
    */
   default Select setOf(Iterable<Selector> elementSelectors) {
-    return selector(QueryBuilderDsl.getSetOf(elementSelectors));
+    return selector(Selector.setOf(elementSelectors));
   }
 
   /** Var-arg equivalent of {@link #setOf(Iterable)}. */
@@ -408,13 +397,13 @@ public interface OngoingSelection {
    * <p>None of the selectors should be aliased (the query builder checks this at runtime).
    *
    * <p>This is a shortcut for {@link #selector(Selector)
-   * selector(QueryBuilderDsl.getTupleOf(elementSelectors))}.
+   * selector(Selector.tupleOf(elementSelectors))}.
    *
    * @throws IllegalArgumentException if any of the selectors is aliased.
-   * @see QueryBuilderDsl#getTupleOf(Iterable)
+   * @see Selector#tupleOf(Iterable)
    */
   default Select tupleOf(Iterable<Selector> elementSelectors) {
-    return selector(QueryBuilderDsl.getTupleOf(elementSelectors));
+    return selector(Selector.tupleOf(elementSelectors));
   }
 
   /** Var-arg equivalent of {@link #tupleOf(Iterable)}. */
@@ -431,7 +420,7 @@ public interface OngoingSelection {
    * fail at execution time if the types are not uniform.
    *
    * <p>This is a shortcut for {@link #selector(Selector)
-   * selector(QueryBuilderDsl.getMapOf(elementSelectors))}.
+   * selector(Selector.mapOf(elementSelectors))}.
    *
    * <p>Note that Cassandra often has trouble inferring the exact map type. This will manifest as
    * the error message:
@@ -444,10 +433,10 @@ public interface OngoingSelection {
    * DataType)}.
    *
    * @throws IllegalArgumentException if any of the selectors is aliased.
-   * @see QueryBuilderDsl#getMapOf(Map)
+   * @see Selector#mapOf(Map)
    */
   default Select mapOf(Map<Selector, Selector> elementSelectors) {
-    return selector(QueryBuilderDsl.getMapOf(elementSelectors));
+    return selector(Selector.mapOf(elementSelectors));
   }
 
   /**
@@ -456,15 +445,15 @@ public interface OngoingSelection {
    *
    * <p>Use the constants and static methods in {@link DataTypes} to create the data types.
    *
-   * <p>This is a shortcut for {@link #selector(Selector)
-   * selector(QueryBuilderDsl.getMapOf(elementSelectors, keyType, valueType))}.
+   * <p>This is a shortcut for {@link #selector(Selector) selector(Selector.mapOf(elementSelectors,
+   * keyType, valueType))}.
    *
    * @see #mapOf(Map)
-   * @see QueryBuilderDsl#getMapOf(Map, DataType, DataType)
+   * @see Selector#mapOf(Map, DataType, DataType)
    */
   default Select mapOf(
       Map<Selector, Selector> elementSelectors, DataType keyType, DataType valueType) {
-    return selector(QueryBuilderDsl.getMapOf(elementSelectors, keyType, valueType));
+    return selector(Selector.mapOf(elementSelectors, keyType, valueType));
   }
 
   /**
@@ -472,13 +461,13 @@ public interface OngoingSelection {
    *
    * <p>Use the constants and static methods in {@link DataTypes} to create the data type.
    *
-   * <p>This is a shortcut for {@link #selector(Selector)
-   * selector(QueryBuilderDsl.getTypeHint(selector, targetType))}.
+   * <p>This is a shortcut for {@link #selector(Selector) selector(Selector.typeHint(selector,
+   * targetType))}.
    *
-   * @see QueryBuilderDsl#getTypeHint(Selector, DataType)
+   * @see Selector#typeHint(Selector, DataType)
    */
   default Select typeHint(Selector selector, DataType targetType) {
-    return selector(QueryBuilderDsl.getTypeHint(selector, targetType));
+    return selector(Selector.typeHint(selector, targetType));
   }
 
   /**
@@ -486,20 +475,20 @@ public interface OngoingSelection {
    *
    * <p>None of the arguments should be aliased (the query builder checks this at runtime).
    *
-   * <p>This is a shortcut for {@link #selector(Selector)
-   * selector(QueryBuilderDsl.getFunction(functionId, arguments))}.
+   * <p>This is a shortcut for {@link #selector(Selector) selector(Selector.function(functionId,
+   * arguments))}.
    *
    * @throws IllegalArgumentException if any of the selectors is aliased.
-   * @see QueryBuilderDsl#getFunction(CqlIdentifier, Iterable)
+   * @see Selector#function(CqlIdentifier, Iterable)
    */
   default Select function(CqlIdentifier functionId, Iterable<Selector> arguments) {
-    return selector(QueryBuilderDsl.getFunction(functionId, arguments));
+    return selector(Selector.function(functionId, arguments));
   }
 
   /**
    * Var-arg equivalent of {@link #function(CqlIdentifier, Iterable)}.
    *
-   * @see QueryBuilderDsl#getFunction(CqlIdentifier, Selector...)
+   * @see Selector#function(CqlIdentifier, Selector...)
    */
   default Select function(CqlIdentifier functionId, Selector... arguments) {
     return function(functionId, Arrays.asList(arguments));
@@ -509,7 +498,7 @@ public interface OngoingSelection {
    * Shortcut for {@link #function(CqlIdentifier, Iterable)
    * function(CqlIdentifier.fromCql(functionName), arguments)}.
    *
-   * @see QueryBuilderDsl#getFunction(String, Iterable)
+   * @see Selector#function(String, Iterable)
    */
   default Select function(String functionName, Iterable<Selector> arguments) {
     return function(CqlIdentifier.fromCql(functionName), arguments);
@@ -518,7 +507,7 @@ public interface OngoingSelection {
   /**
    * Var-arg equivalent of {@link #function(String, Iterable)}.
    *
-   * @see QueryBuilderDsl#getFunction(String, Selector...)
+   * @see Selector#function(String, Selector...)
    */
   default Select function(String functionName, Selector... arguments) {
     return function(functionName, Arrays.asList(arguments));
@@ -529,21 +518,21 @@ public interface OngoingSelection {
    *
    * <p>None of the arguments should be aliased (the query builder checks this at runtime).
    *
-   * <p>This is a shortcut for {@link #selector(Selector)
-   * selector(QueryBuilderDsl.getFunction(keyspaceId, functionId, arguments))}.
+   * <p>This is a shortcut for {@link #selector(Selector) selector(Selector.function(keyspaceId,
+   * functionId, arguments))}.
    *
    * @throws IllegalArgumentException if any of the selectors is aliased.
-   * @see QueryBuilderDsl#getFunction(CqlIdentifier,CqlIdentifier, Iterable)
+   * @see Selector#function(CqlIdentifier, CqlIdentifier, Iterable)
    */
   default Select function(
       CqlIdentifier keyspaceId, CqlIdentifier functionId, Iterable<Selector> arguments) {
-    return selector(QueryBuilderDsl.getFunction(keyspaceId, functionId, arguments));
+    return selector(Selector.function(keyspaceId, functionId, arguments));
   }
 
   /**
    * Var-arg equivalent of {@link #function(CqlIdentifier,CqlIdentifier, Iterable)}.
    *
-   * @see QueryBuilderDsl#getFunction(CqlIdentifier,CqlIdentifier, Selector...)
+   * @see Selector#function(CqlIdentifier, CqlIdentifier, Selector...)
    */
   default Select function(
       CqlIdentifier keyspaceId, CqlIdentifier functionId, Selector... arguments) {
@@ -554,7 +543,7 @@ public interface OngoingSelection {
    * Shortcut for {@link #function(CqlIdentifier, CqlIdentifier, Iterable)
    * function(CqlIdentifier.fromCql(keyspaceName), CqlIdentifier.fromCql(functionName), arguments)}.
    *
-   * @see QueryBuilderDsl#getFunction(String,String, Iterable)
+   * @see Selector#function(String, String, Iterable)
    */
   default Select function(String keyspaceName, String functionName, Iterable<Selector> arguments) {
     return function(
@@ -564,7 +553,7 @@ public interface OngoingSelection {
   /**
    * Var-arg equivalent of {@link #function(String, String, Iterable)}.
    *
-   * @see QueryBuilderDsl#getFunction(String, String, Selector...)
+   * @see Selector#function(String, String, Selector...)
    */
   default Select function(String keyspaceName, String functionName, Selector... arguments) {
     return function(keyspaceName, functionName, Arrays.asList(arguments));
@@ -574,16 +563,16 @@ public interface OngoingSelection {
    * Shortcut to select the result of the built-in {@code writetime} function, as in {@code SELECT
    * writetime(c)}.
    *
-   * @see QueryBuilderDsl#getWriteTime(CqlIdentifier)
+   * @see Selector#writeTime(CqlIdentifier)
    */
   default Select writeTime(CqlIdentifier columnId) {
-    return selector(QueryBuilderDsl.getWriteTime(columnId));
+    return selector(Selector.writeTime(columnId));
   }
 
   /**
    * Shortcut for {@link #writeTime(CqlIdentifier) writeTime(CqlIdentifier.fromCql(columnName))}.
    *
-   * @see QueryBuilderDsl#getWriteTime(String)
+   * @see Selector#writeTime(String)
    */
   default Select writeTime(String columnName) {
     return writeTime(CqlIdentifier.fromCql(columnName));
@@ -593,16 +582,16 @@ public interface OngoingSelection {
    * Shortcut to select the result of the built-in {@code ttl} function, as in {@code SELECT
    * ttl(c)}.
    *
-   * @see QueryBuilderDsl#getTtl(CqlIdentifier)
+   * @see Selector#ttl(CqlIdentifier)
    */
   default Select ttl(CqlIdentifier columnId) {
-    return selector(QueryBuilderDsl.getTtl(columnId));
+    return selector(Selector.ttl(columnId));
   }
 
   /**
    * Shortcut for {@link #ttl(CqlIdentifier) ttl(CqlIdentifier.fromCql(columnName))}.
    *
-   * @see QueryBuilderDsl#getTtl(String)
+   * @see Selector#ttl(String)
    */
   default Select ttl(String columnName) {
     return ttl(CqlIdentifier.fromCql(columnName));
@@ -613,14 +602,14 @@ public interface OngoingSelection {
    *
    * <p>Use the constants and static methods in {@link DataTypes} to create the data type.
    *
-   * <p>This is a shortcut for {@link #selector(Selector)
-   * selector(QueryBuilderDsl.getFunction(keyspaceId, functionId, arguments))}.
+   * <p>This is a shortcut for {@link #selector(Selector) selector(Selector.function(keyspaceId,
+   * functionId, arguments))}.
    *
    * @throws IllegalArgumentException if the selector is aliased.
-   * @see QueryBuilderDsl#getCast(Selector, DataType)
+   * @see Selector#cast(Selector, DataType)
    */
   default Select cast(Selector selector, DataType targetType) {
-    return selector(QueryBuilderDsl.getCast(selector, targetType));
+    return selector(Selector.cast(selector, targetType));
   }
 
   /**
@@ -680,7 +669,7 @@ public interface OngoingSelection {
    * features that are not yet covered by the query builder.
    *
    * <p>This is a shortcut for {@link #selector(Selector)
-   * selector(QueryBuilderDsl.getRaw(rawExpression))}.
+   * selector(QueryBuilderDsl.raw(rawExpression))}.
    */
   default Select raw(String rawExpression) {
     return selector(QueryBuilderDsl.raw(rawExpression));

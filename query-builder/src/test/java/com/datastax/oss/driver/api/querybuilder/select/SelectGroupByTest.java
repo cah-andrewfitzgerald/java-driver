@@ -16,9 +16,6 @@
 package com.datastax.oss.driver.api.querybuilder.select;
 
 import static com.datastax.oss.driver.api.querybuilder.Assertions.assertThat;
-import static com.datastax.oss.driver.api.querybuilder.QueryBuilderDsl.getColumn;
-import static com.datastax.oss.driver.api.querybuilder.QueryBuilderDsl.getFunction;
-import static com.datastax.oss.driver.api.querybuilder.QueryBuilderDsl.isColumn;
 import static com.datastax.oss.driver.api.querybuilder.QueryBuilderDsl.literal;
 import static com.datastax.oss.driver.api.querybuilder.QueryBuilderDsl.selectFrom;
 
@@ -31,7 +28,8 @@ public class SelectGroupByTest {
     assertThat(
             selectFrom("foo")
                 .all()
-                .where(isColumn("k").eq(literal(1)))
+                .whereColumn("k")
+                .isEqualTo(literal(1))
                 .groupBy("foo")
                 .groupBy("bar"))
         .hasCql("SELECT * FROM foo WHERE k=1 GROUP BY foo,bar");
@@ -39,15 +37,18 @@ public class SelectGroupByTest {
     assertThat(
             selectFrom("foo")
                 .all()
-                .where(isColumn("k").eq(literal(1)))
+                .whereColumn("k")
+                .isEqualTo(literal(1))
                 .groupByColumns("foo", "bar"))
         .hasCql("SELECT * FROM foo WHERE k=1 GROUP BY foo,bar");
 
     assertThat(
             selectFrom("foo")
                 .all()
-                .where(isColumn("k").eq(literal(1)))
-                .groupBy(getFunction("ks", "f", getColumn("foo")), getColumn("bar")))
+                .whereColumn("k")
+                .isEqualTo(literal(1))
+                .groupBy(
+                    Selector.function("ks", "f", Selector.column("foo")), Selector.column("bar")))
         .hasCql("SELECT * FROM foo WHERE k=1 GROUP BY ks.f(foo),bar");
   }
 }

@@ -16,14 +16,14 @@
 package com.datastax.oss.driver.api.querybuilder.relation;
 
 import static com.datastax.oss.driver.api.querybuilder.Assertions.assertThat;
-import static com.datastax.oss.driver.api.querybuilder.QueryBuilderDsl.difference;
+import static com.datastax.oss.driver.api.querybuilder.QueryBuilderDsl.add;
 import static com.datastax.oss.driver.api.querybuilder.QueryBuilderDsl.function;
 import static com.datastax.oss.driver.api.querybuilder.QueryBuilderDsl.literal;
-import static com.datastax.oss.driver.api.querybuilder.QueryBuilderDsl.opposite;
-import static com.datastax.oss.driver.api.querybuilder.QueryBuilderDsl.product;
+import static com.datastax.oss.driver.api.querybuilder.QueryBuilderDsl.multiply;
+import static com.datastax.oss.driver.api.querybuilder.QueryBuilderDsl.negate;
 import static com.datastax.oss.driver.api.querybuilder.QueryBuilderDsl.raw;
 import static com.datastax.oss.driver.api.querybuilder.QueryBuilderDsl.remainder;
-import static com.datastax.oss.driver.api.querybuilder.QueryBuilderDsl.sum;
+import static com.datastax.oss.driver.api.querybuilder.QueryBuilderDsl.subtract;
 import static com.datastax.oss.driver.api.querybuilder.QueryBuilderDsl.typeHint;
 
 import com.datastax.oss.driver.api.core.CqlIdentifier;
@@ -43,17 +43,16 @@ public class TermTest {
 
   @Test
   public void should_generate_arithmetic_terms() {
-    assertThat(sum(raw("a"), raw("b"))).hasCql("a+b");
-    assertThat(sum(sum(raw("a"), raw("b")), sum(raw("c"), raw("d")))).hasCql("a+b+c+d");
-    assertThat(difference(sum(raw("a"), raw("b")), sum(raw("c"), raw("d")))).hasCql("a+b-(c+d)");
-    assertThat(difference(sum(raw("a"), raw("b")), difference(raw("c"), raw("d"))))
-        .hasCql("a+b-(c-d)");
-    assertThat(opposite(sum(raw("a"), raw("b")))).hasCql("-(a+b)");
-    assertThat(opposite(difference(raw("a"), raw("b")))).hasCql("-(a-b)");
-    assertThat(product(sum(raw("a"), raw("b")), sum(raw("c"), raw("d")))).hasCql("(a+b)*(c+d)");
-    assertThat(remainder(product(raw("a"), raw("b")), product(raw("c"), raw("d"))))
+    assertThat(add(raw("a"), raw("b"))).hasCql("a+b");
+    assertThat(add(add(raw("a"), raw("b")), add(raw("c"), raw("d")))).hasCql("a+b+c+d");
+    assertThat(subtract(add(raw("a"), raw("b")), add(raw("c"), raw("d")))).hasCql("a+b-(c+d)");
+    assertThat(subtract(add(raw("a"), raw("b")), subtract(raw("c"), raw("d")))).hasCql("a+b-(c-d)");
+    assertThat(negate(add(raw("a"), raw("b")))).hasCql("-(a+b)");
+    assertThat(negate(subtract(raw("a"), raw("b")))).hasCql("-(a-b)");
+    assertThat(multiply(add(raw("a"), raw("b")), add(raw("c"), raw("d")))).hasCql("(a+b)*(c+d)");
+    assertThat(remainder(multiply(raw("a"), raw("b")), multiply(raw("c"), raw("d"))))
         .hasCql("a*b%(c*d)");
-    assertThat(remainder(product(raw("a"), raw("b")), remainder(raw("c"), raw("d"))))
+    assertThat(remainder(multiply(raw("a"), raw("b")), remainder(raw("c"), raw("d"))))
         .hasCql("a*b%(c%d)");
   }
 

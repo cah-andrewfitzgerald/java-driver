@@ -18,10 +18,10 @@ package com.datastax.oss.driver.api.querybuilder.select;
 import static com.datastax.oss.driver.api.core.metadata.schema.ClusteringOrder.ASC;
 import static com.datastax.oss.driver.api.core.metadata.schema.ClusteringOrder.DESC;
 import static com.datastax.oss.driver.api.querybuilder.Assertions.assertThat;
-import static com.datastax.oss.driver.api.querybuilder.QueryBuilderDsl.isColumn;
 import static com.datastax.oss.driver.api.querybuilder.QueryBuilderDsl.literal;
 import static com.datastax.oss.driver.api.querybuilder.QueryBuilderDsl.selectFrom;
 
+import com.datastax.oss.driver.api.querybuilder.relation.Relation;
 import com.google.common.collect.ImmutableMap;
 import org.junit.Test;
 
@@ -32,14 +32,14 @@ public class SelectOrderingTest {
     assertThat(
             selectFrom("foo")
                 .all()
-                .where(isColumn("k").eq(literal(1)))
+                .where(Relation.column("k").isEqualTo(literal(1)))
                 .orderBy("c1", ASC)
                 .orderBy("c2", DESC))
         .hasCql("SELECT * FROM foo WHERE k=1 ORDER BY c1 ASC,c2 DESC");
     assertThat(
             selectFrom("foo")
                 .all()
-                .where(isColumn("k").eq(literal(1)))
+                .where(Relation.column("k").isEqualTo(literal(1)))
                 .orderBy(ImmutableMap.of("c1", ASC, "c2", DESC)))
         .hasCql("SELECT * FROM foo WHERE k=1 ORDER BY c1 ASC,c2 DESC");
   }
@@ -48,7 +48,7 @@ public class SelectOrderingTest {
   public void should_fail_when_provided_names_resolve_to_the_same_id() {
     selectFrom("foo")
         .all()
-        .where(isColumn("k").eq(literal(1)))
+        .where(Relation.column("k").isEqualTo(literal(1)))
         .orderBy(ImmutableMap.of("c1", ASC, "C1", DESC));
   }
 
@@ -57,7 +57,7 @@ public class SelectOrderingTest {
     assertThat(
             selectFrom("foo")
                 .all()
-                .where(isColumn("k").eq(literal(1)))
+                .where(Relation.column("k").isEqualTo(literal(1)))
                 .orderBy("c1", ASC)
                 .orderBy("c2", DESC)
                 .orderBy("c1", DESC))
@@ -65,7 +65,7 @@ public class SelectOrderingTest {
     assertThat(
             selectFrom("foo")
                 .all()
-                .where(isColumn("k").eq(literal(1)))
+                .where(Relation.column("k").isEqualTo(literal(1)))
                 .orderBy("c1", ASC)
                 .orderBy("c2", DESC)
                 .orderBy("c3", ASC)

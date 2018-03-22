@@ -29,15 +29,15 @@ public class SelectFluentRelationTest {
 
   @Test
   public void should_generate_comparison_relation() {
-    assertThat(selectFrom("foo").all().whereColumn("k").eq(bindMarker()))
+    assertThat(selectFrom("foo").all().whereColumn("k").isEqualTo(bindMarker()))
         .hasCql("SELECT * FROM foo WHERE k=?");
-    assertThat(selectFrom("foo").all().whereColumn("k").eq(bindMarker("value")))
+    assertThat(selectFrom("foo").all().whereColumn("k").isEqualTo(bindMarker("value")))
         .hasCql("SELECT * FROM foo WHERE k=:value");
   }
 
   @Test
   public void should_generate_is_not_null_relation() {
-    assertThat(selectFrom("foo").all().whereColumn("k").notNull())
+    assertThat(selectFrom("foo").all().whereColumn("k").isNotNull())
         .hasCql("SELECT * FROM foo WHERE k IS NOT NULL");
   }
 
@@ -51,7 +51,7 @@ public class SelectFluentRelationTest {
 
   @Test
   public void should_generate_token_relation() {
-    assertThat(selectFrom("foo").all().whereToken("k1", "k2").eq(bindMarker("t")))
+    assertThat(selectFrom("foo").all().whereToken("k1", "k2").isEqualTo(bindMarker("t")))
         .hasCql("SELECT * FROM foo WHERE token(k1,k2)=:t");
   }
 
@@ -61,9 +61,9 @@ public class SelectFluentRelationTest {
             selectFrom("foo")
                 .all()
                 .whereColumn("id")
-                .eq(bindMarker())
+                .isEqualTo(bindMarker())
                 .whereMapValue("user", raw("'name'"))
-                .eq(bindMarker()))
+                .isEqualTo(bindMarker()))
         .hasCql("SELECT * FROM foo WHERE id=? AND user['name']=?");
   }
 
@@ -73,7 +73,7 @@ public class SelectFluentRelationTest {
             selectFrom("foo")
                 .all()
                 .whereColumn("k")
-                .eq(bindMarker())
+                .isEqualTo(bindMarker())
                 .whereTuple("c1", "c2", "c3")
                 .in(bindMarker()))
         .hasCql("SELECT * FROM foo WHERE k=? AND (c1,c2,c3) IN ?");
@@ -81,7 +81,7 @@ public class SelectFluentRelationTest {
             selectFrom("foo")
                 .all()
                 .whereColumn("k")
-                .eq(bindMarker())
+                .isEqualTo(bindMarker())
                 .whereTuple("c1", "c2", "c3")
                 .in(bindMarker(), bindMarker()))
         .hasCql("SELECT * FROM foo WHERE k=? AND (c1,c2,c3) IN (?,?)");
@@ -89,7 +89,7 @@ public class SelectFluentRelationTest {
             selectFrom("foo")
                 .all()
                 .whereColumn("k")
-                .eq(bindMarker())
+                .isEqualTo(bindMarker())
                 .whereTuple("c1", "c2", "c3")
                 .in(bindMarker(), raw("(4,5,6)")))
         .hasCql("SELECT * FROM foo WHERE k=? AND (c1,c2,c3) IN (?,(4,5,6))");
@@ -97,7 +97,7 @@ public class SelectFluentRelationTest {
             selectFrom("foo")
                 .all()
                 .whereColumn("k")
-                .eq(bindMarker())
+                .isEqualTo(bindMarker())
                 .whereTuple("c1", "c2", "c3")
                 .in(
                     tuple(bindMarker(), bindMarker(), bindMarker()),
@@ -108,25 +108,25 @@ public class SelectFluentRelationTest {
             selectFrom("foo")
                 .all()
                 .whereColumn("k")
-                .eq(bindMarker())
+                .isEqualTo(bindMarker())
                 .whereTuple("c1", "c2", "c3")
-                .eq(bindMarker()))
+                .isEqualTo(bindMarker()))
         .hasCql("SELECT * FROM foo WHERE k=? AND (c1,c2,c3)=?");
     assertThat(
             selectFrom("foo")
                 .all()
                 .whereColumn("k")
-                .eq(bindMarker())
+                .isEqualTo(bindMarker())
                 .whereTuple("c1", "c2", "c3")
-                .lt(tuple(bindMarker(), bindMarker(), bindMarker())))
+                .isLessThan(tuple(bindMarker(), bindMarker(), bindMarker())))
         .hasCql("SELECT * FROM foo WHERE k=? AND (c1,c2,c3)<(?,?,?)");
     assertThat(
             selectFrom("foo")
                 .all()
                 .whereColumn("k")
-                .eq(bindMarker())
+                .isEqualTo(bindMarker())
                 .whereTuple("c1", "c2", "c3")
-                .gte(raw("(1,2,3)")))
+                .isGreaterThanOrEqualTo(raw("(1,2,3)")))
         .hasCql("SELECT * FROM foo WHERE k=? AND (c1,c2,c3)>=(1,2,3)");
   }
 
@@ -136,14 +136,15 @@ public class SelectFluentRelationTest {
             selectFrom("foo")
                 .all()
                 .whereColumn("k")
-                .eq(bindMarker())
+                .isEqualTo(bindMarker())
                 .whereCustomIndex("my_index", raw("'custom expression'")))
         .hasCql("SELECT * FROM foo WHERE k=? AND expr(my_index,'custom expression')");
   }
 
   @Test
   public void should_generate_raw_relation() {
-    assertThat(selectFrom("foo").all().whereColumn("k").eq(bindMarker()).whereRaw("c = 'test'"))
+    assertThat(
+            selectFrom("foo").all().whereColumn("k").isEqualTo(bindMarker()).whereRaw("c = 'test'"))
         .hasCql("SELECT * FROM foo WHERE k=? AND c = 'test'");
   }
 }

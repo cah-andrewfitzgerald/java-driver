@@ -19,6 +19,7 @@ import com.datastax.oss.driver.api.core.CqlIdentifier;
 import com.datastax.oss.driver.api.querybuilder.CqlSnippet;
 import com.datastax.oss.driver.api.querybuilder.QueryBuilderDsl;
 import com.datastax.oss.driver.api.querybuilder.relation.ArithmeticRelationBuilder;
+import com.datastax.oss.driver.api.querybuilder.select.Selector;
 
 /**
  * A simple expression that doesn't reference columns.
@@ -26,9 +27,8 @@ import com.datastax.oss.driver.api.querybuilder.relation.ArithmeticRelationBuild
  * <p>For example, it can be used:
  *
  * <ul>
- *   <li>for the indices in a {@link QueryBuilderDsl#getRange(CqlIdentifier, Term, Term) range
- *       selection};
- *   <li>as the right operand of a {@link ArithmeticRelationBuilder#eq(Term) relation}.
+ *   <li>for the indices in a {@link Selector#range(CqlIdentifier, Term, Term) range selection};
+ *   <li>as the right operand of a {@link ArithmeticRelationBuilder#isEqualTo(Term) relation}.
  * </ul>
  *
  * To build instances of this type, use the factory methods in {@link QueryBuilderDsl}, such as

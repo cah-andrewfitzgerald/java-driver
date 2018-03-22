@@ -3,15 +3,25 @@
 A condition is a clause that appears after the IF keyword in a conditional [UPDATE](../update/) or
 [DELETE](../delete/) statement.
 
-To create a condition, call one of the `ifXxx()` methods of [QueryBuilderDsl], chain it with one of
-the available "operator" methods, and pass the result to `if_()`:
+The easiest way to add a condition is with an `ifXxx` method in the fluent API:
+
+```java
+deleteFrom("user")
+    .whereColumn("k").isEqualTo(bindMarker())
+    .ifColumn("v1").isEqualTo(literal(1))
+    .ifColumn("v2").isEqualTo(literal(2));
+// DELETE FROM user WHERE k=? IF v1=1 AND v2=2    
+```
+
+You can also create it manually with one of the factory methods in [Condition], and then pass it to
+`if_()`:
 
 ```java
 import static com.datastax.oss.driver.api.querybuilder.QueryBuilderDsl.*;
 
-Condition vCondition = ifColumn("v").eq(literal(1));
+Condition vCondition = Condition.column("v").isEqualTo(literal(1));
 deleteFrom("user")
-    .whereColumn("k").eq(bindMarker())
+    .whereColumn("k").isEqualTo(bindMarker())
     .if_(vCondition);
 // DELETE FROM user WHERE k=? IF v=1
 ```
@@ -22,22 +32,11 @@ temporary objects:
 
 ```java
 deleteFrom("user")
-    .whereColumn("k").eq(bindMarker())
+    .whereColumn("k").isEqualTo(bindMarker())
     .if_(
-        ifColumn("v1").eq(literal(1)), 
-        ifColumn("v2").eq(literal(2)));
+        Condition.column("v1").isEqualTo(literal(1)), 
+        Condition.column("v2").isEqualTo(literal(2)));
 // DELETE FROM user WHERE k=? IF v1=1 AND v2=2
-```
-
-Finally, there are fluent shortcuts to create and add the condition in a single call. This is
-probably the most readable if you're building the query statically:
-
-```java
-deleteFrom("user")
-    .whereColumn("k").eq(bindMarker())
-    .ifColumn("v1").eq(literal(1))
-    .ifColumn("v2").eq(literal(2));
-// DELETE FROM user WHERE k=? IF v1=1 AND v2=2    
 ```
 
 Conditions are composed of a left operand, an operator, and a right-hand-side
@@ -47,14 +46,14 @@ Conditions are composed of a left operand, an operator, and a right-hand-side
 
 `ifColumn` operates on a single column. It supports basic arithmetic comparison operators:
 
-| Comparison operator | Method name |
-|---------------------|-------------|
-| `=`                 | `eq`        |
-| `<`                 | `lt`        |
-| `<=`                | `lte`       |
-| `>`                 | `gt`        |
-| `>=`                | `gte`       |
-| `!=`                | `ne`        |
+| Comparison operator | Method name              |
+|---------------------|--------------------------|
+| `=`                 | `isEqualTo`              |
+| `<`                 | `isLessThan`             |
+| `<=`                | `isLessThanOrEqualTo`    |
+| `>`                 | `isGreaterThan`          |
+| `>=`                | `isGreaterThanOrEqualTo` |
+| `!=`                | `isNotEqualTo`           |
 
 *Note: we support `!=` because it is present in the CQL grammar but, as of Cassandra 4, it is not
 implemented yet.*
@@ -64,7 +63,7 @@ alternative as a term:
 
 ```java
 deleteFrom("user")
-    .whereColumn("k").eq(bindMarker())
+    .whereColumn("k").isEqualTo(bindMarker())
     .ifColumn("v").in(bindMarker(), bindMarker(), bindMarker());
 // DELETE FROM user WHERE k=? IF v IN (?,?,?)
 ```
@@ -73,7 +72,7 @@ Or bind the whole list of alternatives as a single variable:
 
 ```java
 deleteFrom("user")
-    .whereColumn("k").eq(bindMarker())
+    .whereColumn("k").isEqualTo(bindMarker())
     .ifColumn("v").in(bindMarker());
 // DELETE FROM user WHERE k=? IF v IN ?
 ```
@@ -84,8 +83,8 @@ deleteFrom("user")
 
 ```java
 deleteFrom("user")
-    .whereColumn("k").eq(bindMarker())
-    .ifField("address", "zip").eq(literal(94040));
+    .whereColumn("k").isEqualTo(bindMarker())
+    .ifField("address", "zip").isEqualTo(literal(94040));
 // DELETE FROM user WHERE k=? IF address.zip=94040
 ```
 
@@ -97,7 +96,7 @@ It supports the same set of operators as simple columns.
 
 ```java
 deleteFrom("product")
-    .whereColumn("sku").eq(bindMarker())
+    .whereColumn("sku").isEqualTo(bindMarker())
     .ifElement("features", literal("color")).in(literal("red"), literal("blue"));
 // DELETE FROM product WHERE sku=? IF features['color'] IN ('red','blue')
 ```
@@ -111,7 +110,7 @@ without any syntax checking or escaping:
 
 ```java
 deleteFrom("product")
-    .whereColumn("sku").eq(bindMarker())
+    .whereColumn("sku").isEqualTo(bindMarker())
     .ifRaw("features['color'] IN ('red', 'blue') /*some random comment*/");
 // DELETE FROM product WHERE sku=? IF features['color'] IN ('red', 'blue') /*some random comment*/
 ```
@@ -125,7 +124,7 @@ are not yet covered by the query builder.
 Finally, you can specify an IF EXISTS clause:
 
 ```java
-deleteFrom("product").whereColumn("sku").eq(bindMarker()).ifExists();
+deleteFrom("product").whereColumn("sku").isEqualTo(bindMarker()).ifExists();
 // DELETE FROM product WHERE sku=? IF EXISTS
 ```
 
@@ -133,4 +132,4 @@ It is mutually exclusive with column conditions: if you previously specified col
 the statement, they will be ignored; conversely, adding a column condition cancels a previous IF
 EXISTS clause.
 
-[QueryBuilderDsl]: http://docs.datastax.com/en/drivers/java/4.0/com/datastax/oss/driver/api/query-builder/QueryBuilderDsl.html
+[Condition]: http://docs.datastax.com/en/drivers/java/4.0/com/datastax/oss/driver/api/query-builder/condition/Condition.html

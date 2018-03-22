@@ -25,18 +25,24 @@ public class DeleteTimestampTest {
 
   @Test
   public void should_generate_using_timestamp_clause() {
-    assertThat(deleteFrom("foo").usingTimestamp(1).whereColumn("k").eq(bindMarker()))
+    assertThat(deleteFrom("foo").usingTimestamp(1).whereColumn("k").isEqualTo(bindMarker()))
         .hasCql("DELETE FROM foo USING TIMESTAMP 1 WHERE k=?");
-    assertThat(deleteFrom("foo").usingTimestamp(bindMarker()).whereColumn("k").eq(bindMarker()))
+    assertThat(
+            deleteFrom("foo").usingTimestamp(bindMarker()).whereColumn("k").isEqualTo(bindMarker()))
         .hasCql("DELETE FROM foo USING TIMESTAMP ? WHERE k=?");
-    assertThat(deleteFrom("foo").column("v").usingTimestamp(1).whereColumn("k").eq(bindMarker()))
+    assertThat(
+            deleteFrom("foo")
+                .column("v")
+                .usingTimestamp(1)
+                .whereColumn("k")
+                .isEqualTo(bindMarker()))
         .hasCql("DELETE v FROM foo USING TIMESTAMP 1 WHERE k=?");
     assertThat(
             deleteFrom("foo")
                 .column("v")
                 .usingTimestamp(bindMarker())
                 .whereColumn("k")
-                .eq(bindMarker()))
+                .isEqualTo(bindMarker()))
         .hasCql("DELETE v FROM foo USING TIMESTAMP ? WHERE k=?");
   }
 
@@ -48,7 +54,7 @@ public class DeleteTimestampTest {
                 .usingTimestamp(2)
                 .usingTimestamp(3)
                 .whereColumn("k")
-                .eq(bindMarker()))
+                .isEqualTo(bindMarker()))
         .hasCql("DELETE FROM foo USING TIMESTAMP 3 WHERE k=?");
   }
 }

@@ -26,7 +26,7 @@ public interface ColumnRelationBuilder<ResultT>
   }
 
   /** Builds an IS NOT NULL relation for the column. */
-  default ResultT notNull() {
+  default ResultT isNotNull() {
     return build(" IS NOT NULL", null);
   }
 

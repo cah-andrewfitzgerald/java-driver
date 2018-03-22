@@ -6,14 +6,14 @@ A term is an expression that does not involve the value of a column. It is used:
   selectors;
 * as the right operand of [relations](../relation).
 
-To create a term, call one of the factory methods in `QueryBuilderDsl`:
+To create a term, call one of the factory methods in [QueryBuilderDsl]:
 
 ### Literals
 
 `literal()` takes a Java object and inlines it as a CQL literal:
 
 ```java
-selectFrom("user").all().where(isColumn("id").eq(literal(1)));
+selectFrom("user").all().whereColumn("id").isEqualTo(literal(1));
 // SELECT * FROM user WHERE id=1
 ```
 
@@ -28,14 +28,14 @@ your session):
 ```java
 MyCustomId myCustomId = ...;
 CodecRegistry registry = session.getContext().codecRegistry();
-selectFrom("user").all().where(isColumn("id").eq(literal(myCustomId, registry)));
+selectFrom("user").all().whereColumn("id").isEqualTo(literal(myCustomId, registry));
 ```
 
 Alternatively, you can pass a codec directly:
 
 ```java
 TypeCodec<MyCustomId> codec = ...;
-selectFrom("user").all().where(isColumn("id").eq(literal(myCustomId, codec)));
+selectFrom("user").all().whereColumn("id").isEqualTo(literal(myCustomId, codec));
 ```
 
 ### Function calls
@@ -46,9 +46,8 @@ qualified with a keyspace), and a list of terms that will be passed as arguments
 ```java
 selectFrom("sensor_data")
     .all()
-    .where(
-        isColumn("id").eq(bindMarker()),
-        isColumn("date").eq(function("system", "currentDate")));
+    .whereColumn("id").isEqualTo(bindMarker())
+    .whereColumn("date").isEqualTo(function("system", "currentDate"));
 // SELECT * FROM sensor_data WHERE id=? AND date=system.currentdate()
 ```
 
@@ -56,23 +55,22 @@ selectFrom("sensor_data")
 
 Terms can be combined with arithmetic operations.
 
-| CQL Operator | Term name     |
+| CQL Operator | Selector name |
 |--------------|---------------|
-| `a+b`        | `sum`         |
-| `a-b`        | `difference`  |
-| `-a`         | `opposite`    |
-| `a*b`        | `product`     |
-| `a/b`        | `quotient`    |
+| `a+b`        | `add`         |
+| `a-b`        | `subtract`    |
+| `-a`         | `negate`      |
+| `a*b`        | `multiply`    |
+| `a/b`        | `divide`      |
 | `a%b`        | `remainder`   |
 
 ```java
 selectFrom("sensor_data")
     .all()
-    .where(
-        isColumn("id").eq(bindMarker()),
-        isColumn("unix_timestamp").gt(difference(
-            function("toUnixTimestamp", function("now")),
-            literal(3600))));
+    .whereColumn("id").isEqualTo(bindMarker())
+    .whereColumn("unix_timestamp").isGreaterThan(
+        subtract(function("toUnixTimestamp", function("now")),
+        literal(3600)));
 // SELECT * FROM sensor_data WHERE id=? AND unix_timestamp>tounixtimestamp(now())-3600
 ```
 
@@ -86,11 +84,10 @@ expression uses floating-point division:
 ```java
 selectFrom("test")
     .all()
-    .where(
-        isColumn("k").eq(literal(1)),
-        isColumn("c").gt(quotient(
+    .whereColumn("k").isEqualTo(literal(1))
+    .whereColumn("c").isGreaterThan(divide(
             typeHint(literal(1), DataTypes.DOUBLE), 
-            literal(3))));
+            literal(3)));
 // SELECT * FROM test WHERE k=1 AND c>(double)1/3
 ```
 
@@ -100,7 +97,7 @@ Finally, it is possible to provide a raw CQL snippet with `raw()`; it will get a
 as-is, without any syntax checking or escaping:
 
 ```java
-selectFrom("sensor_data").all().where(isColumn("id").eq(raw("  1 /*some random comment*/")));
+selectFrom("sensor_data").all().whereColumn("id").isEqualTo(raw("  1 /*some random comment*/"));
 // SELECT * FROM sensor_data WHERE id=  1 /*some random comment*/
 ```
 
@@ -108,4 +105,5 @@ This should be used with caution, as it's possible to generate invalid CQL that 
 execution time; on the other hand, it can be used as a workaround to handle new CQL features that
 are not yet covered by the query builder.
 
-[CodecRegistry]: http://docs.datastax.com/en/drivers/java/4.0/com/datastax/oss/driver/api/core/type/codec/registry/CodecRegistry.html
+[QueryBuilderDsl]: http://docs.datastax.com/en/drivers/java/4.0/com/datastax/oss/driver/api/query-builder/QueryBuilderDsl.html
+[CodecRegistry]:   http://docs.datastax.com/en/drivers/java/4.0/com/datastax/oss/driver/api/core/type/codec/registry/CodecRegistry.html

@@ -17,11 +17,6 @@ package com.datastax.oss.driver.api.querybuilder.relation;
 
 import static com.datastax.oss.driver.api.querybuilder.Assertions.assertThat;
 import static com.datastax.oss.driver.api.querybuilder.QueryBuilderDsl.bindMarker;
-import static com.datastax.oss.driver.api.querybuilder.QueryBuilderDsl.isColumn;
-import static com.datastax.oss.driver.api.querybuilder.QueryBuilderDsl.isCustomIndex;
-import static com.datastax.oss.driver.api.querybuilder.QueryBuilderDsl.isMapValue;
-import static com.datastax.oss.driver.api.querybuilder.QueryBuilderDsl.isToken;
-import static com.datastax.oss.driver.api.querybuilder.QueryBuilderDsl.isTuple;
 import static com.datastax.oss.driver.api.querybuilder.QueryBuilderDsl.raw;
 import static com.datastax.oss.driver.api.querybuilder.QueryBuilderDsl.selectFrom;
 import static com.datastax.oss.driver.api.querybuilder.QueryBuilderDsl.tuple;
@@ -32,29 +27,29 @@ public class RelationTest {
 
   @Test
   public void should_generate_comparison_relation() {
-    assertThat(selectFrom("foo").all().where(isColumn("k").eq(bindMarker())))
+    assertThat(selectFrom("foo").all().where(Relation.column("k").isEqualTo(bindMarker())))
         .hasCql("SELECT * FROM foo WHERE k=?");
-    assertThat(selectFrom("foo").all().where(isColumn("k").eq(bindMarker("value"))))
+    assertThat(selectFrom("foo").all().where(Relation.column("k").isEqualTo(bindMarker("value"))))
         .hasCql("SELECT * FROM foo WHERE k=:value");
   }
 
   @Test
   public void should_generate_is_not_null_relation() {
-    assertThat(selectFrom("foo").all().where(isColumn("k").notNull()))
+    assertThat(selectFrom("foo").all().where(Relation.column("k").isNotNull()))
         .hasCql("SELECT * FROM foo WHERE k IS NOT NULL");
   }
 
   @Test
   public void should_generate_in_relation() {
-    assertThat(selectFrom("foo").all().where(isColumn("k").in(bindMarker())))
+    assertThat(selectFrom("foo").all().where(Relation.column("k").in(bindMarker())))
         .hasCql("SELECT * FROM foo WHERE k IN ?");
-    assertThat(selectFrom("foo").all().where(isColumn("k").in(bindMarker(), bindMarker())))
+    assertThat(selectFrom("foo").all().where(Relation.column("k").in(bindMarker(), bindMarker())))
         .hasCql("SELECT * FROM foo WHERE k IN (?,?)");
   }
 
   @Test
   public void should_generate_token_relation() {
-    assertThat(selectFrom("foo").all().where(isToken("k1", "k2").eq(bindMarker("t"))))
+    assertThat(selectFrom("foo").all().where(Relation.token("k1", "k2").isEqualTo(bindMarker("t"))))
         .hasCql("SELECT * FROM foo WHERE token(k1,k2)=:t");
   }
 
@@ -64,8 +59,8 @@ public class RelationTest {
             selectFrom("foo")
                 .all()
                 .where(
-                    isColumn("id").eq(bindMarker()),
-                    isMapValue("user", raw("'name'")).eq(bindMarker())))
+                    Relation.column("id").isEqualTo(bindMarker()),
+                    Relation.mapValue("user", raw("'name'")).isEqualTo(bindMarker())))
         .hasCql("SELECT * FROM foo WHERE id=? AND user['name']=?");
   }
 
@@ -74,27 +69,27 @@ public class RelationTest {
     assertThat(
             selectFrom("foo")
                 .all()
-                .where(isColumn("k").eq(bindMarker()))
-                .where(isTuple("c1", "c2", "c3").in(bindMarker())))
+                .where(Relation.column("k").isEqualTo(bindMarker()))
+                .where(Relation.tuple("c1", "c2", "c3").in(bindMarker())))
         .hasCql("SELECT * FROM foo WHERE k=? AND (c1,c2,c3) IN ?");
     assertThat(
             selectFrom("foo")
                 .all()
-                .where(isColumn("k").eq(bindMarker()))
-                .where(isTuple("c1", "c2", "c3").in(bindMarker(), bindMarker())))
+                .where(Relation.column("k").isEqualTo(bindMarker()))
+                .where(Relation.tuple("c1", "c2", "c3").in(bindMarker(), bindMarker())))
         .hasCql("SELECT * FROM foo WHERE k=? AND (c1,c2,c3) IN (?,?)");
     assertThat(
             selectFrom("foo")
                 .all()
-                .where(isColumn("k").eq(bindMarker()))
-                .where(isTuple("c1", "c2", "c3").in(bindMarker(), raw("(4,5,6)"))))
+                .where(Relation.column("k").isEqualTo(bindMarker()))
+                .where(Relation.tuple("c1", "c2", "c3").in(bindMarker(), raw("(4,5,6)"))))
         .hasCql("SELECT * FROM foo WHERE k=? AND (c1,c2,c3) IN (?,(4,5,6))");
     assertThat(
             selectFrom("foo")
                 .all()
-                .where(isColumn("k").eq(bindMarker()))
+                .where(Relation.column("k").isEqualTo(bindMarker()))
                 .where(
-                    isTuple("c1", "c2", "c3")
+                    Relation.tuple("c1", "c2", "c3")
                         .in(
                             tuple(bindMarker(), bindMarker(), bindMarker()),
                             tuple(bindMarker(), bindMarker(), bindMarker()))))
@@ -103,21 +98,22 @@ public class RelationTest {
     assertThat(
             selectFrom("foo")
                 .all()
-                .where(isColumn("k").eq(bindMarker()))
-                .where(isTuple("c1", "c2", "c3").eq(bindMarker())))
+                .where(Relation.column("k").isEqualTo(bindMarker()))
+                .where(Relation.tuple("c1", "c2", "c3").isEqualTo(bindMarker())))
         .hasCql("SELECT * FROM foo WHERE k=? AND (c1,c2,c3)=?");
     assertThat(
             selectFrom("foo")
                 .all()
-                .where(isColumn("k").eq(bindMarker()))
+                .where(Relation.column("k").isEqualTo(bindMarker()))
                 .where(
-                    isTuple("c1", "c2", "c3").lt(tuple(bindMarker(), bindMarker(), bindMarker()))))
+                    Relation.tuple("c1", "c2", "c3")
+                        .isLessThan(tuple(bindMarker(), bindMarker(), bindMarker()))))
         .hasCql("SELECT * FROM foo WHERE k=? AND (c1,c2,c3)<(?,?,?)");
     assertThat(
             selectFrom("foo")
                 .all()
-                .where(isColumn("k").eq(bindMarker()))
-                .where(isTuple("c1", "c2", "c3").gte(raw("(1,2,3)"))))
+                .where(Relation.column("k").isEqualTo(bindMarker()))
+                .where(Relation.tuple("c1", "c2", "c3").isGreaterThanOrEqualTo(raw("(1,2,3)"))))
         .hasCql("SELECT * FROM foo WHERE k=? AND (c1,c2,c3)>=(1,2,3)");
   }
 
@@ -126,15 +122,18 @@ public class RelationTest {
     assertThat(
             selectFrom("foo")
                 .all()
-                .where(isColumn("k").eq(bindMarker()))
-                .where(isCustomIndex("my_index", raw("'custom expression'"))))
+                .where(Relation.column("k").isEqualTo(bindMarker()))
+                .where(Relation.customIndex("my_index", raw("'custom expression'"))))
         .hasCql("SELECT * FROM foo WHERE k=? AND expr(my_index,'custom expression')");
   }
 
   @Test
   public void should_generate_raw_relation() {
     assertThat(
-            selectFrom("foo").all().where(isColumn("k").eq(bindMarker())).where(raw("c = 'test'")))
+            selectFrom("foo")
+                .all()
+                .where(Relation.column("k").isEqualTo(bindMarker()))
+                .where(raw("c = 'test'")))
         .hasCql("SELECT * FROM foo WHERE k=? AND c = 'test'");
   }
 }
