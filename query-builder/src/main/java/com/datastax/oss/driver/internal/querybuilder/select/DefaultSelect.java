@@ -455,4 +455,9 @@ public class DefaultSelect implements SelectFrom, Select {
   public boolean allowsFiltering() {
     return allowsFiltering;
   }
+
+  @Override
+  public String toString() {
+    return asCql();
+  }
 }

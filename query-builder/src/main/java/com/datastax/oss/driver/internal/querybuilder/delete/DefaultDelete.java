@@ -170,4 +170,9 @@ public class DefaultDelete implements DeleteSelection, Delete {
   public Object getTimestamp() {
     return timestamp;
   }
+
+  @Override
+  public String toString() {
+    return asCql();
+  }
 }
