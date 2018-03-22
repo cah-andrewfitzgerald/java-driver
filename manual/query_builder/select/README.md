@@ -281,7 +281,14 @@ Relations get added with the `where()` method:
 
 ```java
 selectFrom("user").all().where(isColumn("id").eq(literal(1)));
-SELECT * FROM user WHERE id=1
+// SELECT * FROM user WHERE id=1
+```
+
+Like selectors, they also have fluent shortcuts to build and add in a single call:
+
+```java
+selectFrom("user").all().whereColumn("id").eq(literal(1));
+// SELECT * FROM user WHERE id=1
 ```
 
 Relations are a common feature used by many types of statements, so they have a

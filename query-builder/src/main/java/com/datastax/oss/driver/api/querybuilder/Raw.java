@@ -16,6 +16,7 @@
 package com.datastax.oss.driver.api.querybuilder;
 
 import com.datastax.oss.driver.api.core.CqlIdentifier;
+import com.datastax.oss.driver.api.querybuilder.condition.Condition;
 import com.datastax.oss.driver.api.querybuilder.relation.Relation;
 import com.datastax.oss.driver.api.querybuilder.select.Selector;
 import com.datastax.oss.driver.api.querybuilder.term.Term;
@@ -35,4 +36,4 @@ import com.datastax.oss.driver.api.querybuilder.term.Term;
  * method is only valid when used as a selector; make sure you don't use it elsewhere, or you will
  * generate invalid CQL that will fail at execution time.
  */
-public interface Raw extends Selector, Relation, Term {}
+public interface Raw extends Selector, Relation, Condition, Term {}

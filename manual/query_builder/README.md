@@ -172,8 +172,13 @@ For a complete tour of the API, browse the child pages in this manual:
 
 * statement types:
   * [SELECT](select/)
+  * [INSERT](insert/)
+  * [UPDATE](update/)
+  * [BATCH](batch/)
+  * [DELETE](delete/)
 * common elements:
   * [Relations](relation/)
+  * [Conditions](condition/)
   * [Terms](term/)
 
 [QueryBuilderDsl]: http://docs.datastax.com/en/drivers/java/4.0/com/datastax/oss/driver/api/query-builder/QueryBuilderDsl.html

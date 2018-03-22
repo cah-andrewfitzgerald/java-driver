@@ -9,7 +9,7 @@ Relations are used by the following statements:
 * [UPDATE](../update/)
 * [DELETE](../delete/)
 
-To create a relation, call one of the `isXxx()` methods of `QueryBuilderDsl`, chain it with one of
+To create a relation, call one of the `isXxx()` methods of [QueryBuilderDsl], chain it with one of
 the available "operator" methods, and pass the result to `where()`:
 
 ```java
@@ -32,7 +32,7 @@ selectFrom("sensor_data").all()
 // SELECT * FROM sensor_data WHERE id=? AND date>?
 ```
 
-Finally, there are fluent shortcuts to create and add the selector in a single call. This is
+Finally, there are fluent shortcuts to create and add the relation in a single call. This is
 probably the most readable if you're building the query statically:
 
 ```java
@@ -211,3 +211,5 @@ selectFrom("foo").all().where(raw("k = 1 /*some custom comment*/ AND c<2"));
 This should be used with caution, as it's possible to generate invalid CQL that will fail at
 execution time; on the other hand, it can be used as a workaround to handle new CQL features that
 are not yet covered by the query builder.
+
+[QueryBuilderDsl]: http://docs.datastax.com/en/drivers/java/4.0/com/datastax/oss/driver/api/query-builder/QueryBuilderDsl.html

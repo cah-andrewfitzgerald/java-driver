@@ -47,7 +47,7 @@ public interface CanAddRelation<SelfT extends CanAddRelation<SelfT>> {
    * <p>This is slightly more efficient than adding the relations one by one (since the underlying
    * implementation of this object is immutable).
    *
-   * <p>To create the argument, use one of the {@code isXxx} factory methods in {@link
+   * <p>To create the arguments, use one of the {@code isXxx} factory methods in {@link
    * QueryBuilderDsl}, for example {@link QueryBuilderDsl#isColumn(CqlIdentifier) isColumn}.
    *
    * @see #where(Relation)

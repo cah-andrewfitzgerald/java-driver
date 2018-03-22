@@ -22,6 +22,9 @@ import com.datastax.oss.driver.api.core.type.DataTypes;
 import com.datastax.oss.driver.api.core.type.codec.CodecNotFoundException;
 import com.datastax.oss.driver.api.core.type.codec.TypeCodec;
 import com.datastax.oss.driver.api.core.type.codec.registry.CodecRegistry;
+import com.datastax.oss.driver.api.querybuilder.condition.Condition;
+import com.datastax.oss.driver.api.querybuilder.condition.ConditionBuilder;
+import com.datastax.oss.driver.api.querybuilder.delete.DeleteSelection;
 import com.datastax.oss.driver.api.querybuilder.relation.ColumnComponentRelationBuilder;
 import com.datastax.oss.driver.api.querybuilder.relation.ColumnRelationBuilder;
 import com.datastax.oss.driver.api.querybuilder.relation.Relation;
@@ -33,11 +36,16 @@ import com.datastax.oss.driver.api.querybuilder.term.Term;
 import com.datastax.oss.driver.internal.querybuilder.ArithmeticOperator;
 import com.datastax.oss.driver.internal.querybuilder.DefaultLiteral;
 import com.datastax.oss.driver.internal.querybuilder.DefaultRaw;
+import com.datastax.oss.driver.internal.querybuilder.condition.DefaultConditionBuilder;
+import com.datastax.oss.driver.internal.querybuilder.delete.DefaultDelete;
+import com.datastax.oss.driver.internal.querybuilder.relation.ColumnComponentLeftHandSide;
+import com.datastax.oss.driver.internal.querybuilder.relation.ColumnLeftHandSide;
 import com.datastax.oss.driver.internal.querybuilder.relation.CustomIndexRelation;
 import com.datastax.oss.driver.internal.querybuilder.relation.DefaultColumnComponentRelationBuilder;
 import com.datastax.oss.driver.internal.querybuilder.relation.DefaultColumnRelationBuilder;
 import com.datastax.oss.driver.internal.querybuilder.relation.DefaultTokenRelationBuilder;
 import com.datastax.oss.driver.internal.querybuilder.relation.DefaultTupleRelationBuilder;
+import com.datastax.oss.driver.internal.querybuilder.relation.FieldLeftHandSide;
 import com.datastax.oss.driver.internal.querybuilder.select.AllSelector;
 import com.datastax.oss.driver.internal.querybuilder.select.BinaryArithmeticSelector;
 import com.datastax.oss.driver.internal.querybuilder.select.CastSelector;
@@ -94,6 +102,29 @@ public interface QueryBuilderDsl {
   /** Shortcut for {@link #selectFrom(CqlIdentifier) selectFrom(CqlIdentifier.fromCql(table))} */
   static SelectFrom selectFrom(String table) {
     return selectFrom(CqlIdentifier.fromCql(table));
+  }
+
+  /** Starts a DELETE query for a qualified table. */
+  static DeleteSelection deleteFrom(CqlIdentifier keyspace, CqlIdentifier table) {
+    return new DefaultDelete(keyspace, table);
+  }
+
+  /**
+   * Shortcut for {@link #deleteFrom(CqlIdentifier, CqlIdentifier)
+   * deleteFrom(CqlIdentifier.fromCql(keyspace), CqlIdentifier.fromCql(table))}
+   */
+  static DeleteSelection deleteFrom(String keyspace, String table) {
+    return deleteFrom(CqlIdentifier.fromCql(keyspace), CqlIdentifier.fromCql(table));
+  }
+
+  /** Starts a DELETE query for an unqualified table. */
+  static DeleteSelection deleteFrom(CqlIdentifier table) {
+    return deleteFrom(null, table);
+  }
+
+  /** Shortcut for {@link #deleteFrom(CqlIdentifier) deleteFrom(CqlIdentifier.fromCql(table))} */
+  static DeleteSelection deleteFrom(String table) {
+    return deleteFrom(CqlIdentifier.fromCql(table));
   }
 
   /** Selects all columns, as in {@code SELECT *}. */
@@ -568,6 +599,48 @@ public interface QueryBuilderDsl {
    */
   static Relation isCustomIndex(String indexName, Term expression) {
     return isCustomIndex(CqlIdentifier.fromCql(indexName), expression);
+  }
+
+  /** Builds a condition on a column for a conditional statement, as in {@code DELETE... IF k=1}. */
+  static ConditionBuilder<Condition> ifColumn(CqlIdentifier columnId) {
+    return new DefaultConditionBuilder(new ColumnLeftHandSide(columnId));
+  }
+
+  /** Shortcut for {@link #ifColumn(CqlIdentifier) ifColumn(CqlIdentifier.fromCql(columnName))}. */
+  static ConditionBuilder<Condition> ifColumn(String columnName) {
+    return ifColumn(CqlIdentifier.fromCql(columnName));
+  }
+
+  /**
+   * Builds a condition on a field in a UDT column for a conditional statement, as in {@code
+   * DELETE... IF address.street='test'}.
+   */
+  static ConditionBuilder<Condition> ifField(CqlIdentifier columnId, CqlIdentifier fieldId) {
+    return new DefaultConditionBuilder(new FieldLeftHandSide(columnId, fieldId));
+  }
+
+  /**
+   * Shortcut for {@link #ifField(CqlIdentifier, CqlIdentifier)
+   * ifField(CqlIdentifier.fromCql(columnName), CqlIdentifier.fromCql(fieldName))}.
+   */
+  static ConditionBuilder<Condition> ifField(String columnName, String fieldName) {
+    return ifField(CqlIdentifier.fromCql(columnName), CqlIdentifier.fromCql(fieldName));
+  }
+
+  /**
+   * Builds a condition on an element in a collection column for a conditional statement, as in
+   * {@code DELETE... IF m[0]=1}.
+   */
+  static ConditionBuilder<Condition> ifElement(CqlIdentifier columnId, Term index) {
+    return new DefaultConditionBuilder(new ColumnComponentLeftHandSide(columnId, index));
+  }
+
+  /**
+   * Shortcut for {@link #ifElement(CqlIdentifier, Term)
+   * ifElement(CqlIdentifier.fromCql(columnName), index)}.
+   */
+  static ConditionBuilder<Condition> ifElement(String columnName, Term index) {
+    return ifElement(CqlIdentifier.fromCql(columnName), index);
   }
 
   /**

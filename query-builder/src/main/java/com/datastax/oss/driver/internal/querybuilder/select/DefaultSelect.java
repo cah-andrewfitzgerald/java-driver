@@ -24,11 +24,11 @@ import com.datastax.oss.driver.api.querybuilder.select.Select;
 import com.datastax.oss.driver.api.querybuilder.select.SelectFrom;
 import com.datastax.oss.driver.api.querybuilder.select.Selector;
 import com.datastax.oss.driver.internal.querybuilder.CqlHelper;
+import com.datastax.oss.driver.internal.querybuilder.ImmutableCollections;
 import com.google.common.base.Preconditions;
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableMap;
 import java.util.Map;
-import java.util.function.Function;
 
 public class DefaultSelect implements SelectFrom, Select {
 
@@ -142,7 +142,7 @@ public class DefaultSelect implements SelectFrom, Select {
       // previous '*' gets cancelled
       newSelectors = ImmutableList.of(selector);
     } else {
-      newSelectors = append(selectors, selector);
+      newSelectors = ImmutableCollections.append(selectors, selector);
     }
     return withSelectors(newSelectors);
   }
@@ -169,7 +169,7 @@ public class DefaultSelect implements SelectFrom, Select {
     } else if (selectors.isEmpty()) {
       throw new IllegalStateException("Can't alias, no selectors defined");
     }
-    return withSelectors(modifyLast(selectors, last -> last.as(alias)));
+    return withSelectors(ImmutableCollections.modifyLast(selectors, last -> last.as(alias)));
   }
 
   public Select withSelectors(ImmutableList<Selector> newSelectors) {
@@ -189,12 +189,12 @@ public class DefaultSelect implements SelectFrom, Select {
 
   @Override
   public Select where(Relation relation) {
-    return withRelations(append(relations, relation));
+    return withRelations(ImmutableCollections.append(relations, relation));
   }
 
   @Override
   public Select where(Iterable<Relation> additionalRelations) {
-    return withRelations(concat(relations, additionalRelations));
+    return withRelations(ImmutableCollections.concat(relations, additionalRelations));
   }
 
   public Select withRelations(ImmutableList<Relation> newRelations) {
@@ -214,12 +214,12 @@ public class DefaultSelect implements SelectFrom, Select {
 
   @Override
   public Select groupBy(Selector groupByClause) {
-    return withGroupByClauses(append(groupByClauses, groupByClause));
+    return withGroupByClauses(ImmutableCollections.append(groupByClauses, groupByClause));
   }
 
   @Override
   public Select groupBy(Iterable<Selector> newGroupByClauses) {
-    return withGroupByClauses(concat(groupByClauses, newGroupByClauses));
+    return withGroupByClauses(ImmutableCollections.concat(groupByClauses, newGroupByClauses));
   }
 
   public Select withGroupByClauses(ImmutableList<Selector> newGroupByClauses) {
@@ -239,12 +239,12 @@ public class DefaultSelect implements SelectFrom, Select {
 
   @Override
   public Select orderBy(CqlIdentifier columnId, ClusteringOrder order) {
-    return withOrderings(append(orderings, columnId, order));
+    return withOrderings(ImmutableCollections.append(orderings, columnId, order));
   }
 
   @Override
   public Select orderByIds(Map<CqlIdentifier, ClusteringOrder> newOrderings) {
-    return withOrderings(concat(orderings, newOrderings));
+    return withOrderings(ImmutableCollections.concat(orderings, newOrderings));
   }
 
   public Select withOrderings(ImmutableMap<CqlIdentifier, ClusteringOrder> newOrderings) {
@@ -454,46 +454,5 @@ public class DefaultSelect implements SelectFrom, Select {
 
   public boolean allowsFiltering() {
     return allowsFiltering;
-  }
-
-  // TODO will likely be used by other queries, move elsewhere
-  private static <T> ImmutableList<T> append(ImmutableList<T> list, T newElement) {
-    return ImmutableList.<T>builder().addAll(list).add(newElement).build();
-  }
-
-  private static <T> ImmutableList<T> concat(ImmutableList<T> list1, Iterable<T> list2) {
-    return ImmutableList.<T>builder().addAll(list1).addAll(list2).build();
-  }
-
-  private static <K, V> ImmutableMap<K, V> append(ImmutableMap<K, V> map, K newKey, V newValue) {
-    ImmutableMap.Builder<K, V> builder = ImmutableMap.builder();
-    for (Map.Entry<K, V> entry : map.entrySet()) {
-      if (!entry.getKey().equals(newKey)) {
-        builder.put(entry);
-      }
-    }
-    builder.put(newKey, newValue);
-    return builder.build();
-  }
-
-  private static <K, V> ImmutableMap<K, V> concat(ImmutableMap<K, V> map1, Map<K, V> map2) {
-    ImmutableMap.Builder<K, V> builder = ImmutableMap.builder();
-    for (Map.Entry<K, V> entry : map1.entrySet()) {
-      if (!map2.containsKey(entry.getKey())) {
-        builder.put(entry);
-      }
-    }
-    builder.putAll(map2);
-    return builder.build();
-  }
-
-  private static <T> ImmutableList<T> modifyLast(ImmutableList<T> list, Function<T, T> change) {
-    ImmutableList.Builder<T> builder = ImmutableList.builder();
-    int size = list.size();
-    for (int i = 0; i < size - 1; i++) {
-      builder.add(list.get(i));
-    }
-    builder.add(change.apply(list.get(size - 1)));
-    return builder.build();
   }
 }
