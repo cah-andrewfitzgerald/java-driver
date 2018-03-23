@@ -119,7 +119,7 @@ Relations are a common feature used by many types of statements, so they have a
 
 ### Conditions
 
-Conditions get added with the fluent `isXxx()` method:
+Conditions get added with the fluent `ifXxx()` methods:
 
 ```java
 deleteFrom("user")

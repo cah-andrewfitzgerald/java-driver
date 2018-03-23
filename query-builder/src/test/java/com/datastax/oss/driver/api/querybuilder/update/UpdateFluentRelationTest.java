@@ -13,11 +13,11 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.datastax.oss.driver.api.querybuilder.delete;
+package com.datastax.oss.driver.api.querybuilder.update;
 
 import static com.datastax.oss.driver.api.querybuilder.Assertions.assertThat;
 import static com.datastax.oss.driver.api.querybuilder.QueryBuilderDsl.bindMarker;
-import static com.datastax.oss.driver.api.querybuilder.QueryBuilderDsl.deleteFrom;
+import static com.datastax.oss.driver.api.querybuilder.QueryBuilderDsl.update;
 
 import com.datastax.oss.driver.api.querybuilder.relation.RelationTest;
 import com.datastax.oss.driver.api.querybuilder.select.SelectFluentRelationTest;
@@ -29,11 +29,11 @@ import org.junit.Test;
  * @see SelectFluentRelationTest
  * @see RelationTest
  */
-public class DeleteFluentRelationTest {
+public class UpdateFluentRelationTest {
 
   @Test
-  public void should_generate_delete_with_column_relation() {
-    assertThat(deleteFrom("foo").whereColumn("k").isEqualTo(bindMarker()))
-        .hasCql("DELETE FROM foo WHERE k=?");
+  public void should_generate_update_with_column_relation() {
+    assertThat(update("foo").setColumn("v", bindMarker()).whereColumn("k").isEqualTo(bindMarker()))
+        .hasCql("UPDATE foo SET v=? WHERE k=?");
   }
 }

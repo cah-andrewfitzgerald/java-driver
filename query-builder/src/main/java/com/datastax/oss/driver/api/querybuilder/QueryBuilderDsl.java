@@ -26,6 +26,7 @@ import com.datastax.oss.driver.api.querybuilder.delete.DeleteSelection;
 import com.datastax.oss.driver.api.querybuilder.relation.Relation;
 import com.datastax.oss.driver.api.querybuilder.select.SelectFrom;
 import com.datastax.oss.driver.api.querybuilder.term.Term;
+import com.datastax.oss.driver.api.querybuilder.update.UpdateStart;
 import com.datastax.oss.driver.internal.querybuilder.ArithmeticOperator;
 import com.datastax.oss.driver.internal.querybuilder.DefaultLiteral;
 import com.datastax.oss.driver.internal.querybuilder.DefaultRaw;
@@ -37,6 +38,7 @@ import com.datastax.oss.driver.internal.querybuilder.term.FunctionTerm;
 import com.datastax.oss.driver.internal.querybuilder.term.OppositeTerm;
 import com.datastax.oss.driver.internal.querybuilder.term.TupleTerm;
 import com.datastax.oss.driver.internal.querybuilder.term.TypeHintTerm;
+import com.datastax.oss.driver.internal.querybuilder.update.DefaultUpdate;
 import java.util.Arrays;
 
 /** A Domain-Specific Language to build CQL queries using Java code. */
@@ -69,6 +71,29 @@ public class QueryBuilderDsl {
   /** Shortcut for {@link #selectFrom(CqlIdentifier) selectFrom(CqlIdentifier.fromCql(table))} */
   public static SelectFrom selectFrom(String table) {
     return selectFrom(CqlIdentifier.fromCql(table));
+  }
+
+  /** Starts an UPDATE query for a qualified table. */
+  public static UpdateStart update(CqlIdentifier keyspace, CqlIdentifier table) {
+    return new DefaultUpdate(keyspace, table);
+  }
+
+  /**
+   * Shortcut for {@link #update(CqlIdentifier, CqlIdentifier)
+   * update(CqlIdentifier.fromCql(keyspace), CqlIdentifier.fromCql(table))}
+   */
+  public static UpdateStart update(String keyspace, String table) {
+    return update(CqlIdentifier.fromCql(keyspace), CqlIdentifier.fromCql(table));
+  }
+
+  /** Starts an UPDATE query for an unqualified table. */
+  public static UpdateStart update(CqlIdentifier table) {
+    return update(null, table);
+  }
+
+  /** Shortcut for {@link #update(CqlIdentifier) update(CqlIdentifier.fromCql(table))} */
+  public static UpdateStart update(String table) {
+    return update(CqlIdentifier.fromCql(table));
   }
 
   /** Starts a DELETE query for a qualified table. */

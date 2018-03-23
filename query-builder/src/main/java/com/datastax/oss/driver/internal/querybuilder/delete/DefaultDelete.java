@@ -82,7 +82,7 @@ public class DefaultDelete implements DeleteSelection, Delete {
     return withRelations(ImmutableCollections.concat(relations, additionalRelations));
   }
 
-  private Delete withRelations(ImmutableList<Relation> newRelations) {
+  public Delete withRelations(ImmutableList<Relation> newRelations) {
     return new DefaultDelete(
         keyspace, table, selectors, newRelations, timestamp, ifExists, conditions);
   }
