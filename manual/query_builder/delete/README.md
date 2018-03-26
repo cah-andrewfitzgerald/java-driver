@@ -1,6 +1,6 @@
 ## DELETE
 
-To start a DELETE query, use one of the `deleteFrom` method in [QueryBuilderDsl]. There are several
+To start a DELETE query, use one of the `deleteFrom` methods in [QueryBuilderDsl]. There are several
 variants depending on whether your table name is qualified, and whether you use case-sensitive
 identifiers or case-insensitive strings:
 

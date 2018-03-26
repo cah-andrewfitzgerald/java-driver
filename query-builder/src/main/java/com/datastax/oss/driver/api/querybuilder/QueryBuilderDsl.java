@@ -23,6 +23,7 @@ import com.datastax.oss.driver.api.core.type.codec.CodecNotFoundException;
 import com.datastax.oss.driver.api.core.type.codec.TypeCodec;
 import com.datastax.oss.driver.api.core.type.codec.registry.CodecRegistry;
 import com.datastax.oss.driver.api.querybuilder.delete.DeleteSelection;
+import com.datastax.oss.driver.api.querybuilder.insert.InsertInto;
 import com.datastax.oss.driver.api.querybuilder.relation.Relation;
 import com.datastax.oss.driver.api.querybuilder.select.SelectFrom;
 import com.datastax.oss.driver.api.querybuilder.term.Term;
@@ -31,6 +32,7 @@ import com.datastax.oss.driver.internal.querybuilder.ArithmeticOperator;
 import com.datastax.oss.driver.internal.querybuilder.DefaultLiteral;
 import com.datastax.oss.driver.internal.querybuilder.DefaultRaw;
 import com.datastax.oss.driver.internal.querybuilder.delete.DefaultDelete;
+import com.datastax.oss.driver.internal.querybuilder.insert.DefaultInsert;
 import com.datastax.oss.driver.internal.querybuilder.select.DefaultBindMarker;
 import com.datastax.oss.driver.internal.querybuilder.select.DefaultSelect;
 import com.datastax.oss.driver.internal.querybuilder.term.BinaryArithmeticTerm;
@@ -71,6 +73,29 @@ public class QueryBuilderDsl {
   /** Shortcut for {@link #selectFrom(CqlIdentifier) selectFrom(CqlIdentifier.fromCql(table))} */
   public static SelectFrom selectFrom(String table) {
     return selectFrom(CqlIdentifier.fromCql(table));
+  }
+
+  /** Starts an INSERT query for a qualified table. */
+  public static InsertInto insertInto(CqlIdentifier keyspace, CqlIdentifier table) {
+    return new DefaultInsert(keyspace, table);
+  }
+
+  /**
+   * Shortcut for {@link #insertInto(CqlIdentifier, CqlIdentifier)
+   * insertInto(CqlIdentifier.fromCql(keyspace), CqlIdentifier.fromCql(table))}.
+   */
+  public static InsertInto insertInto(String keyspace, String table) {
+    return insertInto(CqlIdentifier.fromCql(keyspace), CqlIdentifier.fromCql(table));
+  }
+
+  /** Starts an INSERT query for an unqualified table. */
+  public static InsertInto insertInto(CqlIdentifier table) {
+    return insertInto(null, table);
+  }
+
+  /** Shortcut for {@link #insertInto(CqlIdentifier) insertInto(CqlIdentifier.fromCql(table))}. */
+  public static InsertInto insertInto(String table) {
+    return insertInto(CqlIdentifier.fromCql(table));
   }
 
   /** Starts an UPDATE query for a qualified table. */
