@@ -19,7 +19,6 @@ import com.datastax.oss.driver.api.core.CqlIdentifier;
 import com.datastax.oss.driver.api.querybuilder.schema.CreateKeyspace;
 import com.datastax.oss.driver.internal.querybuilder.ImmutableCollections;
 import com.google.common.collect.ImmutableMap;
-import java.util.Map;
 
 public class DefaultCreateKeyspace implements CreateKeyspace {
 
@@ -49,34 +48,6 @@ public class DefaultCreateKeyspace implements CreateKeyspace {
     return new DefaultCreateKeyspace(keyspaceName, true, properties);
   }
 
-  private String extractPropertyValue(Object property) {
-    StringBuilder propertyValue = new StringBuilder();
-    if (property instanceof String) {
-      propertyValue.append("'").append((String) property).append("'");
-    } else if (property instanceof Map) {
-      @SuppressWarnings("unchecked")
-      Map<String, Object> propertyMap = (Map<String, Object>) property;
-      boolean first = true;
-      propertyValue.append("{");
-      for (Map.Entry<String, Object> subProperty : propertyMap.entrySet()) {
-        if (first) {
-          first = false;
-        } else {
-          propertyValue.append(",");
-        }
-        propertyValue
-            .append("'")
-            .append(subProperty.getKey())
-            .append("':")
-            .append(extractPropertyValue(subProperty.getValue()));
-      }
-      propertyValue.append("}");
-    } else {
-      propertyValue.append(property);
-    }
-    return propertyValue.toString();
-  }
-
   @Override
   public String asCql() {
     StringBuilder builder = new StringBuilder();
@@ -87,19 +58,7 @@ public class DefaultCreateKeyspace implements CreateKeyspace {
     }
 
     builder.append(keyspaceName.asCql(true));
-
-    boolean first = true;
-    for (Map.Entry<String, Object> property : properties.entrySet()) {
-      if (first) {
-        builder.append(" WITH ");
-        first = false;
-      } else {
-        builder.append(" AND ");
-      }
-      String value = extractPropertyValue(property.getValue());
-      builder.append(property.getKey()).append("=").append(value);
-    }
-
+    builder.append(PropertyUtils.buildProperties(properties, true));
     return builder.toString();
   }
 }

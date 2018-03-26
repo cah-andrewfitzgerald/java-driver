@@ -19,7 +19,7 @@ import com.datastax.oss.driver.api.querybuilder.BuildableQuery;
 import com.google.common.collect.ImmutableMap;
 import java.util.Map;
 
-public interface CreateKeyspace extends BuildableQuery {
+public interface CreateKeyspace extends BuildableQuery, PropertyHolder<CreateKeyspace> {
 
   /**
    * Adds SimpleStrategy replication options with the given replication factor.
@@ -65,12 +65,6 @@ public interface CreateKeyspace extends BuildableQuery {
   default CreateKeyspace withDurableWrites(boolean durableWrites) {
     return withProperty("durable_writes", true);
   }
-
-  /**
-   * Adds a free-form property. This is useful for custom options or new options that have not yet
-   * been added to this API.
-   */
-  CreateKeyspace withProperty(String name, Object value);
 
   /**
    * Adds 'IF NOT EXISTS" to the create keyspace specification. This indicates that the keyspace
