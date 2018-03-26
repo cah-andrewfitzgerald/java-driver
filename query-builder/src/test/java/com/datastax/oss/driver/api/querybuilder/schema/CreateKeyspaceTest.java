@@ -37,14 +37,14 @@ public class CreateKeyspaceTest {
   public void should_create_keyspace_simple_strategy() {
     assertThat(createKeyspace("foo").withSimpleStrategy(5))
         .hasCql(
-            "CREATE KEYSPACE foo WITH replication = { 'class' : 'SimpleStrategy', 'replication_factor' : 5 }");
+            "CREATE KEYSPACE foo WITH replication={'class':'SimpleStrategy','replication_factor':5}");
   }
 
   @Test
   public void should_create_keyspace_simple_strategy_and_durable_writes() {
     assertThat(createKeyspace("foo").withSimpleStrategy(5).withDurableWrites(true))
         .hasCql(
-            "CREATE KEYSPACE foo WITH replication = { 'class' : 'SimpleStrategy', 'replication_factor' : 5 } AND durable_writes = true");
+            "CREATE KEYSPACE foo WITH replication={'class':'SimpleStrategy','replication_factor':5} AND durable_writes=true");
   }
 
   @Test
@@ -52,7 +52,7 @@ public class CreateKeyspaceTest {
     assertThat(
             createKeyspace("foo").withNetworkTopologyStrategy(ImmutableMap.of("dc1", 3, "dc2", 4)))
         .hasCql(
-            "CREATE KEYSPACE foo WITH replication = { 'class' : 'NetworkTopologyStrategy', 'dc1' : 3, 'dc2' : 4 }");
+            "CREATE KEYSPACE foo WITH replication={'class':'NetworkTopologyStrategy','dc1':3,'dc2':4}");
   }
 
   @Test
@@ -63,6 +63,6 @@ public class CreateKeyspaceTest {
                 .withProperty("wow_factor", 11)
                 .withProperty("random_string", "hi"))
         .hasCql(
-            "CREATE KEYSPACE foo WITH awesome_feature = true AND wow_factor = 11 AND random_string = 'hi'");
+            "CREATE KEYSPACE foo WITH awesome_feature=true AND wow_factor=11 AND random_string='hi'");
   }
 }

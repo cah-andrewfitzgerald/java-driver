@@ -49,29 +49,28 @@ public class DefaultCreateKeyspace implements CreateKeyspace {
     return new DefaultCreateKeyspace(keyspaceName, true, properties);
   }
 
-  @SuppressWarnings("unchecked")
   private String extractPropertyValue(Object property) {
     StringBuilder propertyValue = new StringBuilder();
     if (property instanceof String) {
       propertyValue.append("'").append((String) property).append("'");
     } else if (property instanceof Map) {
+      @SuppressWarnings("unchecked")
       Map<String, Object> propertyMap = (Map<String, Object>) property;
       boolean first = true;
-      propertyValue.append("{ ");
+      propertyValue.append("{");
       for (Map.Entry<String, Object> subProperty : propertyMap.entrySet()) {
         if (first) {
           first = false;
         } else {
-          propertyValue.append(", ");
+          propertyValue.append(",");
         }
         propertyValue
             .append("'")
             .append(subProperty.getKey())
-            .append("' : ")
+            .append("':")
             .append(extractPropertyValue(subProperty.getValue()));
       }
-      propertyValue.append(" }");
-      // parse
+      propertyValue.append("}");
     } else {
       propertyValue.append(property);
     }
@@ -98,7 +97,7 @@ public class DefaultCreateKeyspace implements CreateKeyspace {
         builder.append(" AND ");
       }
       String value = extractPropertyValue(property.getValue());
-      builder.append(property.getKey()).append(" = ").append(value);
+      builder.append(property.getKey()).append("=").append(value);
     }
 
     return builder.toString();
