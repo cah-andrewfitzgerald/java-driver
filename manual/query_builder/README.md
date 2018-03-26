@@ -175,7 +175,6 @@ For a complete tour of the API, browse the child pages in this manual:
   * [SELECT](select/)
   * [INSERT](insert/)
   * [UPDATE](update/)
-  * [BATCH](batch/)
   * [DELETE](delete/)
 * common elements:
   * [Relations](relation/)
