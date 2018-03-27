@@ -16,6 +16,8 @@
 package com.datastax.oss.driver.internal.querybuilder.delete;
 
 import com.datastax.oss.driver.api.core.CqlIdentifier;
+import com.datastax.oss.driver.api.core.cql.SimpleStatement;
+import com.datastax.oss.driver.api.core.cql.SimpleStatementBuilder;
 import com.datastax.oss.driver.api.querybuilder.BindMarker;
 import com.datastax.oss.driver.api.querybuilder.condition.Condition;
 import com.datastax.oss.driver.api.querybuilder.delete.Delete;
@@ -24,6 +26,7 @@ import com.datastax.oss.driver.api.querybuilder.relation.Relation;
 import com.datastax.oss.driver.api.querybuilder.select.Selector;
 import com.datastax.oss.driver.internal.querybuilder.CqlHelper;
 import com.datastax.oss.driver.internal.querybuilder.ImmutableCollections;
+import com.datastax.oss.driver.internal.querybuilder.select.ElementSelector;
 import com.google.common.collect.ImmutableList;
 
 public class DefaultDelete implements DeleteSelection, Delete {
@@ -149,6 +152,37 @@ public class DefaultDelete implements DeleteSelection, Delete {
       CqlHelper.append(conditions, builder, " IF ", " AND ", null);
     }
     return builder.toString();
+  }
+
+  @Override
+  public SimpleStatement build() {
+    return builder().build();
+  }
+
+  @Override
+  public SimpleStatementBuilder builder() {
+    return SimpleStatement.builder(asCql()).withIdempotence(isIdempotent());
+  }
+
+  public boolean isIdempotent() {
+    // Conditional queries are never idempotent, see JAVA-819
+    if (!conditions.isEmpty() || ifExists) {
+      return false;
+    } else {
+      for (Selector selector : selectors) {
+        // `DELETE list[0]` is not idempotent. Unfortunately we don't know what type of collection
+        // an elements selector targets, so be conservative.
+        if (selector instanceof ElementSelector) {
+          return false;
+        }
+      }
+      for (Relation relation : relations) {
+        if (!relation.isIdempotent()) {
+          return false;
+        }
+      }
+      return true;
+    }
   }
 
   public CqlIdentifier getKeyspace() {

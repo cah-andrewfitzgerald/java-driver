@@ -40,6 +40,11 @@ public class BinaryArithmeticTerm extends ArithmeticTerm {
     appendAndMaybeParenthesize(operator.getPrecedenceRight(), right, builder);
   }
 
+  @Override
+  public boolean isIdempotent() {
+    return left.isIdempotent() && right.isIdempotent();
+  }
+
   public Term getLeft() {
     return left;
   }

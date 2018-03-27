@@ -181,7 +181,8 @@ public interface Selector extends CqlSnippet {
   /**
    * Selects an element in a collection column, as in {@code SELECT m['key']}.
    *
-   * <p>As of Cassandra 4, this is only allowed for map and set columns.
+   * <p>As of Cassandra 4, this is only allowed in SELECT for map and set columns. DELETE accepts
+   * list elements as well.
    */
   static Selector element(Selector collection, Term index) {
     return new ElementSelector(collection, index);

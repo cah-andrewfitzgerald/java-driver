@@ -23,4 +23,9 @@ public class PrependMapEntryAssignment extends ConcatElementAssignment {
   public PrependMapEntryAssignment(CqlIdentifier columnId, Term key, Term value) {
     super(columnId, key, value, '{', '}', true);
   }
+
+  @Override
+  public boolean isIdempotent() {
+    return true;
+  }
 }

@@ -17,6 +17,7 @@ package com.datastax.oss.driver.internal.querybuilder.select;
 
 import com.datastax.oss.driver.api.core.CqlIdentifier;
 import com.datastax.oss.driver.api.core.cql.SimpleStatement;
+import com.datastax.oss.driver.api.core.cql.SimpleStatementBuilder;
 import com.datastax.oss.driver.api.core.metadata.schema.ClusteringOrder;
 import com.datastax.oss.driver.api.querybuilder.BindMarker;
 import com.datastax.oss.driver.api.querybuilder.relation.Relation;
@@ -408,8 +409,13 @@ public class DefaultSelect implements SelectFrom, Select {
 
   @Override
   public SimpleStatement build() {
-    // TODO compute idempotence
-    return SimpleStatement.newInstance(asCql());
+    return builder().build();
+  }
+
+  @Override
+  public SimpleStatementBuilder builder() {
+    // SELECT statements are always idempotent
+    return SimpleStatement.builder(asCql()).withIdempotence(true);
   }
 
   public CqlIdentifier getKeyspace() {

@@ -35,6 +35,11 @@ public class OppositeTerm extends ArithmeticTerm {
     appendAndMaybeParenthesize(operator.getPrecedenceLeft(), argument, builder);
   }
 
+  @Override
+  public boolean isIdempotent() {
+    return argument.isIdempotent();
+  }
+
   public Term getArgument() {
     return argument;
   }

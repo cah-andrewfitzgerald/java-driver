@@ -49,6 +49,11 @@ public class DefaultRaw implements Raw {
     }
   }
 
+  @Override
+  public boolean isIdempotent() {
+    return false;
+  }
+
   public String getRawExpression() {
     return rawExpression;
   }

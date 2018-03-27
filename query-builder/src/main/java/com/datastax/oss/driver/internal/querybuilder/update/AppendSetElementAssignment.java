@@ -23,4 +23,9 @@ public class AppendSetElementAssignment extends ConcatElementAssignment {
   public AppendSetElementAssignment(CqlIdentifier columnId, Term element) {
     super(columnId, null, element, '{', '}', false);
   }
+
+  @Override
+  public boolean isIdempotent() {
+    return true;
+  }
 }

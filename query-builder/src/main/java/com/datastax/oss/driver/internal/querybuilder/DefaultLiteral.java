@@ -52,6 +52,11 @@ public class DefaultLiteral<T> implements Literal {
   }
 
   @Override
+  public boolean isIdempotent() {
+    return true;
+  }
+
+  @Override
   public Selector as(CqlIdentifier alias) {
     return new DefaultLiteral<>(value, codec, alias);
   }

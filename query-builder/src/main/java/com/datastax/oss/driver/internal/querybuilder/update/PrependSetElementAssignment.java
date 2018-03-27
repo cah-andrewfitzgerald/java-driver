@@ -23,4 +23,9 @@ public class PrependSetElementAssignment extends ConcatElementAssignment {
   public PrependSetElementAssignment(CqlIdentifier columnId, Term element) {
     super(columnId, null, element, '{', '}', true);
   }
+
+  @Override
+  public boolean isIdempotent() {
+    return true;
+  }
 }

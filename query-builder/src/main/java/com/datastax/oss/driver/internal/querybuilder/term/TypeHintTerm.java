@@ -34,6 +34,11 @@ public class TypeHintTerm implements Term {
     term.appendTo(builder);
   }
 
+  @Override
+  public boolean isIdempotent() {
+    return term.isIdempotent();
+  }
+
   public Term getTerm() {
     return term;
   }

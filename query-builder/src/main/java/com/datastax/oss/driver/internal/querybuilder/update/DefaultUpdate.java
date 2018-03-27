@@ -16,6 +16,8 @@
 package com.datastax.oss.driver.internal.querybuilder.update;
 
 import com.datastax.oss.driver.api.core.CqlIdentifier;
+import com.datastax.oss.driver.api.core.cql.SimpleStatement;
+import com.datastax.oss.driver.api.core.cql.SimpleStatementBuilder;
 import com.datastax.oss.driver.api.querybuilder.BindMarker;
 import com.datastax.oss.driver.api.querybuilder.condition.Condition;
 import com.datastax.oss.driver.api.querybuilder.relation.Relation;
@@ -146,6 +148,35 @@ public class DefaultUpdate implements UpdateStart, UpdateWithAssignments, Update
       CqlHelper.append(conditions, builder, " IF ", " AND ", null);
     }
     return builder.toString();
+  }
+
+  @Override
+  public SimpleStatement build() {
+    return builder().build();
+  }
+
+  @Override
+  public SimpleStatementBuilder builder() {
+    return SimpleStatement.builder(asCql()).withIdempotence(isIdempotent());
+  }
+
+  public boolean isIdempotent() {
+    // Conditional queries are never idempotent, see JAVA-819
+    if (!conditions.isEmpty() || ifExists) {
+      return false;
+    } else {
+      for (Assignment assignment : assignments) {
+        if (!assignment.isIdempotent()) {
+          return false;
+        }
+      }
+      for (Relation relation : relations) {
+        if (!relation.isIdempotent()) {
+          return false;
+        }
+      }
+      return true;
+    }
   }
 
   public CqlIdentifier getKeyspace() {

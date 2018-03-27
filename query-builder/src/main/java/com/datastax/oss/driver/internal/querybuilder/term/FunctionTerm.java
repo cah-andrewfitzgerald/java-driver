@@ -46,6 +46,11 @@ public class FunctionTerm implements Term {
     builder.append(')');
   }
 
+  @Override
+  public boolean isIdempotent() {
+    return false;
+  }
+
   public CqlIdentifier getKeyspaceId() {
     return keyspaceId;
   }

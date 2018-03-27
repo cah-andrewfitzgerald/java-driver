@@ -39,6 +39,11 @@ public class DefaultBindMarker implements BindMarker {
     }
   }
 
+  @Override
+  public boolean isIdempotent() {
+    return true;
+  }
+
   public CqlIdentifier getId() {
     return id;
   }

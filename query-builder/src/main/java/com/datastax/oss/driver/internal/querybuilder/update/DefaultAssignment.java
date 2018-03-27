@@ -40,6 +40,11 @@ public class DefaultAssignment implements Assignment {
     }
   }
 
+  @Override
+  public boolean isIdempotent() {
+    return rightOperand.isIdempotent();
+  }
+
   public LeftOperand getLeftOperand() {
     return leftOperand;
   }

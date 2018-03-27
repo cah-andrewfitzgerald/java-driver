@@ -37,6 +37,12 @@ public class PrependAssignment implements Assignment {
     builder.append('+').append(column);
   }
 
+  @Override
+  public boolean isIdempotent() {
+    // Not idempotent for lists, be pessimistic
+    return false;
+  }
+
   public CqlIdentifier getColumnId() {
     return columnId;
   }

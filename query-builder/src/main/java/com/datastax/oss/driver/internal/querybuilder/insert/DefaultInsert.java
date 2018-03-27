@@ -16,6 +16,8 @@
 package com.datastax.oss.driver.internal.querybuilder.insert;
 
 import com.datastax.oss.driver.api.core.CqlIdentifier;
+import com.datastax.oss.driver.api.core.cql.SimpleStatement;
+import com.datastax.oss.driver.api.core.cql.SimpleStatementBuilder;
 import com.datastax.oss.driver.api.querybuilder.BindMarker;
 import com.datastax.oss.driver.api.querybuilder.QueryBuilderDsl;
 import com.datastax.oss.driver.api.querybuilder.insert.Insert;
@@ -166,6 +168,30 @@ public class DefaultInsert implements InsertInto, RegularInsert, JsonInsert {
       }
     }
     return builder.toString();
+  }
+
+  @Override
+  public SimpleStatement build() {
+    return builder().build();
+  }
+
+  @Override
+  public SimpleStatementBuilder builder() {
+    return SimpleStatement.builder(asCql()).withIdempotence(isIdempotent());
+  }
+
+  public boolean isIdempotent() {
+    // Conditional queries are never idempotent, see JAVA-819
+    if (ifNotExists) {
+      return false;
+    } else {
+      for (Term value : assignments.values()) {
+        if (!value.isIdempotent()) {
+          return false;
+        }
+      }
+      return true;
+    }
   }
 
   public CqlIdentifier getKeyspace() {

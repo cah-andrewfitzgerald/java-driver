@@ -29,4 +29,14 @@ public class BuildableQueryAssert extends AbstractAssert<BuildableQueryAssert, B
     assertThat(actual.asCql()).isEqualTo(expected);
     return this;
   }
+
+  public BuildableQueryAssert isIdempotent() {
+    assertThat(actual.build().isIdempotent()).isTrue();
+    return this;
+  }
+
+  public BuildableQueryAssert isNotIdempotent() {
+    assertThat(actual.build().isIdempotent()).isFalse();
+    return this;
+  }
 }

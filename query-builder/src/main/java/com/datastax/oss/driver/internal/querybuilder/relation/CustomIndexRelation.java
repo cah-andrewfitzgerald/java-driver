@@ -36,6 +36,11 @@ public class CustomIndexRelation implements Relation {
     builder.append(')');
   }
 
+  @Override
+  public boolean isIdempotent() {
+    return false;
+  }
+
   public CqlIdentifier getIndexId() {
     return indexId;
   }

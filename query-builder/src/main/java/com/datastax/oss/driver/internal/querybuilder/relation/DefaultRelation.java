@@ -43,6 +43,11 @@ public class DefaultRelation implements Relation {
     }
   }
 
+  @Override
+  public boolean isIdempotent() {
+    return rightOperand.isIdempotent();
+  }
+
   public LeftOperand getLeftOperand() {
     return leftOperand;
   }

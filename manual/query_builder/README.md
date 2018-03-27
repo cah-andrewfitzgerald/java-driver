@@ -176,10 +176,11 @@ For a complete tour of the API, browse the child pages in this manual:
   * [INSERT](insert/)
   * [UPDATE](update/)
   * [DELETE](delete/)
-* common elements:
+* common topics:
   * [Relations](relation/)
   * [Conditions](condition/)
   * [Terms](term/)
+  * [Idempotence](idempotence/)
 
 [QueryBuilderDsl]: http://docs.datastax.com/en/drivers/java/4.0/com/datastax/oss/driver/api/query-builder/QueryBuilderDsl.html
 [CqlIdentifier]:   http://docs.datastax.com/en/drivers/java/4.0/com/datastax/oss/driver/api/core/CqlIdentifier.html

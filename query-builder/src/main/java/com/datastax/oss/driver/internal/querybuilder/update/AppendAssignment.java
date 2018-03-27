@@ -13,35 +13,20 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.datastax.oss.driver.internal.querybuilder.term;
+package com.datastax.oss.driver.internal.querybuilder.update;
 
 import com.datastax.oss.driver.api.querybuilder.term.Term;
-import com.datastax.oss.driver.internal.querybuilder.CqlHelper;
+import com.datastax.oss.driver.internal.querybuilder.lhs.LeftOperand;
 
-public class TupleTerm implements Term {
+public class AppendAssignment extends DefaultAssignment {
 
-  private final Iterable<? extends Term> components;
-
-  public TupleTerm(Iterable<? extends Term> components) {
-    this.components = components;
-  }
-
-  @Override
-  public void appendTo(StringBuilder builder) {
-    CqlHelper.append(components, builder, "(", ",", ")");
+  public AppendAssignment(LeftOperand leftOperand, Term rightOperand) {
+    super(leftOperand, "+=", rightOperand);
   }
 
   @Override
   public boolean isIdempotent() {
-    for (Term component : components) {
-      if (!component.isIdempotent()) {
-        return false;
-      }
-    }
-    return true;
-  }
-
-  public Iterable<? extends Term> getComponents() {
-    return components;
+    // Not idempotent for lists, be pessimistic
+    return false;
   }
 }
