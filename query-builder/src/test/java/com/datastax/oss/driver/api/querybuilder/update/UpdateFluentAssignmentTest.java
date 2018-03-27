@@ -96,6 +96,17 @@ public class UpdateFluentAssignmentTest {
                 .whereColumn("k")
                 .isEqualTo(bindMarker()))
         .hasCql("UPDATE foo SET l=[?]+l WHERE k=?");
+
+    assertThat(update("foo").remove("l", bindMarker()).whereColumn("k").isEqualTo(bindMarker()))
+        .hasCql("UPDATE foo SET l-=? WHERE k=?");
+    assertThat(update("foo").remove("l", listLiteral).whereColumn("k").isEqualTo(bindMarker()))
+        .hasCql("UPDATE foo SET l-=[1,2,3] WHERE k=?");
+    assertThat(
+            update("foo")
+                .removeListElement("l", bindMarker())
+                .whereColumn("k")
+                .isEqualTo(bindMarker()))
+        .hasCql("UPDATE foo SET l-=[?] WHERE k=?");
   }
 
   @Test
@@ -123,6 +134,17 @@ public class UpdateFluentAssignmentTest {
                 .whereColumn("k")
                 .isEqualTo(bindMarker()))
         .hasCql("UPDATE foo SET s={?}+s WHERE k=?");
+
+    assertThat(update("foo").remove("s", bindMarker()).whereColumn("k").isEqualTo(bindMarker()))
+        .hasCql("UPDATE foo SET s-=? WHERE k=?");
+    assertThat(update("foo").remove("s", setLiteral).whereColumn("k").isEqualTo(bindMarker()))
+        .hasCql("UPDATE foo SET s-={1,2,3} WHERE k=?");
+    assertThat(
+            update("foo")
+                .removeSetElement("s", bindMarker())
+                .whereColumn("k")
+                .isEqualTo(bindMarker()))
+        .hasCql("UPDATE foo SET s-={?} WHERE k=?");
   }
 
   @Test
@@ -150,5 +172,16 @@ public class UpdateFluentAssignmentTest {
                 .whereColumn("k")
                 .isEqualTo(bindMarker()))
         .hasCql("UPDATE foo SET m={1:'foo'}+m WHERE k=?");
+
+    assertThat(update("foo").remove("m", bindMarker()).whereColumn("k").isEqualTo(bindMarker()))
+        .hasCql("UPDATE foo SET m-=? WHERE k=?");
+    assertThat(update("foo").remove("m", mapLiteral).whereColumn("k").isEqualTo(bindMarker()))
+        .hasCql("UPDATE foo SET m-={1:'foo',2:'bar'} WHERE k=?");
+    assertThat(
+            update("foo")
+                .removeMapEntry("m", literal(1), literal("foo"))
+                .whereColumn("k")
+                .isEqualTo(bindMarker()))
+        .hasCql("UPDATE foo SET m-={1:'foo'} WHERE k=?");
   }
 }

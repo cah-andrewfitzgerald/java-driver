@@ -18,14 +18,9 @@ package com.datastax.oss.driver.internal.querybuilder.update;
 import com.datastax.oss.driver.api.core.CqlIdentifier;
 import com.datastax.oss.driver.api.querybuilder.term.Term;
 
-public class AppendSetElementAssignment extends ConcatElementAssignment {
+public class AppendSetElementAssignment extends CollectionElementAssignment {
 
   public AppendSetElementAssignment(CqlIdentifier columnId, Term element) {
-    super(columnId, null, element, '{', '}', false);
-  }
-
-  @Override
-  public boolean isIdempotent() {
-    return true;
+    super(columnId, Operator.APPEND, null, element, '{', '}');
   }
 }

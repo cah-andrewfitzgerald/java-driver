@@ -20,40 +20,59 @@ import com.datastax.oss.driver.api.querybuilder.term.Term;
 import com.datastax.oss.driver.api.querybuilder.update.Assignment;
 import com.google.common.base.Preconditions;
 
-public abstract class ConcatElementAssignment implements Assignment {
+public abstract class CollectionElementAssignment implements Assignment {
+
+  public enum Operator {
+    APPEND("%s+=%s"),
+    PREPEND("%1$s=%2$s+%1$s"),
+    REMOVE("%s-=%s"),
+    ;
+
+    public final String pattern;
+
+    Operator(String pattern) {
+      this.pattern = pattern;
+    }
+  }
 
   private final CqlIdentifier columnId;
+  private final Operator operator;
   private final Term key;
   private final Term value;
   private final char opening;
   private final char closing;
-  private final boolean prepend;
 
-  protected ConcatElementAssignment(
-      CqlIdentifier columnId, Term key, Term value, char opening, char closing, boolean prepend) {
+  protected CollectionElementAssignment(
+      CqlIdentifier columnId, Operator operator, Term key, Term value, char opening, char closing) {
     Preconditions.checkNotNull(columnId);
     Preconditions.checkNotNull(value);
     this.columnId = columnId;
+    this.operator = operator;
     this.key = key;
     this.value = value;
     this.opening = opening;
     this.closing = closing;
-    this.prepend = prepend;
   }
 
   @Override
   public void appendTo(StringBuilder builder) {
-    String column = columnId.asCql(true);
-    builder.append(column).append(prepend ? "=" : "+=").append(opening);
+    builder.append(String.format(operator.pattern, columnId.asCql(true), buildRightOperand()));
+  }
+
+  private String buildRightOperand() {
+    StringBuilder builder = new StringBuilder();
+    builder.append(opening);
     if (key != null) {
       key.appendTo(builder);
       builder.append(':');
     }
     value.appendTo(builder);
-    builder.append(closing);
-    if (prepend) {
-      builder.append('+').append(column);
-    }
+    return builder.append(closing).toString();
+  }
+
+  @Override
+  public boolean isIdempotent() {
+    return (key == null || key.isIdempotent()) && value.isIdempotent();
   }
 
   public CqlIdentifier getColumnId() {

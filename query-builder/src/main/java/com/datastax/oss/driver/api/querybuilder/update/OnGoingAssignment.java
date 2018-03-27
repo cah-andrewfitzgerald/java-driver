@@ -386,4 +386,103 @@ public interface OnGoingAssignment {
   default UpdateWithAssignments prependMapEntry(String columnName, Term key, Term value) {
     return prependMapEntry(CqlIdentifier.fromCql(columnName), key, value);
   }
+
+  /**
+   * Removes elements from a collection, as in {@code SET l-=[1,2,3]}.
+   *
+   * <p>The term must be a collection of the same type as the column.
+   *
+   * <p><b>DO NOT USE THIS TO DECREMENT COUNTERS.</b> Use the dedicated {@link
+   * #decrement(CqlIdentifier, Term)} methods instead. While the operator is technically the same,
+   * and it would be possible to generate an expression such as {@code counter-=1} with this method,
+   * a collection removal is idempotent while a counter decrement isn't.
+   *
+   * <p>This is a shortcut for {@link #set(Assignment) set(Assignment.remove(columnId,
+   * collectionToRemove))}.
+   *
+   * @see Assignment#remove(CqlIdentifier, Term)
+   */
+  default UpdateWithAssignments remove(CqlIdentifier columnId, Term collectionToRemove) {
+    return set(Assignment.remove(columnId, collectionToRemove));
+  }
+
+  /**
+   * Shortcut for {@link #remove(CqlIdentifier, Term) remove(CqlIdentifier.fromCql(columnName),
+   * collectionToRemove)}.
+   *
+   * @see Assignment#remove(String, Term)
+   */
+  default UpdateWithAssignments remove(String columnName, Term collectionToRemove) {
+    return remove(CqlIdentifier.fromCql(columnName), collectionToRemove);
+  }
+
+  /**
+   * Removes a single element to a list column, as in {@code SET l-=[?]}.
+   *
+   * <p>The term must be of the same type as the column's elements.
+   *
+   * <p>This is a shortcut for {@link #set(Assignment) set(Assignment.removeListElement(columnId,
+   * suffix))}.
+   *
+   * @see Assignment#removeListElement(CqlIdentifier, Term)
+   */
+  default UpdateWithAssignments removeListElement(CqlIdentifier columnId, Term suffix) {
+    return set(Assignment.removeListElement(columnId, suffix));
+  }
+
+  /**
+   * Shortcut for {@link #removeListElement(CqlIdentifier, Term)
+   * removeListElement(CqlIdentifier.fromCql(columnName), suffix)}.
+   *
+   * @see Assignment#removeListElement(String, Term)
+   */
+  default UpdateWithAssignments removeListElement(String columnName, Term suffix) {
+    return removeListElement(CqlIdentifier.fromCql(columnName), suffix);
+  }
+
+  /**
+   * Removes a single element to a set column, as in {@code SET s-={?}}.
+   *
+   * <p>The term must be of the same type as the column's elements.
+   *
+   * <p>This is a shortcut for {@link #set(Assignment) set(Assignment.removeSetElement(columnId,
+   * suffix))}.
+   *
+   * @see Assignment#removeSetElement(CqlIdentifier, Term)
+   */
+  default UpdateWithAssignments removeSetElement(CqlIdentifier columnId, Term suffix) {
+    return set(Assignment.removeSetElement(columnId, suffix));
+  }
+
+  /**
+   * Shortcut for {@link #removeSetElement(CqlIdentifier, Term)
+   * removeSetElement(CqlIdentifier.fromCql(columnName), suffix)}.
+   */
+  default UpdateWithAssignments removeSetElement(String columnName, Term suffix) {
+    return removeSetElement(CqlIdentifier.fromCql(columnName), suffix);
+  }
+
+  /**
+   * Removes a single entry to a map column, as in {@code SET m-={?:?}}.
+   *
+   * <p>The terms must be of the same type as the column's keys and values respectively.
+   *
+   * <p>This is a shortcut for {@link #set(Assignment) set(Assignment.removeMapEntry(columnId, key,
+   * value)}.
+   *
+   * @see Assignment#removeMapEntry(CqlIdentifier, Term, Term)
+   */
+  default UpdateWithAssignments removeMapEntry(CqlIdentifier columnId, Term key, Term value) {
+    return set(Assignment.removeMapEntry(columnId, key, value));
+  }
+
+  /**
+   * Shortcut for {@link #removeMapEntry(CqlIdentifier, Term, Term)
+   * removeMapEntry(CqlIdentifier.fromCql(columnName), key, value)}.
+   *
+   * @see Assignment#removeMapEntry(String, Term, Term)
+   */
+  default UpdateWithAssignments removeMapEntry(String columnName, Term key, Term value) {
+    return removeMapEntry(CqlIdentifier.fromCql(columnName), key, value);
+  }
 }

@@ -18,10 +18,10 @@ package com.datastax.oss.driver.internal.querybuilder.update;
 import com.datastax.oss.driver.api.core.CqlIdentifier;
 import com.datastax.oss.driver.api.querybuilder.term.Term;
 
-public class AppendListElementAssignment extends ConcatElementAssignment {
+public class AppendListElementAssignment extends CollectionElementAssignment {
 
   public AppendListElementAssignment(CqlIdentifier columnId, Term element) {
-    super(columnId, null, element, '[', ']', false);
+    super(columnId, Operator.APPEND, null, element, '[', ']');
   }
 
   @Override

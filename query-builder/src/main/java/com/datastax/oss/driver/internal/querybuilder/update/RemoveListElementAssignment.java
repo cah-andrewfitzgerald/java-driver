@@ -18,9 +18,14 @@ package com.datastax.oss.driver.internal.querybuilder.update;
 import com.datastax.oss.driver.api.core.CqlIdentifier;
 import com.datastax.oss.driver.api.querybuilder.term.Term;
 
-public class AppendMapEntryAssignment extends CollectionElementAssignment {
+public class RemoveListElementAssignment extends CollectionElementAssignment {
 
-  public AppendMapEntryAssignment(CqlIdentifier columnId, Term key, Term value) {
-    super(columnId, Operator.APPEND, key, value, '{', '}');
+  public RemoveListElementAssignment(CqlIdentifier columnId, Term element) {
+    super(columnId, Operator.REMOVE, null, element, '[', ']');
+  }
+
+  @Override
+  public boolean isIdempotent() {
+    return false;
   }
 }

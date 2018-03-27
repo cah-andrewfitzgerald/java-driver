@@ -160,6 +160,13 @@ update("foo").prepend("l", bindMarker());
 // UPDATE foo SET l=?+l...
 ```
 
+As well as a `remove` counterpart:
+
+```java
+update("foo").remove("l", bindMarker());
+// UPDATE foo SET l-=?...
+```
+
 ### Relations
 
 Once you have at least one assignment, relations can be added with the fluent `whereXxx()` methods:

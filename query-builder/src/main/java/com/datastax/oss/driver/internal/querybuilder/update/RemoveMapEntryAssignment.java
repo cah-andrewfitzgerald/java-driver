@@ -18,9 +18,9 @@ package com.datastax.oss.driver.internal.querybuilder.update;
 import com.datastax.oss.driver.api.core.CqlIdentifier;
 import com.datastax.oss.driver.api.querybuilder.term.Term;
 
-public class AppendMapEntryAssignment extends CollectionElementAssignment {
+public class RemoveMapEntryAssignment extends CollectionElementAssignment {
 
-  public AppendMapEntryAssignment(CqlIdentifier columnId, Term key, Term value) {
-    super(columnId, Operator.APPEND, key, value, '{', '}');
+  public RemoveMapEntryAssignment(CqlIdentifier columnId, Term key, Term value) {
+    super(columnId, Operator.REMOVE, key, value, '{', '}');
   }
 }
