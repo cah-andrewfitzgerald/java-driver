@@ -13,16 +13,12 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.datastax.oss.driver.api.querybuilder.schema;
+package com.datastax.oss.driver.api.querybuilder.schema.compaction;
 
-import java.util.Map;
+public interface LeveledCompactionStrategy<SelfT extends LeveledCompactionStrategy<SelfT>>
+    extends CompactionStrategy<SelfT> {
 
-public interface PropertyHolder<SelfT extends PropertyHolder<SelfT>> {
-  /**
-   * Adds a free-form property. This is useful for custom options or new options that have not yet
-   * been added to this API.
-   */
-  SelfT withProperty(String name, Object value);
-
-  Map<String, Object> getProperties();
+  default SelfT withSSTableSizeInMB(int ssTableSizeInMB) {
+    return withProperty("sstable_size_in_mb", ssTableSizeInMB);
+  }
 }

@@ -20,6 +20,9 @@ import static com.datastax.oss.driver.api.querybuilder.SchemaBuilderDsl.createTa
 import static com.datastax.oss.driver.api.querybuilder.SchemaBuilderDsl.udt;
 
 import com.datastax.oss.driver.api.core.type.DataTypes;
+import com.datastax.oss.driver.api.querybuilder.SchemaBuilderDsl;
+import com.datastax.oss.driver.api.querybuilder.schema.compaction.TimeWindowCompactionStrategy.CompactionWindowUnit;
+import com.datastax.oss.driver.api.querybuilder.schema.compaction.TimeWindowCompactionStrategy.TimestampResolution;
 import org.junit.Test;
 
 public class CreateTableTest {
@@ -46,9 +49,20 @@ public class CreateTableTest {
     assertThat(
             createTable("bar")
                 .withPartitionKey("k", DataTypes.INT)
-                .withClusteringColumn("c", udt("category", true))
-                .withColumn("v", DataTypes.TEXT))
-        .hasCql("CREATE TABLE bar (k int,c frozen<category>,v text,PRIMARY KEY(k,c))");
+                .withClusteringColumn("c", DataTypes.TEXT)
+                .withColumn("v", udt("val", true)))
+        .hasCql("CREATE TABLE bar (k int,c text,v frozen<val>,PRIMARY KEY(k,c))");
+  }
+
+  @Test
+  public void should_create_table_with_static_column() {
+    assertThat(
+            createTable("bar")
+                .withPartitionKey("k", DataTypes.INT)
+                .withClusteringColumn("c", DataTypes.TEXT)
+                .withStaticColumn("s", DataTypes.TIMEUUID)
+                .withColumn("v", udt("val", true)))
+        .hasCql("CREATE TABLE bar (k int,c text,s timeuuid STATIC,v frozen<val>,PRIMARY KEY(k,c))");
   }
 
   @Test
@@ -105,5 +119,135 @@ public class CreateTableTest {
                 .withSpeculativeRetry("99percentile"))
         .hasCql(
             "CREATE TABLE bar (k int PRIMARY KEY,v text) WITH bloom_filter_fp_chance=0.42 AND cdc=false AND comment='Hello world' AND dclocal_read_repair_chance=0.54 AND default_time_to_live=86400 AND gc_grace_seconds=864000 AND memtable_flush_period_in_ms=10000 AND min_index_interval=1024 AND max_index_interval=4096 AND read_repair_chance=0.55 AND speculative_retry='99percentile'");
+  }
+
+  @Test
+  public void should_create_table_lz4_compression() {
+    assertThat(
+            createTable("bar")
+                .withPartitionKey("k", DataTypes.INT)
+                .withColumn("v", DataTypes.TEXT)
+                .withLZ4Compression())
+        .hasCql(
+            "CREATE TABLE bar (k int PRIMARY KEY,v text) WITH compression={'class':'LZ4Compressor'}");
+  }
+
+  @Test
+  public void should_create_table_lz4_compression_options() {
+    assertThat(
+            createTable("bar")
+                .withPartitionKey("k", DataTypes.INT)
+                .withColumn("v", DataTypes.TEXT)
+                .withLZ4Compression(1024, .5))
+        .hasCql(
+            "CREATE TABLE bar (k int PRIMARY KEY,v text) WITH compression={'class':'LZ4Compressor','chunk_length_kb':1024,'crc_check_chance':0.5}");
+  }
+
+  @Test
+  public void should_create_table_snappy_compression() {
+    assertThat(
+            createTable("bar")
+                .withPartitionKey("k", DataTypes.INT)
+                .withColumn("v", DataTypes.TEXT)
+                .withSnappyCompression())
+        .hasCql(
+            "CREATE TABLE bar (k int PRIMARY KEY,v text) WITH compression={'class':'SnappyCompressor'}");
+  }
+
+  @Test
+  public void should_create_table_snappy_compression_options() {
+    assertThat(
+            createTable("bar")
+                .withPartitionKey("k", DataTypes.INT)
+                .withColumn("v", DataTypes.TEXT)
+                .withSnappyCompression(2048, .25))
+        .hasCql(
+            "CREATE TABLE bar (k int PRIMARY KEY,v text) WITH compression={'class':'SnappyCompressor','chunk_length_kb':2048,'crc_check_chance':0.25}");
+  }
+
+  @Test
+  public void should_create_table_deflate_compression() {
+    assertThat(
+            createTable("bar")
+                .withPartitionKey("k", DataTypes.INT)
+                .withColumn("v", DataTypes.TEXT)
+                .withDeflateCompression())
+        .hasCql(
+            "CREATE TABLE bar (k int PRIMARY KEY,v text) WITH compression={'class':'DeflateCompressor'}");
+  }
+
+  @Test
+  public void should_create_table_deflate_compression_options() {
+    assertThat(
+            createTable("bar")
+                .withPartitionKey("k", DataTypes.INT)
+                .withColumn("v", DataTypes.TEXT)
+                .withDeflateCompression(4096, .1))
+        .hasCql(
+            "CREATE TABLE bar (k int PRIMARY KEY,v text) WITH compression={'class':'DeflateCompressor','chunk_length_kb':4096,'crc_check_chance':0.1}");
+  }
+
+  @Test
+  public void should_create_table_caching_options() {
+    assertThat(
+            createTable("bar")
+                .withPartitionKey("k", DataTypes.INT)
+                .withColumn("v", DataTypes.TEXT)
+                .withCaching(
+                    SchemaBuilderDsl.KeyCaching.ALL, SchemaBuilderDsl.RowsPerPartition.rows(10)))
+        .hasCql(
+            "CREATE TABLE bar (k int PRIMARY KEY,v text) WITH caching={'keys':'ALL','rows_per_partition':'10'}");
+  }
+
+  @Test
+  public void should_create_table_size_tiered_compaction() {
+    assertThat(
+            createTable("bar")
+                .withPartitionKey("k", DataTypes.INT)
+                .withColumn("v", DataTypes.TEXT)
+                .withCompaction(
+                    SchemaBuilderDsl.sizeTieredCompactionStrategy()
+                        .withBucketHigh(1.6)
+                        .withBucketLow(0.6)
+                        .withColdReadsToOmit(0.1)
+                        .withMaxThreshold(33)
+                        .withMinThreshold(5)
+                        .withMinSSTableSizeInBytes(50000)
+                        .withOnlyPurgeRepairedTombstones(true)
+                        .withEnabled(false)
+                        .withTombstoneCompactionIntervalInSeconds(86400)
+                        .withTombstoneThreshold(0.22)
+                        .withUncheckedTombstoneCompaction(true)))
+        .hasCql(
+            "CREATE TABLE bar (k int PRIMARY KEY,v text) WITH compaction={'class':'SizeTieredCompactionStrategy','bucket_high':1.6,'bucket_low':0.6,'cold_reads_to_omit':0.1,'max_threshold':33,'min_threshold':5,'min_sstable_size':50000,'only_purge_repaired_tombstones':true,'enabled':false,'tombstone_compaction_interval':86400,'tombstone_threshold':0.22,'unchecked_tombstone_compaction':true}");
+  }
+
+  @Test
+  public void should_create_table_leveled_compaction() {
+    assertThat(
+            createTable("bar")
+                .withPartitionKey("k", DataTypes.INT)
+                .withColumn("v", DataTypes.TEXT)
+                .withCompaction(
+                    SchemaBuilderDsl.leveledCompactionStrategy()
+                        .withSSTableSizeInMB(110)
+                        .withTombstoneCompactionIntervalInSeconds(3600)))
+        .hasCql(
+            "CREATE TABLE bar (k int PRIMARY KEY,v text) WITH compaction={'class':'LeveledCompactionStrategy','sstable_size_in_mb':110,'tombstone_compaction_interval':3600}");
+  }
+
+  @Test
+  public void should_create_table_time_window_compaction() {
+    assertThat(
+            createTable("bar")
+                .withPartitionKey("k", DataTypes.INT)
+                .withColumn("v", DataTypes.TEXT)
+                .withCompaction(
+                    SchemaBuilderDsl.timeWindowCompactionStrategy()
+                        .withCompactionWindow(10, CompactionWindowUnit.DAYS)
+                        .withTimestampResolution(TimestampResolution.MICROSECONDS)
+                        .withUnsafeAggressiveSSTableExpiration(false)))
+        .hasCql(
+            "CREATE TABLE bar (k int PRIMARY KEY,v text) WITH compaction={'class':'TimeWindowCompactionStrategy','compaction_window_size':10,'compaction_window_unit':'DAYS','timestamp_resolution':'MICROSECONDS','unsafe_aggressive_sstable_expiration':false}");
   }
 }

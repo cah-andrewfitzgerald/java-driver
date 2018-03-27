@@ -19,9 +19,15 @@ import com.datastax.oss.driver.api.core.CqlIdentifier;
 import com.datastax.oss.driver.api.core.type.UserDefinedType;
 import com.datastax.oss.driver.api.querybuilder.schema.CreateKeyspace;
 import com.datastax.oss.driver.api.querybuilder.schema.CreateTable;
+import com.datastax.oss.driver.api.querybuilder.schema.compaction.LeveledCompactionStrategy;
+import com.datastax.oss.driver.api.querybuilder.schema.compaction.SizeTieredCompactionStrategy;
+import com.datastax.oss.driver.api.querybuilder.schema.compaction.TimeWindowCompactionStrategy;
 import com.datastax.oss.driver.internal.core.metadata.schema.ShallowUserDefinedType;
 import com.datastax.oss.driver.internal.querybuilder.schema.DefaultCreateKeyspace;
 import com.datastax.oss.driver.internal.querybuilder.schema.DefaultCreateTable;
+import com.datastax.oss.driver.internal.querybuilder.schema.compaction.DefaultLeveledCompactionStrategy;
+import com.datastax.oss.driver.internal.querybuilder.schema.compaction.DefaultSizeTieredCompactionStrategy;
+import com.datastax.oss.driver.internal.querybuilder.schema.compaction.DefaultTimeWindowCompactionStrategy;
 
 /** A Domain-Specific Language to build CQL DDL queries using Java code. */
 public class SchemaBuilderDsl {
@@ -55,6 +61,18 @@ public class SchemaBuilderDsl {
     return createTable(CqlIdentifier.fromCql(keyspace), CqlIdentifier.fromCql(tableName));
   }
 
+  public static SizeTieredCompactionStrategy sizeTieredCompactionStrategy() {
+    return new DefaultSizeTieredCompactionStrategy();
+  }
+
+  public static LeveledCompactionStrategy leveledCompactionStrategy() {
+    return new DefaultLeveledCompactionStrategy();
+  }
+
+  public static TimeWindowCompactionStrategy timeWindowCompactionStrategy() {
+    return new DefaultTimeWindowCompactionStrategy();
+  }
+
   // Short cuts for getting a DataType reference for UDTs.
 
   public static UserDefinedType udt(CqlIdentifier keyspace, CqlIdentifier name, boolean frozen) {
@@ -71,5 +89,31 @@ public class SchemaBuilderDsl {
 
   public static UserDefinedType udt(String name, boolean frozen) {
     return udt(CqlIdentifier.fromCql(name), frozen);
+  }
+
+  public enum KeyCaching {
+    ALL,
+    NONE;
+  }
+
+  public static class RowsPerPartition {
+
+    private final String value;
+
+    private RowsPerPartition(String value) {
+      this.value = value;
+    }
+
+    public static RowsPerPartition ALL = new RowsPerPartition("ALL");
+
+    public static RowsPerPartition NONE = new RowsPerPartition("NONE");
+
+    public static RowsPerPartition rows(int rowNumber) {
+      return new RowsPerPartition(Integer.toString(rowNumber));
+    }
+
+    public String getValue() {
+      return value;
+    }
   }
 }

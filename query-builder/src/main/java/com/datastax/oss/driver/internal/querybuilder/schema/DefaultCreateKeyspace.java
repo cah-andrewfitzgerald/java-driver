@@ -19,6 +19,7 @@ import com.datastax.oss.driver.api.core.CqlIdentifier;
 import com.datastax.oss.driver.api.querybuilder.schema.CreateKeyspace;
 import com.datastax.oss.driver.internal.querybuilder.ImmutableCollections;
 import com.google.common.collect.ImmutableMap;
+import java.util.Map;
 
 public class DefaultCreateKeyspace implements CreateKeyspace {
 
@@ -41,6 +42,11 @@ public class DefaultCreateKeyspace implements CreateKeyspace {
   public CreateKeyspace withProperty(String name, Object value) {
     return new DefaultCreateKeyspace(
         keyspaceName, ifNotExists, ImmutableCollections.append(properties, name, value));
+  }
+
+  @Override
+  public Map<String, Object> getProperties() {
+    return properties;
   }
 
   @Override

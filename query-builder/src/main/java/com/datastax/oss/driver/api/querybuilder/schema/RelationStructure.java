@@ -15,6 +15,11 @@
  */
 package com.datastax.oss.driver.api.querybuilder.schema;
 
+import com.datastax.oss.driver.api.querybuilder.SchemaBuilderDsl.KeyCaching;
+import com.datastax.oss.driver.api.querybuilder.SchemaBuilderDsl.RowsPerPartition;
+import com.datastax.oss.driver.api.querybuilder.schema.compaction.CompactionStrategy;
+import com.google.common.collect.ImmutableMap;
+
 public interface RelationStructure<SelfT extends RelationStructure<SelfT>>
     extends PropertyHolder<SelfT> {
 
@@ -26,8 +31,64 @@ public interface RelationStructure<SelfT extends RelationStructure<SelfT>>
     return withProperty("cdc", enabled);
   }
 
+  default SelfT withCaching(KeyCaching keys, RowsPerPartition rowsPerPartition) {
+    return withProperty(
+        "caching",
+        ImmutableMap.of(
+            "keys", keys.toString(), "rows_per_partition", rowsPerPartition.getValue()));
+  }
+
   default SelfT withComment(String comment) {
     return withProperty("comment", comment);
+  }
+
+  default SelfT withCompaction(CompactionStrategy<?> compactionStrategy) {
+    return withProperty("compaction", compactionStrategy.getProperties());
+  }
+
+  default SelfT withLZ4Compression(int chunkLengthKB, double crcCheckChance) {
+    return withCompression("LZ4Compressor", chunkLengthKB, crcCheckChance);
+  }
+
+  default SelfT withLZ4Compression() {
+    return withCompression("LZ4Compressor");
+  }
+
+  default SelfT withSnappyCompression(int chunkLengthKB, double crcCheckChance) {
+    return withCompression("SnappyCompressor", chunkLengthKB, crcCheckChance);
+  }
+
+  default SelfT withSnappyCompression() {
+    return withCompression("SnappyCompressor");
+  }
+
+  default SelfT withDeflateCompression(int chunkLengthKB, double crcCheckChance) {
+    return withCompression("DeflateCompressor", chunkLengthKB, crcCheckChance);
+  }
+
+  default SelfT withDeflateCompression() {
+    return withCompression("DeflateCompressor");
+  }
+
+  default SelfT withCompression(String compressionAlgorithmName) {
+    return withProperty("compression", ImmutableMap.of("class", compressionAlgorithmName));
+  }
+
+  default SelfT withCompression(
+      String compressionAlgorithmName, int chunkLengthKB, double crcCheckChance) {
+    return withProperty(
+        "compression",
+        ImmutableMap.of(
+            "class",
+            compressionAlgorithmName,
+            "chunk_length_kb",
+            chunkLengthKB,
+            "crc_check_chance",
+            crcCheckChance));
+  }
+
+  default SelfT withNoCompression() {
+    return withProperty("compression", ImmutableMap.of("sstable_compression", ""));
   }
 
   default SelfT withDcLocalReadRepairChance(double dcLocalReadRepairChance) {
@@ -61,9 +122,4 @@ public interface RelationStructure<SelfT extends RelationStructure<SelfT>>
   default SelfT withSpeculativeRetry(String speculativeRetry) {
     return withProperty("speculative_retry", speculativeRetry);
   }
-
-  // TODO
-  // compaction
-  // compression
-  // caching
 }
