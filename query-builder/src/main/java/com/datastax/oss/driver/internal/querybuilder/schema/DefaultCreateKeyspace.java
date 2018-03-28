@@ -17,11 +17,12 @@ package com.datastax.oss.driver.internal.querybuilder.schema;
 
 import com.datastax.oss.driver.api.core.CqlIdentifier;
 import com.datastax.oss.driver.api.querybuilder.schema.CreateKeyspace;
+import com.datastax.oss.driver.api.querybuilder.schema.CreateKeyspaceStart;
 import com.datastax.oss.driver.internal.querybuilder.ImmutableCollections;
 import com.google.common.collect.ImmutableMap;
 import java.util.Map;
 
-public class DefaultCreateKeyspace implements CreateKeyspace {
+public class DefaultCreateKeyspace implements CreateKeyspace, CreateKeyspaceStart {
 
   private final CqlIdentifier keyspaceName;
   private final boolean ifNotExists;
@@ -50,8 +51,13 @@ public class DefaultCreateKeyspace implements CreateKeyspace {
   }
 
   @Override
-  public CreateKeyspace ifNotExists() {
+  public CreateKeyspaceStart ifNotExists() {
     return new DefaultCreateKeyspace(keyspaceName, true, properties);
+  }
+
+  @Override
+  public CreateKeyspace withReplicationOptions(Map<String, Object> replicationOptions) {
+    return withProperty("replication", replicationOptions);
   }
 
   @Override

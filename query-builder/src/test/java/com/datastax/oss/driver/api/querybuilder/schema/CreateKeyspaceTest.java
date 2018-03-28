@@ -24,16 +24,6 @@ import org.junit.Test;
 public class CreateKeyspaceTest {
 
   @Test
-  public void should_create_keyspace_with_no_options() {
-    assertThat(createKeyspace("foo")).hasCql("CREATE KEYSPACE foo");
-  }
-
-  @Test
-  public void should_create_keyspace_if_not_exists() {
-    assertThat(createKeyspace("foo").ifNotExists()).hasCql("CREATE KEYSPACE IF NOT EXISTS foo");
-  }
-
-  @Test
   public void should_create_keyspace_simple_strategy() {
     assertThat(createKeyspace("foo").withSimpleStrategy(5))
         .hasCql(
@@ -48,6 +38,13 @@ public class CreateKeyspaceTest {
   }
 
   @Test
+  public void should_create_keyspace_if_not_exists() {
+    assertThat(createKeyspace("foo").ifNotExists().withSimpleStrategy(2))
+        .hasCql(
+            "CREATE KEYSPACE IF NOT EXISTS foo WITH replication={'class':'SimpleStrategy','replication_factor':2}");
+  }
+
+  @Test
   public void should_create_keyspace_network_topology_strategy() {
     assertThat(
             createKeyspace("foo").withNetworkTopologyStrategy(ImmutableMap.of("dc1", 3, "dc2", 4)))
@@ -59,10 +56,11 @@ public class CreateKeyspaceTest {
   public void should_create_keyspace_with_custom_properties() {
     assertThat(
             createKeyspace("foo")
+                .withSimpleStrategy(3)
                 .withProperty("awesome_feature", true)
                 .withProperty("wow_factor", 11)
                 .withProperty("random_string", "hi"))
         .hasCql(
-            "CREATE KEYSPACE foo WITH awesome_feature=true AND wow_factor=11 AND random_string='hi'");
+            "CREATE KEYSPACE foo WITH replication={'class':'SimpleStrategy','replication_factor':3} AND awesome_feature=true AND wow_factor=11 AND random_string='hi'");
   }
 }

@@ -15,14 +15,6 @@
  */
 package com.datastax.oss.driver.api.querybuilder.schema;
 
-import com.datastax.oss.driver.api.querybuilder.BuildableQuery;
-
-public interface CreateKeyspace extends BuildableQuery, PropertyHolder<CreateKeyspace> {
-  /**
-   * Adds durable writes configuration to this keyspace. If set to false, data written to the
-   * keyspace will bypass the commit log.
-   */
-  default CreateKeyspace withDurableWrites(boolean durableWrites) {
-    return withProperty("durable_writes", durableWrites);
-  }
+public interface CreateTableStart extends OngoingCreateTable {
+  CreateTableStart ifNotExists();
 }

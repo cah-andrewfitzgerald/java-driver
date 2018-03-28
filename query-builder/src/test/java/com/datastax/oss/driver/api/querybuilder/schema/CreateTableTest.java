@@ -28,6 +28,12 @@ import org.junit.Test;
 public class CreateTableTest {
 
   @Test
+  public void should_create_table_if_not_exists() {
+    assertThat(createTable("bar").ifNotExists().withPartitionKey("k", DataTypes.INT))
+        .hasCql("CREATE TABLE IF NOT EXISTS bar (k int PRIMARY KEY)");
+  }
+
+  @Test
   public void should_create_table_with_single_partition_key() {
     assertThat(
             createTable("bar").withPartitionKey("k", DataTypes.INT).withColumn("v", DataTypes.TEXT))

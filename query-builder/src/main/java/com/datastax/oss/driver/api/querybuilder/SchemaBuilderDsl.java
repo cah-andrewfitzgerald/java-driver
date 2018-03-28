@@ -17,8 +17,8 @@ package com.datastax.oss.driver.api.querybuilder;
 
 import com.datastax.oss.driver.api.core.CqlIdentifier;
 import com.datastax.oss.driver.api.core.type.UserDefinedType;
-import com.datastax.oss.driver.api.querybuilder.schema.CreateKeyspace;
-import com.datastax.oss.driver.api.querybuilder.schema.CreateTable;
+import com.datastax.oss.driver.api.querybuilder.schema.CreateKeyspaceStart;
+import com.datastax.oss.driver.api.querybuilder.schema.CreateTableStart;
 import com.datastax.oss.driver.api.querybuilder.schema.compaction.LeveledCompactionStrategy;
 import com.datastax.oss.driver.api.querybuilder.schema.compaction.SizeTieredCompactionStrategy;
 import com.datastax.oss.driver.api.querybuilder.schema.compaction.TimeWindowCompactionStrategy;
@@ -33,7 +33,7 @@ import com.datastax.oss.driver.internal.querybuilder.schema.compaction.DefaultTi
 public class SchemaBuilderDsl {
 
   /** Starts a CREATE KEYSPACE query. */
-  public static CreateKeyspace createKeyspace(CqlIdentifier keyspaceName) {
+  public static CreateKeyspaceStart createKeyspace(CqlIdentifier keyspaceName) {
     return new DefaultCreateKeyspace(keyspaceName);
   }
 
@@ -41,23 +41,23 @@ public class SchemaBuilderDsl {
    * Shortcut for {@link #createKeyspace(CqlIdentifier)
    * createKeyspace(CqlIdentifier.fromCql(keyspaceName))}
    */
-  public static CreateKeyspace createKeyspace(String keyspaceName) {
+  public static CreateKeyspaceStart createKeyspace(String keyspaceName) {
     return createKeyspace(CqlIdentifier.fromCql(keyspaceName));
   }
 
-  public static CreateTable createTable(CqlIdentifier tableName) {
+  public static CreateTableStart createTable(CqlIdentifier tableName) {
     return new DefaultCreateTable(tableName);
   }
 
-  public static CreateTable createTable(CqlIdentifier keyspace, CqlIdentifier tableName) {
+  public static CreateTableStart createTable(CqlIdentifier keyspace, CqlIdentifier tableName) {
     return new DefaultCreateTable(keyspace, tableName);
   }
 
-  public static CreateTable createTable(String tableName) {
+  public static CreateTableStart createTable(String tableName) {
     return createTable(CqlIdentifier.fromCql(tableName));
   }
 
-  public static CreateTable createTable(String keyspace, String tableName) {
+  public static CreateTableStart createTable(String keyspace, String tableName) {
     return createTable(CqlIdentifier.fromCql(keyspace), CqlIdentifier.fromCql(tableName));
   }
 

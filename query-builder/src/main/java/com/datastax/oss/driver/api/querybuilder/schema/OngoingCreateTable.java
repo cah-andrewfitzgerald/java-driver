@@ -15,14 +15,14 @@
  */
 package com.datastax.oss.driver.api.querybuilder.schema;
 
-import com.datastax.oss.driver.api.querybuilder.BuildableQuery;
+import com.datastax.oss.driver.api.core.CqlIdentifier;
+import com.datastax.oss.driver.api.core.type.DataType;
 
-public interface CreateKeyspace extends BuildableQuery, PropertyHolder<CreateKeyspace> {
-  /**
-   * Adds durable writes configuration to this keyspace. If set to false, data written to the
-   * keyspace will bypass the commit log.
-   */
-  default CreateKeyspace withDurableWrites(boolean durableWrites) {
-    return withProperty("durable_writes", durableWrites);
+public interface OngoingCreateTable {
+
+  CreateTableWithColumns withPartitionKey(CqlIdentifier columnName, DataType dataType);
+
+  default CreateTableWithColumns withPartitionKey(String columnName, DataType dataType) {
+    return withPartitionKey(CqlIdentifier.fromCql(columnName), dataType);
   }
 }

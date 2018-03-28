@@ -18,13 +18,16 @@ package com.datastax.oss.driver.internal.querybuilder.schema;
 import com.datastax.oss.driver.api.core.CqlIdentifier;
 import com.datastax.oss.driver.api.core.metadata.schema.ClusteringOrder;
 import com.datastax.oss.driver.api.core.type.DataType;
-import com.datastax.oss.driver.api.querybuilder.schema.CreateTable;
+import com.datastax.oss.driver.api.querybuilder.schema.CreateTableStart;
+import com.datastax.oss.driver.api.querybuilder.schema.CreateTableWithColumns;
+import com.datastax.oss.driver.api.querybuilder.schema.CreateTableWithOptions;
 import com.datastax.oss.driver.internal.querybuilder.ImmutableCollections;
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableMap;
 import java.util.Map;
 
-public class DefaultCreateTable implements CreateTable {
+public class DefaultCreateTable
+    implements CreateTableStart, CreateTableWithColumns, CreateTableWithOptions {
 
   private final CqlIdentifier keyspace;
   private final CqlIdentifier tableName;
@@ -83,7 +86,7 @@ public class DefaultCreateTable implements CreateTable {
   }
 
   @Override
-  public CreateTable ifNotExists() {
+  public CreateTableStart ifNotExists() {
     return new DefaultCreateTable(
         keyspace,
         tableName,
@@ -100,7 +103,7 @@ public class DefaultCreateTable implements CreateTable {
   // TODO: Throw runtime error if column used twice.
 
   @Override
-  public CreateTable withPartitionKey(CqlIdentifier columnName, DataType dataType) {
+  public CreateTableWithColumns withPartitionKey(CqlIdentifier columnName, DataType dataType) {
     return new DefaultCreateTable(
         keyspace,
         tableName,
@@ -115,7 +118,7 @@ public class DefaultCreateTable implements CreateTable {
   }
 
   @Override
-  public CreateTable withClusteringColumn(CqlIdentifier columnName, DataType dataType) {
+  public CreateTableWithColumns withClusteringColumn(CqlIdentifier columnName, DataType dataType) {
     return new DefaultCreateTable(
         keyspace,
         tableName,
@@ -130,7 +133,7 @@ public class DefaultCreateTable implements CreateTable {
   }
 
   @Override
-  public CreateTable withColumn(CqlIdentifier columnName, DataType dataType) {
+  public CreateTableWithColumns withColumn(CqlIdentifier columnName, DataType dataType) {
     return new DefaultCreateTable(
         keyspace,
         tableName,
@@ -145,7 +148,7 @@ public class DefaultCreateTable implements CreateTable {
   }
 
   @Override
-  public CreateTable withStaticColumn(CqlIdentifier columnName, DataType dataType) {
+  public CreateTableWithColumns withStaticColumn(CqlIdentifier columnName, DataType dataType) {
     return new DefaultCreateTable(
         keyspace,
         tableName,
@@ -160,7 +163,7 @@ public class DefaultCreateTable implements CreateTable {
   }
 
   @Override
-  public CreateTable withCompactStorage() {
+  public CreateTableWithOptions withCompactStorage() {
     return new DefaultCreateTable(
         keyspace,
         tableName,
@@ -175,12 +178,14 @@ public class DefaultCreateTable implements CreateTable {
   }
 
   @Override
-  public CreateTable withClusteringOrderByIds(Map<CqlIdentifier, ClusteringOrder> orderings) {
+  public CreateTableWithOptions withClusteringOrderByIds(
+      Map<CqlIdentifier, ClusteringOrder> orderings) {
     return null;
   }
 
   @Override
-  public CreateTable withClusteringOrder(CqlIdentifier columnName, ClusteringOrder order) {
+  public CreateTableWithOptions withClusteringOrder(
+      CqlIdentifier columnName, ClusteringOrder order) {
     return null;
   }
 
@@ -265,7 +270,7 @@ public class DefaultCreateTable implements CreateTable {
   }
 
   @Override
-  public CreateTable withProperty(String name, Object value) {
+  public CreateTableWithColumns withProperty(String name, Object value) {
     return new DefaultCreateTable(
         keyspace,
         tableName,
