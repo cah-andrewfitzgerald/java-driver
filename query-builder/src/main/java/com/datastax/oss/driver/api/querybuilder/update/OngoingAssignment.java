@@ -20,7 +20,7 @@ import com.datastax.oss.driver.api.querybuilder.QueryBuilderDsl;
 import com.datastax.oss.driver.api.querybuilder.term.Term;
 import java.util.Arrays;
 
-public interface OnGoingAssignment {
+public interface OngoingAssignment {
 
   /**
    * Adds an assignment to this statement, as in {@code UPDATE foo SET v=1}.

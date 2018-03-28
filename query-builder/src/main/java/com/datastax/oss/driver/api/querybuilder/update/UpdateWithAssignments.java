@@ -21,4 +21,4 @@ import com.datastax.oss.driver.api.querybuilder.relation.OngoingWhereClause;
  * An UPDATE statement that has at least one assignment. You can keep adding assignments, or add
  * WHERE clauses to get a buildable statement.
  */
-public interface UpdateWithAssignments extends OnGoingAssignment, OngoingWhereClause<Update> {}
+public interface UpdateWithAssignments extends OngoingAssignment, OngoingWhereClause<Update> {}

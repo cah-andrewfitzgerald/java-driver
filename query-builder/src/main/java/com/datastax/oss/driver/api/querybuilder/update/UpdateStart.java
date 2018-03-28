@@ -21,7 +21,7 @@ import com.datastax.oss.driver.api.querybuilder.BindMarker;
  * The beginning of an UPDATE statement. It needs at least one assignment before the WHERE clause
  * can be added.
  */
-public interface UpdateStart extends OnGoingAssignment {
+public interface UpdateStart extends OngoingAssignment {
 
   /**
    * Adds a USING TIMESTAMP clause to this statement with a literal value.
